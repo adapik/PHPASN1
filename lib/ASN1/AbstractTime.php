@@ -20,23 +20,17 @@ abstract class AbstractTime extends Object
     /** @var DateTime */
     protected $value;
 
-    public function __construct($dateTime = null, $dateTimeZone = 'UTC')
+    public function __construct(Identifier $identifier, ContentLength $contentLength, Content $content, array $children = [])
     {
-        if ($dateTime == null || is_string($dateTime)) {
-            $timeZone = new DateTimeZone($dateTimeZone);
-            $dateTimeObject = new DateTime($dateTime, $timeZone);
-            if ($dateTimeObject == false) {
-                $errorMessage = $this->getLastDateTimeErrors();
-                $className = Identifier::getName($this->getType());
-                throw new Exception(sprintf("Could not create %s from date time string '%s': %s", $className, $dateTime, $errorMessage));
-            }
-            $dateTime = $dateTimeObject;
-        } elseif (!$dateTime instanceof DateTime) {
-            throw new Exception('Invalid first argument for some instance of ASN_AbstractTime constructor');
-        }
 
-        $this->value = $dateTime;
+        parent::__construct($identifier, $contentLength, $content,$children);
+
+        if(!$this->identifier->isConstructed) {
+            $this->setValue($content);
+        }
     }
+
+    abstract function setValue(Content $content);
 
     public function getContent()
     {

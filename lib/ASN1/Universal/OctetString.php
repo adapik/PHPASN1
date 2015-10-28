@@ -11,16 +11,27 @@
 namespace FG\ASN1\Universal;
 
 use Exception;
+use FG\ASN1\Content;
 use FG\ASN1\Object;
-use FG\ASN1\Parsable;
 use FG\ASN1\Identifier;
+use FG\ASN1\ContentLength;
 
-class OctetString extends Object implements Parsable
+class OctetString extends Object
 {
     protected $value;
 
-    public function __construct($value)
+    public function __construct(Identifier $identifier, ContentLength $contentLength, Content $content, array $children = [])
     {
+
+        parent::__construct($identifier, $contentLength, $content,$children);
+
+        if(!$this->identifier->isConstructed) {
+            $this->setValue($content);
+        }
+    }
+
+    public function setValue(Content $content) {
+        $value = $content->binaryData;
         if (is_string($value)) {
             // remove gaps between hex digits
             $value = preg_replace('/\s|0x/', '', $value);
@@ -38,16 +49,6 @@ class OctetString extends Object implements Parsable
         $this->value = $value;
     }
 
-    public function getType()
-    {
-        return Identifier::OCTETSTRING;
-    }
-
-    protected function calculateContentLength()
-    {
-        return strlen($this->value) / 2;
-    }
-
     protected function getEncodedValue()
     {
         $value = $this->value;
@@ -63,6 +64,11 @@ class OctetString extends Object implements Parsable
         return $result;
     }
 
+    public function getStringValue()
+    {
+        return strtoupper(bin2hex($this->content->binaryData));
+    }
+
     public function getContent()
     {
         return strtoupper($this->value);
@@ -73,17 +79,9 @@ class OctetString extends Object implements Parsable
         return $this->getEncodedValue();
     }
 
-    public static function fromBinary(&$binaryData, &$offsetIndex = 0)
+    public static function encodeValue($value)
     {
-        self::parseIdentifier($binaryData[$offsetIndex], Identifier::OCTETSTRING, $offsetIndex++);
-        $contentLength = self::parseContentLength($binaryData, $offsetIndex, 1);
-
-        $value = substr($binaryData, $offsetIndex, $contentLength);
-        $offsetIndex += $contentLength;
-
-        $parsedObject = new self(bin2hex($value));
-        $parsedObject->setContentLength($contentLength);
-
-        return $parsedObject;
+        //данные в бинарном виде as is
+        return $value;
     }
 }

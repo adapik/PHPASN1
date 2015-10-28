@@ -14,44 +14,21 @@ use Exception;
 use FG\ASN1\Parsable;
 use FG\ASN1\Identifier;
 use FG\ASN1\Exception\ParserException;
+use FG\ASN1\ContentLength;
+use FG\ASN1\Content;
 
 class RelativeObjectIdentifier extends ObjectIdentifier implements Parsable
 {
-    public function __construct($subIdentifiers)
+    public function __construct(Identifier $identifier, ContentLength $contentLength, Content $content, array $children = [])
     {
-        $this->value = $subIdentifiers;
-        $this->subIdentifiers = explode('.', $subIdentifiers);
-        $nrOfSubIdentifiers = count($this->subIdentifiers);
 
-        for ($i = 0; $i < $nrOfSubIdentifiers; $i++) {
-            if (is_numeric($this->subIdentifiers[$i])) {
-                // enforce the integer type
-                $this->subIdentifiers[$i] = intval($this->subIdentifiers[$i]);
-            } else {
-                throw new Exception("[{$subIdentifiers}] is no valid object identifier (sub identifier ".($i + 1).' is not numeric)!');
-            }
-        }
+        parent::__construct($identifier, $contentLength, $content, $children);
+
+        $this->setValue($content);
     }
 
     public function getType()
     {
         return Identifier::RELATIVE_OID;
-    }
-
-    public static function fromBinary(&$binaryData, &$offsetIndex = 0)
-    {
-        self::parseIdentifier($binaryData[$offsetIndex], Identifier::RELATIVE_OID, $offsetIndex++);
-        $contentLength = self::parseContentLength($binaryData, $offsetIndex, 1);
-
-        try {
-            $oidString = self::parseOid($binaryData, $offsetIndex, $contentLength);
-        } catch (ParserException $e) {
-            throw new ParserException('Malformed ASN.1 Relative Object Identifier', $e->getOffset());
-        }
-
-        $parsedObject = new self($oidString);
-        $parsedObject->setContentLength($contentLength);
-
-        return $parsedObject;
     }
 }

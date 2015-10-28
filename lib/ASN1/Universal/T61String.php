@@ -12,6 +12,8 @@ namespace FG\ASN1\Universal;
 
 use FG\ASN1\AbstractString;
 use FG\ASN1\Identifier;
+use FG\ASN1\Content;
+use FG\ASN1\ContentLength;
 
 class T61String extends AbstractString
 {
@@ -23,9 +25,11 @@ class T61String extends AbstractString
      *
      * @param string $string
      */
-    public function __construct($string)
+    public function __construct(Identifier $identifier, ContentLength $contentLength, Content $content, array $children = [])
     {
-        $this->value = $string;
+
+        parent::__construct($identifier, $contentLength, $content, $children);
+
         $this->allowAll();
     }
 

@@ -10,21 +10,23 @@
 
 namespace FG\ASN1\Universal;
 
+use FG\ASN1\Content;
 use FG\ASN1\Object;
-use FG\ASN1\Parsable;
 use FG\ASN1\Identifier;
-use FG\ASN1\Exception\ParserException;
+use FG\ASN1\ContentLength;
 
-class Boolean extends Object implements Parsable
+class Boolean extends Object
 {
     private $value;
 
-    /**
-     * @param bool $value
-     */
-    public function __construct($value)
+    public function __construct(Identifier $identifier, ContentLength $contentLength, Content $content, array $children = [])
     {
-        $this->value = $value;
+
+        parent::__construct($identifier, $contentLength, $content,$children);
+
+        if(!$this->identifier->isConstructed) {
+            $this->setValue($content);
+        }
     }
 
     public function getType()
@@ -55,21 +57,9 @@ class Boolean extends Object implements Parsable
         }
     }
 
-    public static function fromBinary(&$binaryData, &$offsetIndex = 0)
+    public function setValue(Content $content)
     {
-        self::parseIdentifier($binaryData[$offsetIndex], Identifier::BOOLEAN, $offsetIndex++);
-        $contentLength = self::parseContentLength($binaryData, $offsetIndex);
-
-        if ($contentLength != 1) {
-            throw new ParserException("An ASN.1 Boolean should not have a length other than one. Extracted length was {$contentLength}", $offsetIndex);
-        }
-
-        $value = ord($binaryData[$offsetIndex++]);
-        $booleanValue = $value == 0xFF ? true : false;
-
-        $parsedObject = new self($booleanValue);
-        $parsedObject->setContentLength($contentLength);
-
-        return $parsedObject;
+        $value = ord($content->binaryData[0]);
+        $this->value = $value == 0xFF ? true : false;
     }
 }

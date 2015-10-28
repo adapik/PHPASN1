@@ -10,14 +10,31 @@
 
 namespace FG\ASN1\Universal;
 
-use FG\ASN1\Construct;
-use FG\ASN1\Parsable;
+use FG\ASN1\Object;
 use FG\ASN1\Identifier;
+use FG\ASN1\ContentLength;
+use FG\ASN1\Content;
 
-class Sequence extends Construct implements Parsable
+class Sequence extends Object
 {
-    public function getType()
+    public function __construct(Identifier $identifier, ContentLength $contentLength, Content $content, array $children = [])
     {
-        return Identifier::SEQUENCE;
+
+        parent::__construct($identifier, $contentLength, $content, $children);
+    }
+
+    protected function getEncodedValue()
+    {
+        $result = '';
+        foreach ($this->children as $component) {
+            $result .= $component->getBinary();
+        }
+
+        return $result;
+    }
+
+    public function getContent()
+    {
+        return $this->children;
     }
 }

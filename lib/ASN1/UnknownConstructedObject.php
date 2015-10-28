@@ -10,6 +10,8 @@
 
 namespace FG\ASN1;
 
+use FG\ASN1\Universal\EOC;
+
 class UnknownConstructedObject extends Construct
 {
     private $identifier;
@@ -23,8 +25,9 @@ class UnknownConstructedObject extends Construct
      */
     public function __construct($binaryData, &$offsetIndex)
     {
+        $startPos = $offsetIndex - 2;
         $this->identifier = self::parseBinaryIdentifier($binaryData, $offsetIndex);
-        $this->contentLength = self::parseContentLength($binaryData, $offsetIndex);
+        $contentLength = self::parseContentLength($binaryData, $offsetIndex);
 
         $children = [];
         $octetsToRead = $this->contentLength;
@@ -33,6 +36,30 @@ class UnknownConstructedObject extends Construct
             $octetsToRead -= $newChild->getObjectLength();
             $children[] = $newChild;
         }
+
+        $children = [];
+        if(null != $contentLength) {
+            $octetsToRead = $contentLength;
+            while ($octetsToRead > 0) {
+                $newChild = Object::fromBinary($binaryData, $offsetIndex);
+                $octetsToRead -= $newChild->getObjectLength();
+                $children[] = $newChild;
+            }
+        } else {
+            /*try {*/
+            for (;;) {
+                $newChild = Object::fromBinary($binaryData, $offsetIndex);
+                if($newChild instanceof EOC)
+                    break;
+                $children[] = $newChild;
+            }
+            $contentLength = abs($startPos - $offsetIndex); // undefined lengths are represented as negative values
+            /*            } catch (\Exception $e) {
+                            $e->getMessage();
+                        }*/
+        }
+
+        $this->contentLength = $contentLength;
 
         parent::__construct(...$children);
     }

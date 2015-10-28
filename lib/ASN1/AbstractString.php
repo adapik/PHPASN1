@@ -12,21 +12,19 @@ namespace FG\ASN1;
 
 use Exception;
 
-abstract class AbstractString extends Object implements Parsable
+abstract class AbstractString extends Object
 {
     /** @var string */
     protected $value;
     private $checkStringForIllegalChars = true;
     private $allowedCharacters = [];
 
-    /**
-     * The abstract base class for ASN.1 classes which represent some string of character.
-     *
-     * @param string $string
-     */
-    public function __construct($string)
+    public function __construct(Identifier $identifier, ContentLength $contentLength, Content $content, array $children)
     {
-        $this->value = $string;
+
+        parent::__construct($identifier, $contentLength, $content, $children);
+
+        $this->value = $content->binaryData;
     }
 
     public function getContent()
@@ -102,35 +100,9 @@ abstract class AbstractString extends Object implements Parsable
         $stringLength = $this->getContentLength();
         for ($i = 0; $i < $stringLength; $i++) {
             if (in_array($this->value[$i], $this->allowedCharacters) == false) {
-                $typeName = Identifier::getName($this->getType());
+                $typeName = IdentifierManager::getName($this->identifier->tagNumber);
                 throw new Exception("Could not create a {$typeName} from the character sequence '{$this->value}'.");
             }
-        }
-    }
-
-    public static function fromBinary(&$binaryData, &$offsetIndex = 0)
-    {
-        $parsedObject = new static('');
-
-        self::parseIdentifier($binaryData[$offsetIndex], $parsedObject->getType(), $offsetIndex++);
-        $contentLength = self::parseContentLength($binaryData, $offsetIndex);
-        $string = substr($binaryData, $offsetIndex, $contentLength);
-        $offsetIndex += $contentLength;
-
-        $parsedObject->value = $string;
-        $parsedObject->setContentLength($contentLength);
-        return $parsedObject;
-    }
-
-    public static function isValid($string)
-    {
-        $testObject = new static($string);
-        try {
-            $testObject->checkString();
-
-            return true;
-        } catch (Exception $exception) {
-            return false;
         }
     }
 }

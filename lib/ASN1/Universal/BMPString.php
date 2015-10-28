@@ -12,6 +12,8 @@ namespace FG\ASN1\Universal;
 
 use FG\ASN1\AbstractString;
 use FG\ASN1\Identifier;
+use FG\ASN1\ContentLength;
+use FG\ASN1\Content;
 
 class BMPString extends AbstractString
 {
@@ -28,14 +30,9 @@ class BMPString extends AbstractString
      *
      * @param string $string
      */
-    public function __construct($string)
+    public function __construct(Identifier $identifier, ContentLength $contentLength, Content $content, array $children = [])
     {
-        $this->value = $string;
-        $this->allowAll();
-    }
 
-    public function getType()
-    {
-        return Identifier::BMP_STRING;
+        parent::__construct($identifier, $contentLength, $content, $children);
     }
 }

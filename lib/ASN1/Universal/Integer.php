@@ -12,25 +12,27 @@ namespace FG\ASN1\Universal;
 
 use Exception;
 use FG\ASN1\Object;
-use FG\ASN1\Parsable;
 use FG\ASN1\Identifier;
+use FG\ASN1\ContentLength;
+use FG\ASN1\Content;
 
-class Integer extends Object implements Parsable
+class Integer extends Object
 {
     /** @var int */
-    private $value;
+    public $value;
 
     /**
      * @param int $value
      *
      * @throws Exception if the value is not numeric
      */
-    public function __construct($value)
+    public function __construct(Identifier $identifier, ContentLength $contentLength, Content $content, array $children = [])
     {
-        if (is_numeric($value) == false) {
-            throw new Exception("Invalid VALUE [{$value}] for ASN1_INTEGER");
-        }
-        $this->value = $value;
+
+        parent::__construct($identifier, $contentLength, $content, $children);
+
+        $this->setValue($content);
+
     }
 
     public function getType()
@@ -85,12 +87,11 @@ class Integer extends Object implements Parsable
         return $result;
     }
 
-    public static function fromBinary(&$binaryData, &$offsetIndex = 0)
+    public function setValue(Content $content)
     {
-        $parsedObject = new static(0);
-        self::parseIdentifier($binaryData[$offsetIndex], $parsedObject->getType(), $offsetIndex++);
-        $contentLength = self::parseContentLength($binaryData, $offsetIndex, 1);
-
+        $binaryData = $content->binaryData;
+        $offsetIndex = 0;
+        $contentLength = $this->contentLength->length;
         $isNegative = (ord($binaryData[$offsetIndex]) & 0x80) != 0x00;
         $number = gmp_init(ord($binaryData[$offsetIndex++]) & 0x7F, 10);
 
@@ -102,9 +103,21 @@ class Integer extends Object implements Parsable
             $number = gmp_sub($number, gmp_pow(2, 8 * $contentLength - 1));
         }
 
-        $parsedObject = new static(gmp_strval($number, 10));
-        $parsedObject->setContentLength($contentLength);
+        $value = gmp_strval($number, 10);
+        if (is_string($value)) {
+            // remove gaps between hex digits
+            $value = preg_replace('/\s|0x/', '', $value);
+        } elseif (is_numeric($value)) {
+            $value = dechex($value);
+        } else {
+            throw new Exception('OctetString: unrecognized input type!');
+        }
 
-        return $parsedObject;
+        if (strlen($value) % 2 != 0) {
+            // transform values like 1F2 to 01F2
+            $value = '0'.$value;
+        }
+
+        $this->value = $value;
     }
 }

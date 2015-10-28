@@ -13,39 +13,23 @@ namespace FG\ASN1\Universal;
 use Exception;
 use FG\ASN1\Parsable;
 use FG\ASN1\Identifier;
+use FG\ASN1\ContentLength;
+use FG\ASN1\Content;
 
 class BitString extends OctetString implements Parsable
 {
     private $nrOfUnusedBits;
 
-    /**
-     * Creates a new ASN.1 BitString object.
-     *
-     * @param string|int $value Either the hexadecimal value as a string (spaces are allowed - leading 0x is optional) or a numeric value
-     * @param int $nrOfUnusedBits the number of unused bits in the last octet [optional].
-     *
-     * @throws Exception if the second parameter is no positive numeric value
-     */
-    public function __construct($value, $nrOfUnusedBits = 0)
+    public function __construct(Identifier $identifier, ContentLength $contentLength, Content $content, array $children = [])
     {
-        parent::__construct($value);
+
+        parent::__construct($identifier, $contentLength, $content, $children);
+
+        $this->nrOfUnusedBits = $nrOfUnusedBits = ord($content->binaryData[0]);
 
         if (!is_numeric($nrOfUnusedBits) || $nrOfUnusedBits < 0) {
             throw new Exception('BitString: second parameter needs to be a positive number (or zero)!');
         }
-
-        $this->nrOfUnusedBits = $nrOfUnusedBits;
-    }
-
-    public function getType()
-    {
-        return Identifier::BITSTRING;
-    }
-
-    protected function calculateContentLength()
-    {
-        // add one to the length for the first octet which encodes the number of unused bits in the last octet
-        return parent::calculateContentLength() + 1;
     }
 
     protected function getEncodedValue()
@@ -62,18 +46,25 @@ class BitString extends OctetString implements Parsable
         return $this->nrOfUnusedBits;
     }
 
-    public static function fromBinary(&$binaryData, &$offsetIndex = 0)
+    public function setValue(Content $content)
     {
-        self::parseIdentifier($binaryData[$offsetIndex], Identifier::BITSTRING, $offsetIndex++);
-        $contentLength = self::parseContentLength($binaryData, $offsetIndex, 2);
+        $binaryData = $content->binaryData;
+        $value = bin2hex(substr($binaryData, 1, $this->contentLength->length - 1));
 
-        $nrOfUnusedBits = ord($binaryData[$offsetIndex]);
-        $value = substr($binaryData, $offsetIndex + 1, $contentLength - 1);
-        $offsetIndex += $contentLength;
+        if (is_string($value)) {
+            // remove gaps between hex digits
+            $value = preg_replace('/\s|0x/', '', $value);
+        } elseif (is_numeric($value)) {
+            $value = dechex($value);
+        } else {
+            throw new Exception('OctetString: unrecognized input type!');
+        }
 
-        $parsedObject = new self(bin2hex($value), $nrOfUnusedBits);
-        $parsedObject->setContentLength($contentLength);
+        if (strlen($value) % 2 != 0) {
+            // transform values like 1F2 to 01F2
+            $value = '0'.$value;
+        }
 
-        return $parsedObject;
+        $this->value = bin2hex($value);
     }
 }

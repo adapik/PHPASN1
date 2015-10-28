@@ -13,6 +13,8 @@ namespace FG\ASN1;
 use ArrayAccess;
 use ArrayIterator;
 use Countable;
+use FG\ASN1\Universal\EOC;
+use FG\ASN1\Universal\Sequence;
 use Iterator;
 
 abstract class Construct extends Object implements Countable, ArrayAccess, Iterator, Parsable
@@ -156,15 +158,30 @@ abstract class Construct extends Object implements Countable, ArrayAccess, Itera
     public static function fromBinary(&$binaryData, &$offsetIndex = 0)
     {
         $parsedObject = new static();
-        self::parseIdentifier($binaryData[$offsetIndex], $parsedObject->getType(), $offsetIndex++);
-        $contentLength = self::parseContentLength($binaryData, $offsetIndex);
+        $startPos = $offsetIndex;
+        self::parseBinaryIdentifier($binaryData, $offsetIndex);
 
+        $contentLength = self::parseContentLength($binaryData, $offsetIndex);
         $children = [];
-        $octetsToRead = $contentLength;
-        while ($octetsToRead > 0) {
-            $newChild = Object::fromBinary($binaryData, $offsetIndex);
-            $octetsToRead -= $newChild->getObjectLength();
-            $children[] = $newChild;
+        if(null != $contentLength) {
+            $octetsToRead = $contentLength;
+            while ($octetsToRead > 0) {
+                $newChild = Object::fromBinary($binaryData, $offsetIndex);
+                $octetsToRead -= $newChild->getObjectLength();
+                $children[] = $newChild;
+            }
+        } else {
+            /*try {*/
+                for (;;) {
+                    $newChild = Object::fromBinary($binaryData, $offsetIndex);
+                    if($newChild instanceof EOC)
+                        break;
+                    $children[] = $newChild;
+                    }
+                $contentLength = abs($startPos - $offsetIndex); // undefined lengths are represented as negative values
+/*            } catch (\Exception $e) {
+                $e->getMessage();
+            }*/
         }
 
         $parsedObject->addChildren($children);

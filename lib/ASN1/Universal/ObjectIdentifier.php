@@ -12,38 +12,25 @@ namespace FG\ASN1\Universal;
 
 use Exception;
 use FG\ASN1\Base128;
+use FG\ASN1\Content;
 use FG\ASN1\OID;
 use FG\ASN1\Object;
 use FG\ASN1\Parsable;
 use FG\ASN1\Identifier;
 use FG\ASN1\Exception\ParserException;
+use FG\ASN1\ContentLength;
 
-class ObjectIdentifier extends Object implements Parsable
+class ObjectIdentifier extends Object
 {
     protected $subIdentifiers;
     protected $value;
 
-    public function __construct($value)
+    public function __construct(Identifier $identifier, ContentLength $contentLength, Content $content, array $children = [])
     {
-        $this->subIdentifiers = explode('.', $value);
-        $nrOfSubIdentifiers = count($this->subIdentifiers);
 
-        for ($i = 0; $i < $nrOfSubIdentifiers; $i++) {
-            if (is_numeric($this->subIdentifiers[$i])) {
-                // enforce the integer type
-                $this->subIdentifiers[$i] = intval($this->subIdentifiers[$i]);
-            } else {
-                throw new Exception("[{$value}] is no valid object identifier (sub identifier ".($i + 1).' is not numeric)!');
-            }
-        }
+        parent::__construct($identifier, $contentLength, $content, $children);
 
-        // Merge the first to arcs of the OID registration tree (per ASN definition!)
-        if ($nrOfSubIdentifiers >= 2) {
-            $this->subIdentifiers[1] = ($this->subIdentifiers[0] * 40) + $this->subIdentifiers[1];
-            unset($this->subIdentifiers[0]);
-        }
-
-        $this->value = $value;
+        $this->setValue($content);
     }
 
     public function getContent()
@@ -84,21 +71,6 @@ class ObjectIdentifier extends Object implements Parsable
         return OID::getName($this->value);
     }
 
-    public static function fromBinary(&$binaryData, &$offsetIndex = 0)
-    {
-        self::parseIdentifier($binaryData[$offsetIndex], Identifier::OBJECT_IDENTIFIER, $offsetIndex++);
-        $contentLength = self::parseContentLength($binaryData, $offsetIndex, 1);
-
-        $firstOctet = ord($binaryData[$offsetIndex++]);
-        $oidString = floor($firstOctet / 40).'.'.($firstOctet % 40);
-        $oidString .= '.'.self::parseOid($binaryData, $offsetIndex, $contentLength - 1);
-
-        $parsedObject = new self($oidString);
-        $parsedObject->setContentLength($contentLength);
-
-        return $parsedObject;
-    }
-
     /**
      * Parses an object identifier except for the first octet, which is parsed
      * differently. This way relative object identifiers can also be parsed
@@ -135,4 +107,33 @@ class ObjectIdentifier extends Object implements Parsable
         // Remove trailing '.'
         return substr($oid, 0, -1) ?: '';
     }
+
+    public function setValue(Content $content)
+    {
+        $binaryData = $content->binaryData;
+        $offsetIndex = 0;
+        $firstOctet = ord($binaryData[$offsetIndex++]);
+        $oidString = floor($firstOctet / 40).'.'.($firstOctet % 40);
+        $oidString .= '.'.self::parseOid($binaryData, $offsetIndex, $this->contentLength->length - 1);
+        $this->value = $value = $oidString;
+
+        $this->subIdentifiers = explode('.', $value);
+        $nrOfSubIdentifiers = count($this->subIdentifiers);
+
+        for ($i = 0; $i < $nrOfSubIdentifiers; $i++) {
+            if (is_numeric($this->subIdentifiers[$i])) {
+                // enforce the integer type
+                $this->subIdentifiers[$i] = intval($this->subIdentifiers[$i]);
+            } else {
+                throw new Exception("[{$value}] is no valid object identifier (sub identifier ".($i + 1).' is not numeric)!');
+            }
+        }
+
+        // Merge the first to arcs of the OID registration tree (per ASN definition!)
+        if ($nrOfSubIdentifiers >= 2) {
+            $this->subIdentifiers[1] = ($this->subIdentifiers[0] * 40) + $this->subIdentifiers[1];
+            unset($this->subIdentifiers[0]);
+        }
+    }
+
 }

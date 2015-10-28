@@ -11,9 +11,13 @@
 namespace FG\ASN1\Universal;
 
 use FG\ASN1\AbstractTime;
+use FG\ASN1\Content;
+use FG\ASN1\IdentifierManager;
 use FG\ASN1\Parsable;
 use FG\ASN1\Identifier;
 use FG\ASN1\Exception\ParserException;
+use DateTime;
+use DateTimeZone;
 
 /**
  * This ASN.1 universal type contains date and time information according to ISO 8601.
@@ -80,11 +84,13 @@ class GeneralizedTime extends AbstractTime implements Parsable
         }
     }
 
-    public static function fromBinary(&$binaryData, &$offsetIndex = 0)
+    public function setValue(Content $content)
     {
-        self::parseIdentifier($binaryData[$offsetIndex], Identifier::GENERALIZED_TIME, $offsetIndex++);
+        $binaryData = $content->binaryData;
+        $offsetIndex = 0;
+
         $lengthOfMinimumTimeString = 14; // YYYYMMDDHHmmSS
-        $contentLength = self::parseContentLength($binaryData, $offsetIndex, $lengthOfMinimumTimeString);
+        $contentLength = $this->contentLength->length;
         $maximumBytesToRead = $contentLength;
 
         $format = 'YmdGis';
@@ -102,9 +108,9 @@ class GeneralizedTime extends AbstractTime implements Parsable
                 $nrOfFractionalSecondElements = 1; // account for the '.'
 
                 while ($maximumBytesToRead > 0
-                      && $binaryData[$offsetIndex + $nrOfFractionalSecondElements] != '+'
-                      && $binaryData[$offsetIndex + $nrOfFractionalSecondElements] != '-'
-                      && $binaryData[$offsetIndex + $nrOfFractionalSecondElements] != 'Z') {
+                    && $binaryData[$offsetIndex + $nrOfFractionalSecondElements] != '+'
+                    && $binaryData[$offsetIndex + $nrOfFractionalSecondElements] != '-'
+                    && $binaryData[$offsetIndex + $nrOfFractionalSecondElements] != 'Z') {
                     $nrOfFractionalSecondElements++;
                     $maximumBytesToRead--;
                 }
@@ -118,17 +124,36 @@ class GeneralizedTime extends AbstractTime implements Parsable
 
             if ($maximumBytesToRead > 0) {
                 if ($binaryData[$offsetIndex] == '+'
-                || $binaryData[$offsetIndex] == '-') {
+                    || $binaryData[$offsetIndex] == '-') {
                     $dateTime = static::extractTimeZoneData($binaryData, $offsetIndex, $dateTime);
                 } elseif ($binaryData[$offsetIndex++] != 'Z') {
                     throw new ParserException('Invalid ISO 8601 Time String', $offsetIndex);
                 }
             }
+
+            $dateTimeZone = 'UTC';
+
+            if ($dateTime == null || is_string($dateTime)) {
+                $timeZone = new DateTimeZone($dateTimeZone);
+                $dateTimeObject = new DateTime($dateTime, $timeZone);
+                if ($dateTimeObject == false) {
+                    $errorMessage = $this->getLastDateTimeErrors();
+                    $className = IdentifierManager::getName($this->getType());
+                    throw new \Exception(sprintf("Could not create %s from date time string '%s': %s", $className, $dateTime, $errorMessage));
+                }
+                $dateTime = $dateTimeObject;
+            } elseif (!$dateTime instanceof DateTime) {
+                throw new \Exception('Invalid first argument for some instance of ASN_AbstractTime constructor');
+            }
+
+            $this->value = $dateTime;
+
+            $this->microseconds = $this->value->format('u');
+            if ($this->containsFractionalSecondsElement()) {
+                // DER requires us to remove trailing zeros
+                $this->microseconds = preg_replace('/([1-9]+)0+$/', '$1', $this->microseconds);
+            }
+
         }
-
-        $parsedObject = new self($dateTime);
-        $parsedObject->setContentLength($contentLength);
-
-        return $parsedObject;
     }
 }

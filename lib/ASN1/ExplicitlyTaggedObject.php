@@ -39,10 +39,10 @@ class ExplicitlyTaggedObject extends Object
      * @param int $tag
      * @param \FG\ASN1\Object $objects,...
      */
-    public function __construct($tag, /* HH_FIXME[4858]: variadic + strict */ ...$objects)
+    public function __construct(Identifier $identifier, ContentLength $contentLength, Content $content, array $children = [])
     {
-        $this->tag = $tag;
-        $this->decoratedObjects = $objects;
+
+        parent::__construct($identifier, $contentLength, $content, $children);
     }
 
     protected function calculateContentLength()
@@ -57,75 +57,11 @@ class ExplicitlyTaggedObject extends Object
 
     protected function getEncodedValue()
     {
-        $encoded = '';
-        foreach ($this->decoratedObjects as $object) {
-            $encoded .= $object->getBinary();
-        }
-
-        return $encoded;
+        return $this->content->binaryData;
     }
 
     public function getContent()
     {
-        return $this->decoratedObjects;
-    }
-
-    public function __toString()
-    {
-        switch ($length = count($this->decoratedObjects)) {
-        case 0:
-            return "Context specific empty object with tag [{$this->tag}]";
-        case 1:
-            $decoratedType = Identifier::getShortName($this->decoratedObjects[0]->getType());
-            return "Context specific $decoratedType with tag [{$this->tag}]";
-        default:
-            return "$length context specific objects with tag [{$this->tag}]";
-        }
-    }
-
-    public function getType()
-    {
-        return ord($this->getIdentifier());
-    }
-
-    public function getIdentifier()
-    {
-        $identifier = Identifier::create(Identifier::CLASS_CONTEXT_SPECIFIC, true, $this->tag);
-
-        return is_int($identifier) ? chr($identifier) : $identifier;
-    }
-
-    public function getTag()
-    {
-        return $this->tag;
-    }
-
-    public static function fromBinary(&$binaryData, &$offsetIndex = 0)
-    {
-        $identifier = self::parseBinaryIdentifier($binaryData, $offsetIndex);
-        $firstIdentifierOctet = ord($identifier);
-        assert(Identifier::isContextSpecificClass($firstIdentifierOctet), 'identifier octet should indicate context specific class');
-        assert(Identifier::isConstructed($firstIdentifierOctet), 'identifier octet should indicate constructed object');
-        $tag = Identifier::getTagNumber($identifier);
-
-        $totalContentLength = self::parseContentLength($binaryData, $offsetIndex);
-        $remainingContentLength = $totalContentLength;
-
-        $offsetIndexOfDecoratedObject = $offsetIndex;
-        $decoratedObjects = [];
-
-        while ($remainingContentLength > 0) {
-            $nextObject = Object::fromBinary($binaryData, $offsetIndex);
-            $remainingContentLength -= $nextObject->getObjectLength();
-            $decoratedObjects[] = $nextObject;
-        }
-
-        if ($remainingContentLength != 0) {
-            throw new ParserException("Context-Specific explicitly tagged object [$tag] starting at offset $offsetIndexOfDecoratedObject specifies a length of $totalContentLength octets but $remainingContentLength remain after parsing the content", $offsetIndexOfDecoratedObject);
-        }
-
-        $parsedObject = new self($tag, ...$decoratedObjects);
-        $parsedObject->setContentLength($totalContentLength);
-        return $parsedObject;
+        return $this->children;
     }
 }

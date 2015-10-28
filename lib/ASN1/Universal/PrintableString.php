@@ -12,6 +12,8 @@ namespace FG\ASN1\Universal;
 
 use FG\ASN1\AbstractString;
 use FG\ASN1\Identifier;
+use FG\ASN1\ContentLength;
+use FG\ASN1\Content;
 
 class PrintableString extends AbstractString
 {
@@ -37,9 +39,11 @@ class PrintableString extends AbstractString
      *
      * @param string $string
      */
-    public function __construct($string)
+    public function __construct(Identifier $identifier, ContentLength $contentLength, Content $content, array $children = [])
     {
-        $this->value = $string;
+
+        parent::__construct($identifier, $contentLength, $content, $children);
+
         $this->allowNumbers();
         $this->allowAllLetters();
         $this->allowSpaces();
@@ -50,4 +54,5 @@ class PrintableString extends AbstractString
     {
         return Identifier::PRINTABLE_STRING;
     }
+
 }
