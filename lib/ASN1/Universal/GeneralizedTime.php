@@ -18,6 +18,7 @@ use FG\ASN1\Identifier;
 use FG\ASN1\Exception\ParserException;
 use DateTime;
 use DateTimeZone;
+use FG\ASN1\ContentLength;
 
 /**
  * This ASN.1 universal type contains date and time information according to ISO 8601.
@@ -30,13 +31,18 @@ use DateTimeZone;
  * Decoding of this type will accept the Basic Encoding Rules (BER)
  * The encoding will comply with the Distinguished Encoding Rules (DER).
  */
-class GeneralizedTime extends AbstractTime implements Parsable
+class GeneralizedTime extends AbstractTime
 {
     private $microseconds;
 
-    public function __construct($dateTime = null, $dateTimeZone = 'UTC')
+    public function __construct(Identifier $identifier, ContentLength $contentLength, Content $content, array $children = [])
     {
-        parent::__construct($dateTime, $dateTimeZone);
+        parent::__construct($identifier, $contentLength, $content, $children);
+
+        if(!$this->identifier->isConstructed) {
+            $this->setValue($content);
+        }
+
         $this->microseconds = $this->value->format('u');
         if ($this->containsFractionalSecondsElement()) {
             // DER requires us to remove trailing zeros
@@ -155,5 +161,10 @@ class GeneralizedTime extends AbstractTime implements Parsable
             }
 
         }
+    }
+
+    public function getStringValue()
+    {
+        return $this->value->format('ymdHis').'Z';
     }
 }
