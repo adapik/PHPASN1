@@ -625,4 +625,37 @@ abstract class Object
             }
         }
     }
+
+    /**
+     * @param string $className
+     * @return Object[]
+     * @throws \Exception
+     */
+    public function findChildrenByType($className)
+    {
+        if(!class_exists($className)) throw new \Exception('Class not defined');
+
+        return array_filter($this->children, function($value) use ($className) {
+            if (is_a($value, $className)) return true;
+
+            return false;
+        });
+    }
+
+    public final static function fromFile($fileContent)
+    {
+        $temp = trim($fileContent);
+        if(substr($fileContent, 0, 1) === '-') {
+            $temp = preg_replace('#.*?^-+[^-]+-+#ms', '', $fileContent, 1);
+            if(is_null($temp)) throw new \Exception('Preg_error:' . preg_last_error());
+            $temp = preg_replace('#--+[^-]+--+#', '', $temp);
+            if(is_null($temp)) throw new \Exception('Preg_error:' . preg_last_error());
+        }
+
+        $temp = str_replace(array("\r", "\n", ' '), '', $temp);
+        $temp = preg_match('#^[a-zA-Z\d/+]*={0,2}$#', $temp) ? base64_decode($temp) : false;
+        $file = $temp != false ? $temp : $fileContent;
+
+        return self::fromBinary($file);
+    }
 }
