@@ -136,4 +136,26 @@ class ObjectIdentifier extends Object
         }
     }
 
+    public static function encodeValue($oid)
+    {
+        $value = '';
+        $parts = explode('.', $oid);
+        $value = chr(40 * $parts[0] + $parts[1]);
+        for ($i = 2; $i < count($parts); $i++) {
+            $temp = '';
+            if (!$parts[$i]) {
+                $temp = "\0";
+            } else {
+                while ($parts[$i]) {
+                    $temp = chr(0x80 | ($parts[$i] & 0x7F)) . $temp;
+                    $parts[$i] >>= 7;
+                }
+                $temp[strlen($temp) - 1] = $temp[strlen($temp) - 1] & chr(0x7F);
+            }
+            $value .= $temp;
+        }
+
+        return $value;
+    }
+
 }
