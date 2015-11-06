@@ -578,14 +578,19 @@ abstract class Object
         }
     }
 
+    /**
+     * @return \FG\ASN1\Object[]
+     */
     public function getSiblings()
     {
         if($this->parent->isConstructed()) {
-            return array_filter($this->parent->getChildren(), function($value) {
+            $siblings = array_filter($this->parent->getChildren(), function($value) {
                 if($value === $this) return false;
 
                 return true;
             });
+
+            return array_values($siblings);
         } else {
             return [];
         }
@@ -599,6 +604,17 @@ abstract class Object
             return $this->children;
         } else {
             return [];
+        }
+    }
+
+    public function getParent()
+    {
+        if($this->parent) {
+
+            return $this->parent;
+        } else {
+
+            return null;
         }
     }
 
@@ -628,18 +644,20 @@ abstract class Object
 
     /**
      * @param string $className
-     * @return Object[]
+     * @return \FG\ASN1\Object[]
      * @throws \Exception
      */
     public function findChildrenByType($className)
     {
         if(!class_exists($className)) throw new \Exception('Class not defined');
 
-        return array_filter($this->children, function($value) use ($className) {
+        $children = array_filter($this->children, function($value) use ($className) {
             if (is_a($value, $className)) return true;
 
             return false;
         });
+
+        return array_values($children);
     }
 
     public final static function fromFile($fileContent)
