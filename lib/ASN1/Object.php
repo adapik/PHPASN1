@@ -477,7 +477,7 @@ abstract class Object
     public function findByOid($oidString)
     {
         $objects = [];
-        if($this->identifier->isConstructed) {
+        if($this->identifier->isConstructed && !empty($this->children)) {
             foreach ($this->children as $child) {
                 $objectFound = $child->findByOid($oidString);
                 if($objectFound) {
