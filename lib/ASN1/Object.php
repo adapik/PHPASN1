@@ -676,4 +676,12 @@ abstract class Object
 
         return self::fromBinary($file);
     }
+
+    public function detach()
+    {
+        $object = clone $this;
+        $this->parent = null;
+
+        return $object;
+    }
 }
