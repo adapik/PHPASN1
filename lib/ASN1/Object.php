@@ -624,7 +624,7 @@ abstract class Object
             foreach ($this->parent->children as $key => $child) {
                 if($child === $this) {
                     if($key + 1 === count($this->parent->children)) {
-                        array_push($this->parent->children, $child);
+                        array_push($this->parent->children, $object);
                     } else {
                         array_splice($this->parent->children, $key + 1, 0, [$object]);
                     }
