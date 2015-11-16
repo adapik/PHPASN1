@@ -688,4 +688,11 @@ abstract class Object
 
         return $object;
     }
+
+    public function getRoot()
+    {
+        if(is_null($this->parent)) return $this;
+
+        return $this->parent->getRoot();
+    }
 }
