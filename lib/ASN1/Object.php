@@ -623,7 +623,11 @@ abstract class Object
         if($this->parent) {
             foreach ($this->parent->children as $key => $child) {
                 if($child === $this) {
-                    array_splice($this->parent->children, $key + 1, 0, [$object]);
+                    if($key + 1 === count($this->parent->children)) {
+                        array_push($this->parent->children, $child);
+                    } else {
+                        array_splice($this->parent->children, $key + 1, 0, [$object]);
+                    }
                     $this->parent->rebuildTree();
                 }
             }
