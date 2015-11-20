@@ -19,7 +19,7 @@ class ElementBuilder
 
         if($identifier->tagClass === Identifier::CLASS_UNIVERSAL && $identifier->isConstructed === false) {
             //для простых элементов вызываем конструктор
-            switch ($identifier->tagNumber) {
+            switch ($identifier->getTagNumber()) {
                 case Identifier::BITSTRING:
                     $value = Universal\BitString::encodeValue($value);
                     break;
@@ -108,7 +108,7 @@ class ElementBuilder
 
         if ($identifier->tagClass === Identifier::CLASS_UNIVERSAL) {
             //для простых элементов вызываем конструктор
-            switch ($identifier->tagNumber) {
+            switch ($identifier->getTagNumber()) {
                 case Identifier::BITSTRING:
                     return new Universal\BitString($identifier, $contentLength, $content, $children);
                 case Identifier::BOOLEAN:

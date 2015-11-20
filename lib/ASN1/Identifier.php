@@ -13,7 +13,7 @@ class Identifier extends ObjectPart
 {
     public $binaryData;
     public $tagClass;
-    public $tagNumber;
+    private $tagNumber;
     public $isConstructed;
     public $code;
 
@@ -69,6 +69,11 @@ class Identifier extends ObjectPart
         $this->tagClass = ord($firstOctet) >> 6;
         $this->tagNumber = IdentifierManager::getTagNumber($identifierOctets);
         $this->code = $this->getCode();
+    }
+
+    public function getTagNumber()
+    {
+        return $this->tagNumber;
     }
 
     public function getCode()

@@ -100,7 +100,7 @@ abstract class AbstractString extends Object
         $stringLength = $this->getContentLength();
         for ($i = 0; $i < $stringLength; $i++) {
             if (in_array($this->value[$i], $this->allowedCharacters) == false) {
-                $typeName = IdentifierManager::getName($this->identifier->tagNumber);
+                $typeName = IdentifierManager::getName($this->identifier->getTagNumber());
                 throw new Exception("Could not create a {$typeName} from the character sequence '{$this->value}'.");
             }
         }

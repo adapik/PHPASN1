@@ -275,7 +275,7 @@ abstract class Object
 
         if ($identifier->tagClass === Identifier::CLASS_UNIVERSAL) {
             //для простых элементов вызываем конструктор
-            switch ($identifier->tagNumber) {
+            switch ($identifier->getTagNumber()) {
                 case Identifier::EOC:
                     return new EOC($identifier, $contentLength, $content, $children);
                 case Identifier::BITSTRING:
