@@ -472,7 +472,7 @@ abstract class Object
     /**
      * @param $oidString
      *
-     * @return Object[]
+     * @return \FG\ASN1\Object[]
      */
     public function findByOid($oidString)
     {
@@ -596,6 +596,9 @@ abstract class Object
         }
     }
 
+    /**
+     * @return \FG\ASN1\Object[]
+     */
     public function getChildren()
     {
         if($this->isConstructed()) {
@@ -607,6 +610,9 @@ abstract class Object
         }
     }
 
+    /**
+     * @return null|\FG\ASN1\Object
+     */
     public function getParent()
     {
         if($this->parent) {
@@ -664,6 +670,12 @@ abstract class Object
         return array_values($children);
     }
 
+    /**
+     * @param $fileContent
+     * @return \FG\ASN1\Object
+     *
+     * @throws \Exception
+     */
     public final static function fromFile($fileContent)
     {
         $temp = trim($fileContent);
@@ -689,6 +701,9 @@ abstract class Object
         return $object;
     }
 
+    /**
+     * @return \FG\ASN1\Object
+     */
     public function getRoot()
     {
         if(is_null($this->parent)) return $this;
