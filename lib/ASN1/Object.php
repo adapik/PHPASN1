@@ -710,4 +710,9 @@ abstract class Object
 
         return $this->parent->getRoot();
     }
+
+    public function getBinaryContent()
+    {
+        return $this->content->binaryData;
+    }
 }
