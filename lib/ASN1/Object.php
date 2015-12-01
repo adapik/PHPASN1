@@ -636,10 +636,13 @@ abstract class Object
                     } else {
                         array_splice($this->parent->children, $key + 1, 0, [$object]);
                     }
+                    $object->parent = $this->parent;
                     $this->parent->rebuildTree();
                 }
             }
         }
+
+        return $object;
     }
 
     public function insertBefore(Object $object)
@@ -648,10 +651,13 @@ abstract class Object
             foreach ($this->parent->children as $key => $child) {
                 if($child === $this) {
                     array_splice($this->parent->children, $key, 0, [$object]);
+                    $object->parent = $this->parent;
                     $this->parent->rebuildTree();
                 }
             }
         }
+
+        return $object;
     }
 
     /**
