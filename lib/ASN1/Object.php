@@ -510,6 +510,8 @@ abstract class Object
                         $this->parent->rebuildTree();
                 }
             }
+
+            return $this->getParent();
         }
     }
 
