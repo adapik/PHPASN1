@@ -74,11 +74,6 @@ class OctetString extends Object
         return strtoupper($this->value);
     }
 
-    public function getBinaryContent()
-    {
-        return $this->getEncodedValue();
-    }
-
     public static function encodeValue($value)
     {
         //данные в бинарном виде as is
