@@ -215,6 +215,7 @@ abstract class Object
             $octetsToRead = $contentLength->length;
             while ($octetsToRead > 0) {
                 $newChild = Object::fromBinary($binaryData, $offsetIndex);
+                if(is_null($newChild)) throw new ParserException('Children not found', $offsetIndex);
                 $octetsToRead -= ($newChild->contentLength->length + strlen($newChild->identifier->binaryData) + strlen($newChild->contentLength->binaryData));
                 $children[] = $newChild;
             }
@@ -710,7 +711,7 @@ abstract class Object
     }
 
     /**
-     * @return \FG\ASN1\Object
+     * @return \FG\ASN1\Object|\FG\ASN1\Universal\Sequence
      */
     public function getRoot()
     {
