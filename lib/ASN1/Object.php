@@ -125,24 +125,6 @@ abstract class Object
         return chr($firstOctet);
     }
 
-    private function createLengthPart()
-    {
-        $contentLength = $this->content->getNrOfOctets();
-        $nrOfLengthOctets = $this->getNumberOfLengthOctets($contentLength);
-
-        if ($nrOfLengthOctets == 1) {
-            return chr($contentLength);
-        } else {
-            // the first length octet determines the number subsequent length octets
-            $lengthOctets = chr(0x80 | ($nrOfLengthOctets - 1));
-            for ($shiftLength = 8 * ($nrOfLengthOctets - 2); $shiftLength >= 0; $shiftLength -= 8) {
-                $lengthOctets .= chr($contentLength >> $shiftLength);
-            }
-
-            return $lengthOctets;
-        }
-    }
-
     protected function getNumberOfLengthOctets($contentLength = null)
     {
         if (!isset($this->nrOfLengthOctets)) {
@@ -536,8 +518,8 @@ abstract class Object
             if($this->contentLength->form === ContentLength::INDEFINITE_FORM) {
                 $this->contentLength->length = $this->content->getNrOfOctets();
             } else {
-                $lengthOctets = $this->createLengthPart();
-                $this->contentLength = new ContentLength($lengthOctets);
+                $this->contentLength = ElementBuilder::createContentLength($this->content->binaryData,
+                    $this->contentLength->form);
             }
 
             if($this->parent) {

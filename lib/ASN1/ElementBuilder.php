@@ -186,7 +186,7 @@ class ElementBuilder
         return $identifier;
     }
 
-    protected static function createContentLength($content, $lengthForm)
+    public static function createContentLength($content, $lengthForm)
     {
         $length = strlen($content);
         if($lengthForm === ContentLength::INDEFINITE_FORM) {
