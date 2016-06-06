@@ -249,6 +249,10 @@ abstract class Object
             }
         }
 
+        if(!is_int($contentLength->length)) {
+            throw new ParserException('Length of Object not determined', $offsetIndex);
+        }
+
         $contentOctets = substr($binaryData, $startPos, $contentLength->length);
         //если сдвигов не происходило (дети не парсились) прибавим длину контента
         if ($offsetIndex === $startPos) {
