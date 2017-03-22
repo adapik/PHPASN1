@@ -78,7 +78,7 @@ class Identifier extends ObjectPart
 
     public function getCode()
     {
-        if($this->tagClass === self::CLASS_UNIVERSAL) {
+        if ($this->tagClass === self::CLASS_UNIVERSAL) {
             switch ($this->tagNumber) {
                 case self::EOC:
                     return 'End-of-contents octet';

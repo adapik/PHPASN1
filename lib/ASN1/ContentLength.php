@@ -9,13 +9,14 @@
 namespace FG\ASN1;
 
 
+use FG\ASN1\Exception\ParserException;
 use Symfony\Component\Yaml\Exception\ParseException;
 
 class ContentLength extends ObjectPart
 {
-    const SHORT_FORM = 1;
+    const SHORT_FORM      = 1;
     const INDEFINITE_FORM = 2;
-    const LONG_FORM = 3;
+    const LONG_FORM       = 3;
 
 
     public $binaryData;
@@ -23,22 +24,30 @@ class ContentLength extends ObjectPart
     public $length;
 
     /**
-     * @param $lengthOctets
+     * @param      $lengthOctets
+     * @param null $length Default - be calculated, otherwise shold be passed with length octets
      */
-    public function __construct($lengthOctets)
+    public function __construct($lengthOctets, $length = null)
     {
         $this->binaryData = $lengthOctets;
-        $this->form = self::defineForm();
-        $this->length = $this->calculateContentLength();
+
+        $this->form = $this->defineForm();
+
+        $this->length = $length ?: $this->calculateContentLength();
     }
 
+    /**
+     * Define length form based on binaryData
+     *
+     * @return int
+     */
     public function defineForm() {
 
-        $firstOctet = ord(substr($this->binaryData, 0 , 1));
+        $firstOctet = ord($this->binaryData[0]);
 
-        if($firstOctet === 0x80) {
+        if ($firstOctet === 0x80) {
             $form = self::INDEFINITE_FORM;
-        }else if(($firstOctet & 0x80) != 0) {
+        } elseif (($firstOctet & 0x80) != 0) {
             $form = self::LONG_FORM;
         } else {
             $form = self::SHORT_FORM;
@@ -47,9 +56,14 @@ class ContentLength extends ObjectPart
         return $form;
     }
 
+    /**
+     * Calculates content length based on binaryData
+     *
+     * @return int lenght in octets
+     */
     public function calculateContentLength()
     {
-        $firstOctet = substr($this->binaryData, 0, 1);
+        $firstOctet = $this->binaryData[0];
 
         switch ($this->form) {
             case self::SHORT_FORM:
@@ -67,7 +81,7 @@ class ContentLength extends ObjectPart
                 $contentLength = NAN;
                 break;
             default:
-                throw new ParseException('Unknown Form');
+                throw new \Exception('Unknown Form');
         }
 
         return $contentLength;

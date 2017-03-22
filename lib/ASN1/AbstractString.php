@@ -95,6 +95,11 @@ abstract class AbstractString extends Object
         return $this->value;
     }
 
+    public static function encodeValue($value)
+    {
+        return $value;
+    }
+
     protected function checkString()
     {
         $stringLength = $this->getContentLength();
@@ -104,5 +109,20 @@ abstract class AbstractString extends Object
                 throw new Exception("Could not create a {$typeName} from the character sequence '{$this->value}'.");
             }
         }
+    }
+
+    public static function createFromString(string $string, $options = [])
+    {
+        $isConstructed = $options['isConstructed'] ?? false;
+        $lengthForm    = $options['lengthForm'] ?? ContentLength::INDEFINITE_FORM;
+
+        return
+            ElementBuilder::createObject(
+                Identifier::CLASS_UNIVERSAL,
+                Identifier::BMP_STRING,
+                $isConstructed,
+                $string,
+                $lengthForm
+            );
     }
 }

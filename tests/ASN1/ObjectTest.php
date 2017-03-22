@@ -30,31 +30,39 @@ use FG\ASN1\Universal\PrintableString;
 
 class ObjectTest extends ASN1TestCase
 {
-    public function testCalculateNumberOfLengthOctets()
+    /**
+     * @var Object
+     */
+    private $object;
+
+    public function setUp()
     {
-        $object = $this->getMockForAbstractClass('\FG\ASN1\Object');
-        $calculatedNrOfLengthOctets = $this->callMethod($object, 'getNumberOfLengthOctets', 32);
-        $this->assertEquals(1, $calculatedNrOfLengthOctets);
+        $this->object = $this->getMockBuilder(Object::class)->disableOriginalConstructor()->getMockForAbstractClass();
+    }
 
-        $object = $this->getMockForAbstractClass('\FG\ASN1\Object');
-        $calculatedNrOfLengthOctets = $this->callMethod($object, 'getNumberOfLengthOctets', 0);
-        $this->assertEquals(1, $calculatedNrOfLengthOctets);
+    /**
+     * @dataProvider contentLengthDataProvider
+     */
+    public function testCalculateNumberOfLengthOctets($contentLength, $nrOfLengthOctets)
+    {
 
-        $object = $this->getMockForAbstractClass('\FG\ASN1\Object');
-        $calculatedNrOfLengthOctets = $this->callMethod($object, 'getNumberOfLengthOctets', 127);
-        $this->assertEquals(1, $calculatedNrOfLengthOctets);
+        $calculatedNrOfLengthOctets = $this->callMethod($this->object, 'getNumberOfLengthOctets', $contentLength);
+        $this->assertEquals($nrOfLengthOctets, $calculatedNrOfLengthOctets);
+    }
 
-        $object = $this->getMockForAbstractClass('\FG\ASN1\Object');
-        $calculatedNrOfLengthOctets = $this->callMethod($object, 'getNumberOfLengthOctets', 128);
-        $this->assertEquals(2, $calculatedNrOfLengthOctets);
-
-        $object = $this->getMockForAbstractClass('\FG\ASN1\Object');
-        $calculatedNrOfLengthOctets = $this->callMethod($object, 'getNumberOfLengthOctets', 255);
-        $this->assertEquals(2, $calculatedNrOfLengthOctets);
-
-        $object = $this->getMockForAbstractClass('\FG\ASN1\Object');
-        $calculatedNrOfLengthOctets = $this->callMethod($object, 'getNumberOfLengthOctets', 1025);
-        $this->assertEquals(3, $calculatedNrOfLengthOctets);
+    /**
+     * @return array
+     */
+    public function contentLengthDataProvider()
+    {
+        return [
+            [32, 1],
+            [0, 1],
+            [127, 1],
+            [128, 2],
+            [255, 2],
+            [1025, 3],
+        ];
     }
 
     /**
@@ -69,7 +77,7 @@ class ObjectTest extends ASN1TestCase
         $binaryData .= chr(0xFF);
         $binaryData .= chr(0xA0);
 
-        $expectedObject = new BitString(0xFFA0, 5);
+        $expectedObject = BitString::createFromInt(0xFFA0, 5);
         $parsedObject = Object::fromBinary($binaryData);
         $this->assertTrue($parsedObject instanceof BitString);
         $this->assertEquals($expectedObject->getContent(), $parsedObject->getContent());

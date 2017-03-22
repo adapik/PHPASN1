@@ -101,34 +101,25 @@ abstract class Object
      * Return the content of this object in a non encoded form.
      * This can be used to print the value in human readable form.
      *
-     * @return mixed
+     * @return Content
      */
-    abstract public function getContent();
+    public function getContent()
+    {
+        return $this->content;
+    }
 
     /**
-     * Returns all identifier octets. If an inheriting class models a tag with
-     * the long form identifier format, it MUST reimplement this method to
-     * return all octets of the identifier.
-     *
-     * @throws LogicException If the identifier format is long form
-     *
-     * @return string Identifier as a set of octets
+     * @return Identifier
      */
     public function getIdentifier()
     {
-        $firstOctet = $this->getType();
-
-        if (Identifier::isLongForm($firstOctet)) {
-            throw new LogicException(sprintf('Identifier of %s uses the long form and must therefor override "Object::getIdentifier()".', get_class($this)));
-        }
-
-        return chr($firstOctet);
+        return $this->identifier;
     }
 
     protected function getNumberOfLengthOctets($contentLength = null)
     {
         if (!isset($this->nrOfLengthOctets)) {
-            if ($contentLength == null) {
+            if ($contentLength === null) {
                 $contentLength = $this->getContentLength();
             }
 
@@ -160,11 +151,10 @@ abstract class Object
      */
     public function getObjectLength()
     {
-        $nrOfIdentifierOctets = strlen($this->getIdentifier());
-        $contentLength = $this->getContentLength();
-        $nrOfLengthOctets = $this->getNumberOfLengthOctets($contentLength);
-
-        return $nrOfIdentifierOctets + $nrOfLengthOctets + $contentLength;
+        return $this->identifier->getNrOfOctets() +
+            $this->contentLength->getNrOfOctets() +
+            $this->content->getNrOfOctets() +
+            ($this->eoc ? $this->eoc->getNrOfOctets() : 0);
     }
 
     public function __toString()
@@ -223,7 +213,7 @@ abstract class Object
      *
      * @return \FG\ASN1\Object
      */
-    public static final function fromBinary(&$binaryData, &$offsetIndex = 0)
+    public static function fromBinary(&$binaryData, &$offsetIndex = 0)
     {
         if (strlen($binaryData) <= $offsetIndex) {
             throw new ParserException('Can not parse binary from data: Offset index larger than input size',
@@ -249,6 +239,7 @@ abstract class Object
             }
         }
 
+        //todo exception raises when object not constructed and length form is indefinite - its wrong
         if(!is_int($contentLength->length)) {
             throw new ParserException('Length of Object not determined', $offsetIndex);
         }

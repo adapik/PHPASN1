@@ -12,6 +12,8 @@ namespace FG\ASN1\Universal;
 
 use Exception;
 use FG\ASN1\Content;
+use FG\ASN1\ElementBuilder;
+use FG\ASN1\IdentifierManager;
 use FG\ASN1\Object;
 use FG\ASN1\Identifier;
 use FG\ASN1\ContentLength;
@@ -23,7 +25,7 @@ class OctetString extends Object
     public function __construct(Identifier $identifier, ContentLength $contentLength, Content $content, array $children = [])
     {
 
-        parent::__construct($identifier, $contentLength, $content,$children);
+        parent::__construct($identifier, $contentLength, $content, $children);
 
         if(!$this->identifier->isConstructed) {
             $this->setValue($content);
@@ -69,14 +71,25 @@ class OctetString extends Object
         return strtoupper(bin2hex($this->content->binaryData));
     }
 
-    public function getContent()
-    {
-        return strtoupper($this->value);
-    }
-
     public static function encodeValue($value)
     {
         //данные в бинарном виде as is
         return $value;
+    }
+
+    public static function createFromBinaryString(string $binaryString, $options = [])
+    {
+
+        $isConstructed = $options['isConstructed'] ?? false;
+        $lengthForm    = $options['lengthForm'] ?? ContentLength::INDEFINITE_FORM;
+
+        return
+            ElementBuilder::createObject(
+                Identifier::CLASS_UNIVERSAL,
+                Identifier::OCTETSTRING,
+                $isConstructed,
+                $binaryString,
+                $lengthForm
+            );
     }
 }

@@ -11,6 +11,8 @@
 namespace FG\ASN1\Universal;
 
 use Exception;
+use FG\ASN1\ElementBuilder;
+use FG\ASN1\Exception\ParserException;
 use FG\ASN1\Parsable;
 use FG\ASN1\Identifier;
 use FG\ASN1\ContentLength;
@@ -22,7 +24,6 @@ class BitString extends OctetString implements Parsable
 
     public function __construct(Identifier $identifier, ContentLength $contentLength, Content $content, array $children = [])
     {
-
         parent::__construct($identifier, $contentLength, $content, $children);
 
         $this->nrOfUnusedBits = $nrOfUnusedBits = ord($content->binaryData[0]);
@@ -66,5 +67,63 @@ class BitString extends OctetString implements Parsable
         }
 
         $this->value = bin2hex($value);
+    }
+
+    /**
+     * @return string
+     */
+    public function getStringValue()
+    {
+        return strtoupper(bin2hex(substr($this->content->binaryData, 1)));
+    }
+
+    public static function createFromBitString(string $bitString, $options = []) : self
+    {
+        $isConstructed = $options['isConstructed'] ?? false;
+        $lengthForm    = $options['lengthForm'] ?? ContentLength::LONG_FORM;
+
+        $bitsCount = strlen($bitString);
+
+        $nrOfUnusedBits = $bitsCount % 8;
+        $bitString     .= str_repeat('0', $nrOfUnusedBits);
+
+        $value = chr($nrOfUnusedBits) . hex2bin(base_convert($bitString, 2, 16));
+
+        return
+            ElementBuilder::createObject(
+                Identifier::CLASS_UNIVERSAL,
+                Identifier::BITSTRING,
+                $isConstructed,
+                $value,
+                $lengthForm
+            );
+    }
+
+    public static function createFromHexString(string $hexString, $options = []) : self
+    {
+        $isConstructed = $options['isConstructed'] ?? false;
+        $lengthForm    = $options['lengthForm'] ?? ContentLength::LONG_FORM;
+
+        $value = chr(0x00) . hex2bin($hexString);
+
+        return
+            ElementBuilder::createObject(
+                Identifier::CLASS_UNIVERSAL,
+                Identifier::BITSTRING,
+                $isConstructed,
+                $value,
+                $lengthForm
+            );
+    }
+
+    public static function fromBinary(&$binaryData, &$offsetIndex = 0)
+    {
+        $bitString = parent::fromBinary($binaryData, $offsetIndex);
+
+        if($bitString->getContent()->getNrOfOctets() < 2) {
+            throw new ParserException('Malformed bit string', $offsetIndex);
+        }
+
+        return $bitString;
     }
 }

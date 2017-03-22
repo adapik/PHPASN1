@@ -200,6 +200,6 @@ class ElementBuilder
             }
         }
 
-        return new ContentLength($lengthOctets);
+        return new ContentLength($lengthOctets, $length);
     }
 }
