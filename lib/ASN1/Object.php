@@ -233,10 +233,22 @@ abstract class Object
             $children = self::parseChildren($binaryData, $offsetIndex, $contentLength);
             //разница между текущем положением сдвига и стартовым - длина детей, блина контента составного элемента
             $contentLength->length = abs($startPos - $offsetIndex);
-            //если неопределенная форма - вычитаем 2 октета на EOC
-            if ($contentLength->form === ContentLength::INDEFINITE_FORM) {
-                $contentLength->length -= 2;
+        } else {
+            if($contentLength->form === ContentLength::INDEFINITE_FORM) {
+                for (; ;) {
+                    $firstOctet = $binaryData[$offsetIndex];
+                    $secondOctet = $binaryData[$offsetIndex++];
+                    if($firstOctet.$secondOctet === chr(0) . chr(0)) {
+                        $contentLength->length = abs($startPos - $offsetIndex) + 1;
+                        break;
+                    }
+                }
             }
+        }
+
+        //если неопределенная форма - вычитаем 2 октета на EOC
+        if ($contentLength->form === ContentLength::INDEFINITE_FORM) {
+            $contentLength->length -= 2;
         }
 
         //todo exception raises when object not constructed and length form is indefinite - its wrong

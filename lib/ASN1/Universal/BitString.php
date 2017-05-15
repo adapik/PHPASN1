@@ -20,6 +20,8 @@ use FG\ASN1\Content;
 
 class BitString extends OctetString implements Parsable
 {
+    const IDENTIFIER = 0x1E;
+
     private $nrOfUnusedBits;
 
     public function __construct(Identifier $identifier, ContentLength $contentLength, Content $content, array $children = [])

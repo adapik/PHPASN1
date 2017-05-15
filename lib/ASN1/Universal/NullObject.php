@@ -10,6 +10,7 @@
 
 namespace FG\ASN1\Universal;
 
+use FG\ASN1\ElementBuilder;
 use FG\ASN1\Object;
 use FG\ASN1\Parsable;
 use FG\ASN1\Identifier;
@@ -22,7 +23,6 @@ class NullObject extends Object
 
     public function __construct(Identifier $identifier, ContentLength $contentLength, Content $content, array $children = [])
     {
-
         parent::__construct($identifier, $contentLength, $content, $children);
     }
 
@@ -31,8 +31,55 @@ class NullObject extends Object
         return null;
     }
 
-    public function getContent()
+    public function getStringValue()
     {
-        return 'NULL';
+        return 'null';
+    }
+
+    public function encodeValue($value)
+    {
+        return '';
+    }
+
+    /**
+     * @return self
+     */
+    public static function create()
+    {
+        $isConstructed = false;
+        $lengthForm    = ContentLength::SHORT_FORM;
+
+        return
+            ElementBuilder::createObject(
+                Identifier::CLASS_UNIVERSAL,
+                Identifier::NULL,
+                $isConstructed,
+                null,
+                $lengthForm
+            );
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @return self
+     */
+    public static function fromBinary(&$binaryData, &$offsetIndex = 0)
+    {
+        $nullObject = parent::fromBinary($binaryData, $offsetIndex);
+
+        $contentLength = $nullObject->getContentLength();
+
+        if ($contentLength !== 0) {
+            throw new ParserException(
+                sprintf(
+                    'An ASN.1 Null should not have a length other than zero. Extracted length was %d',
+                    $contentLength
+                ),
+                $offsetIndex
+            );
+        }
+
+        return $nullObject;
     }
 }

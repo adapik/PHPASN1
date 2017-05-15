@@ -16,33 +16,27 @@ use FG\ASN1\Universal\Boolean;
 
 class BooleanTest extends ASN1TestCase
 {
-    public function testGetType()
-    {
-        $object = new Boolean(true);
-        $this->assertEquals(Identifier::BOOLEAN, $object->getType());
-    }
-
     public function testGetIdentifier()
     {
-        $object = new Boolean(true);
-        $this->assertEquals(chr(Identifier::BOOLEAN), $object->getIdentifier());
+        $object = Boolean::create(true);
+        $this->assertEquals(Identifier::BOOLEAN, $object->getIdentifier()->getTagNumber());
     }
 
-    public function testContent()
+    public function testGetStringValue()
     {
-        $object = new Boolean(true);
-        $this->assertEquals('TRUE', $object->getContent());
+        $object = Boolean::create(true);
+        $this->assertEquals('true', $object->getStringValue());
 
-        $object = new Boolean(false);
-        $this->assertEquals('FALSE', $object->getContent());
+        $object = Boolean::create(false);
+        $this->assertEquals('false', $object->getStringValue());
     }
 
     public function testGetObjectLength()
     {
-        $object = new Boolean(true);
+        $object = Boolean::create(true);
         $this->assertEquals(3, $object->getObjectLength());
 
-        $object = new Boolean(false);
+        $object = Boolean::create(false);
         $this->assertEquals(3, $object->getObjectLength());
     }
 
@@ -51,11 +45,11 @@ class BooleanTest extends ASN1TestCase
         $expectedType = chr(Identifier::BOOLEAN);
         $expectedLength = chr(0x01);
 
-        $object = new Boolean(true);
+        $object = Boolean::create(true);
         $expectedContent = chr(0xFF);
         $this->assertEquals($expectedType.$expectedLength.$expectedContent, $object->getBinary());
 
-        $object = new Boolean(false);
+        $object = Boolean::create(false);
         $expectedContent = chr(0x00);
         $this->assertEquals($expectedType.$expectedLength.$expectedContent, $object->getBinary());
     }
@@ -65,12 +59,12 @@ class BooleanTest extends ASN1TestCase
      */
     public function testFromBinary()
     {
-        $originalObject = new Boolean(true);
+        $originalObject = Boolean::create(true);
         $binaryData = $originalObject->getBinary();
         $parsedObject = Boolean::fromBinary($binaryData);
         $this->assertEquals($originalObject, $parsedObject);
 
-        $originalObject = new Boolean(false);
+        $originalObject = Boolean::create(false);
         $binaryData = $originalObject->getBinary();
         $parsedObject = Boolean::fromBinary($binaryData);
         $this->assertEquals($originalObject, $parsedObject);
@@ -81,8 +75,8 @@ class BooleanTest extends ASN1TestCase
      */
     public function testFromBinaryWithOffset()
     {
-        $originalObject1 = new Boolean(true);
-        $originalObject2 = new Boolean(false);
+        $originalObject1 = Boolean::create(true);
+        $originalObject2 = Boolean::create(false);
 
         $binaryData  = $originalObject1->getBinary();
         $binaryData .= $originalObject2->getBinary();
@@ -98,7 +92,7 @@ class BooleanTest extends ASN1TestCase
 
     /**
      * @expectedException \FG\ASN1\Exception\ParserException
-     * @expectedExceptionMessage ASN.1 Parser Exception at offset 2: An ASN.1 Boolean should not have a length other than one. Extracted length was 2
+     * @expectedExceptionMessage ASN.1 Parser Exception at offset 4: An ASN.1 Boolean should not have a length other than one. Extracted length was 2
      * @depends testFromBinary
      */
     public function testFromBinaryWithInvalidLength01()

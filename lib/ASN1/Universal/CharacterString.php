@@ -10,12 +10,13 @@
 
 namespace FG\ASN1\Universal;
 
-use FG\ASN1\AbstractString;
+use FG\ASN1\AbstractCharacterString;
+use FG\ASN1\ElementBuilder;
 use FG\ASN1\Identifier;
 use FG\ASN1\ContentLength;
 use FG\ASN1\Content;
 
-class CharacterString extends AbstractString
+class CharacterString extends AbstractCharacterString
 {
     public function __construct(Identifier $identifier, ContentLength $contentLength, Content $content, array $children = [])
     {
@@ -23,7 +24,7 @@ class CharacterString extends AbstractString
         parent::__construct($identifier, $contentLength, $content, $children);
     }
 
-    public function getType()
+    public static function getType()
     {
         return Identifier::CHARACTER_STRING;
     }

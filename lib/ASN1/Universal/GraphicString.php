@@ -10,12 +10,12 @@
 
 namespace FG\ASN1\Universal;
 
-use FG\ASN1\AbstractString;
+use FG\ASN1\AbstractCharacterString;
 use FG\ASN1\Identifier;
 use FG\ASN1\ContentLength;
 use FG\ASN1\Content;
 
-class GraphicString extends AbstractString
+class GraphicString extends AbstractCharacterString
 {
     /**
      * Creates a new ASN.1 Graphic String.

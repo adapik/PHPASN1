@@ -10,12 +10,12 @@
 
 namespace FG\ASN1\Universal;
 
-use FG\ASN1\AbstractString;
+use FG\ASN1\AbstractCharacterString;
 use FG\ASN1\Identifier;
 use FG\ASN1\Content;
 use FG\ASN1\ContentLength;
 
-class T61String extends AbstractString
+class T61String extends AbstractCharacterString
 {
     /**
      * Creates a new ASN.1 T61 String.

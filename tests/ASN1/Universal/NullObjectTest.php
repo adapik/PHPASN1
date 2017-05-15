@@ -16,33 +16,27 @@ use FG\ASN1\Universal\NullObject;
 
 class NullObjectTest extends ASN1TestCase
 {
-    public function testGetType()
-    {
-        $object = new NullObject();
-        $this->assertEquals(Identifier::NULL, $object->getType());
-    }
-
     public function testGetIdentifier()
     {
-        $object = new NullObject();
-        $this->assertEquals(chr(Identifier::NULL), $object->getIdentifier());
+        $object = NullObject::create();
+        $this->assertEquals(Identifier::NULL, $object->getIdentifier()->getTagNumber());
     }
 
-    public function testContent()
+    public function testGetStringValue()
     {
-        $object = new NullObject();
-        $this->assertEquals('NULL', $object->getContent());
+        $object = NullObject::create();
+        $this->assertEquals('null', $object->getStringValue());
     }
 
     public function testGetObjectLength()
     {
-        $object = new NullObject();
+        $object = NullObject::create();
         $this->assertEquals(2, $object->getObjectLength());
     }
 
     public function testGetBinary()
     {
-        $object = new NullObject();
+        $object = NullObject::create();
         $expectedType = chr(Identifier::NULL);
         $expectedLength = chr(0x00);
         $this->assertEquals($expectedType.$expectedLength, $object->getBinary());
@@ -53,7 +47,7 @@ class NullObjectTest extends ASN1TestCase
      */
     public function testFromBinary()
     {
-        $originalObject = new NullObject();
+        $originalObject = NullObject::create();
         $binaryData = $originalObject->getBinary();
         $parsedObject = NullObject::fromBinary($binaryData);
         $this->assertEquals($originalObject, $parsedObject);
@@ -64,8 +58,8 @@ class NullObjectTest extends ASN1TestCase
      */
     public function testFromBinaryWithOffset()
     {
-        $originalObject1 = new NullObject();
-        $originalObject2 = new NullObject();
+        $originalObject1 = NullObject::create();
+        $originalObject2 = NullObject::create();
 
         $binaryData  = $originalObject1->getBinary();
         $binaryData .= $originalObject2->getBinary();
@@ -81,7 +75,7 @@ class NullObjectTest extends ASN1TestCase
 
     /**
      * @expectedException \FG\ASN1\Exception\ParserException
-     * @expectedExceptionMessage ASN.1 Parser Exception at offset 2: An ASN.1 Null should not have a length other than zero. Extracted length was 1
+     * @expectedExceptionMessage ASN.1 Parser Exception at offset 3: An ASN.1 Null should not have a length other than zero. Extracted length was 1
      * @depends testFromBinary
      */
     public function testFromBinaryWithInvalidLength01()

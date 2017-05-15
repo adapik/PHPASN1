@@ -10,7 +10,7 @@
 
 namespace FG\ASN1\Universal;
 
-use FG\ASN1\AbstractString;
+use FG\ASN1\AbstractCharacterString;
 use FG\ASN1\Identifier;
 use FG\ASN1\ContentLength;
 use FG\ASN1\Content;
@@ -20,7 +20,7 @@ use FG\ASN1\Content;
  *
  * Each character in the data is encoded as 1 byte.
  */
-class IA5String extends AbstractString
+class IA5String extends AbstractCharacterString
 {
     public function __construct(Identifier $identifier, ContentLength $contentLength, Content $content, array $children = [])
     {

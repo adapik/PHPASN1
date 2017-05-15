@@ -11,6 +11,8 @@
 namespace FG\ASN1\Universal;
 
 use FG\ASN1\Content;
+use FG\ASN1\ElementBuilder;
+use FG\ASN1\Exception\ParserException;
 use FG\ASN1\Object;
 use FG\ASN1\Identifier;
 use FG\ASN1\ContentLength;
@@ -18,6 +20,10 @@ use FG\ASN1\ContentLength;
 class Boolean extends Object
 {
     private $value;
+
+    const FALSE = 0x00;
+
+    const TRUE = 0xFF;
 
     public function __construct(Identifier $identifier, ContentLength $contentLength, Content $content, array $children = [])
     {
@@ -42,24 +48,77 @@ class Boolean extends Object
     protected function getEncodedValue()
     {
         if ($this->value == false) {
-            return chr(0x00);
+            return chr(self::FALSE);
         } else {
-            return chr(0xFF);
+            return chr(self::TRUE);
         }
     }
 
-    public function getContent()
+    public function getStringValue()
     {
-        if ($this->value == true) {
-            return 'TRUE';
-        } else {
-            return 'FALSE';
-        }
+        return $this->value ? 'true' : 'false';
     }
 
     public function setValue(Content $content)
     {
-        $value = ord($content->binaryData[0]);
-        $this->value = $value == 0xFF ? true : false;
+        $valueOctet = isset($content->binaryData[0]) ? ord($content->binaryData[0]) : null;
+
+        switch ($valueOctet) {
+            case self::FALSE:
+                $this->value = false;
+                break;
+            case self::TRUE:
+                $this->value = true;
+                break;
+        }
+    }
+
+    public static function encodeValue($value)
+    {
+        return $value ? chr(self::TRUE) : chr(self::FALSE);
+    }
+
+    /**
+     * @param bool  $value
+     *
+     * @return self
+     */
+    public static function create(bool $value)
+    {
+        $isConstructed = false;
+        $lengthForm    = ContentLength::SHORT_FORM;
+
+        return
+            ElementBuilder::createObject(
+                Identifier::CLASS_UNIVERSAL,
+                Identifier::BOOLEAN,
+                $isConstructed,
+                $value,
+                $lengthForm
+            );
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @return self
+     */
+    public static function fromBinary(&$binaryData, &$offsetIndex = 0)
+    {
+        $boolean = parent::fromBinary($binaryData, $offsetIndex);
+
+        $contentLength = $boolean->getContentLength();
+
+        if ($contentLength !== 1) {
+            throw new ParserException(
+                sprintf(
+                    'An ASN.1 Boolean should not have a length other than one. Extracted length was %d',
+                    $contentLength
+                ),
+                $offsetIndex
+            );
+        }
+
+        return $boolean;
     }
 }

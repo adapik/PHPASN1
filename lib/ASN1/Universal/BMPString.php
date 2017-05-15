@@ -10,12 +10,12 @@
 
 namespace FG\ASN1\Universal;
 
-use FG\ASN1\AbstractString;
+use FG\ASN1\AbstractCharacterString;
 use FG\ASN1\Identifier;
 use FG\ASN1\ContentLength;
 use FG\ASN1\Content;
 
-class BMPString extends AbstractString
+class BMPString extends AbstractCharacterString
 {
     /**
      * Creates a new ASN.1 BMP String.
@@ -32,7 +32,11 @@ class BMPString extends AbstractString
      */
     public function __construct(Identifier $identifier, ContentLength $contentLength, Content $content, array $children = [])
     {
-
         parent::__construct($identifier, $contentLength, $content, $children);
+    }
+
+    public static function getType()
+    {
+        return Identifier::BMP_STRING;
     }
 }

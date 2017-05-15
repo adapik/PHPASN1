@@ -12,7 +12,7 @@ namespace FG\ASN1;
 
 use Exception;
 
-abstract class AbstractString extends Object
+abstract class AbstractCharacterString extends Object implements CharacterStringInterface
 {
     /** @var string */
     protected $value;
@@ -119,7 +119,7 @@ abstract class AbstractString extends Object
         return
             ElementBuilder::createObject(
                 Identifier::CLASS_UNIVERSAL,
-                Identifier::BMP_STRING,
+                static::getType(),
                 $isConstructed,
                 $string,
                 $lengthForm
