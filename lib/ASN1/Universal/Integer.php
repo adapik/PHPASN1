@@ -11,6 +11,8 @@
 namespace FG\ASN1\Universal;
 
 use Exception;
+use FG\ASN1\ElementBuilder;
+use FG\ASN1\Exception\ParserException;
 use FG\ASN1\Object;
 use FG\ASN1\Identifier;
 use FG\ASN1\ContentLength;
@@ -28,7 +30,6 @@ class Integer extends Object
      */
     public function __construct(Identifier $identifier, ContentLength $contentLength, Content $content, array $children = [])
     {
-
         parent::__construct($identifier, $contentLength, $content, $children);
 
         $this->setValue($content);
@@ -40,17 +41,12 @@ class Integer extends Object
         return Identifier::INTEGER;
     }
 
-    public function getContent()
-    {
-        return $this->value;
-    }
-
-    protected function calculateContentLength()
+    protected static function calculateContentLength($value)
     {
         $nrOfOctets = 1; // we need at least one octet
-        $tmpValue = gmp_abs(gmp_init($this->value, 10));
+        $tmpValue = gmp_abs(gmp_init($value, 10));
         while (gmp_cmp($tmpValue, 127) > 0) {
-            $tmpValue = $this->rightShift($tmpValue, 8);
+            $tmpValue = self::rightShift($tmpValue, 8);
             $nrOfOctets++;
         }
         return $nrOfOctets;
@@ -62,16 +58,16 @@ class Integer extends Object
      *
      * @return resource|\GMP
      */
-    private function rightShift($number, $positions)
+    private static function rightShift($number, $positions)
     {
         // Shift 1 right = div / 2
         return gmp_div($number, gmp_pow(2, (int) $positions));
     }
 
-    protected function getEncodedValue()
+    public static function encodeValue($value): string
     {
-        $numericValue = gmp_init($this->value, 10);
-        $contentLength = $this->getContentLength();
+        $numericValue = gmp_init($value, 10);
+        $contentLength = self::calculateContentLength($value);
 
         if (gmp_sign($numericValue) < 0) {
             $numericValue = gmp_add($numericValue, (gmp_sub(gmp_pow(2, 8 * $contentLength), 1)));
@@ -80,11 +76,16 @@ class Integer extends Object
 
         $result = '';
         for ($shiftLength = ($contentLength - 1) * 8; $shiftLength >= 0; $shiftLength -= 8) {
-            $octet = gmp_strval(gmp_mod($this->rightShift($numericValue, $shiftLength), 256));
+            $octet = gmp_strval(gmp_mod(self::rightShift($numericValue, $shiftLength), 256));
             $result .= chr($octet);
         }
 
         return $result;
+    }
+
+    public function getEncodedValue()
+    {
+        self::encodeValue($this->value);
     }
 
     public function setValue(Content $content)
@@ -110,14 +111,28 @@ class Integer extends Object
         } elseif (is_numeric($value)) {
             $value = dechex($value);
         } else {
-            throw new Exception('OctetString: unrecognized input type!');
-        }
-
-        if (strlen($value) % 2 != 0) {
-            // transform values like 1F2 to 01F2
-            $value = '0'.$value;
+            throw new Exception('Integer: unrecognized input type!');
         }
 
         $this->value = $value;
+    }
+
+    public static function create($integer, $options = []) : self
+    {
+        $isConstructed = false;
+        $lengthForm    = ContentLength::SHORT_FORM;
+
+        if (is_int($integer) === false && preg_match('/^([+-]?[1-9]\d*|0)$/', $integer) == false) {
+            throw new Exception("Invalid value [{$integer}] for ASN.1 Integer");
+        }
+
+        return
+            ElementBuilder::createObject(
+                Identifier::CLASS_UNIVERSAL,
+                Identifier::ENUMERATED,
+                $isConstructed,
+                $integer,
+                $lengthForm
+            );
     }
 }

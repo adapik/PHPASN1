@@ -103,7 +103,7 @@ abstract class Object
      *
      * @return Content
      */
-    public function getContent()
+    public function getContent(): Content
     {
         return $this->content;
     }
@@ -159,7 +159,7 @@ abstract class Object
 
     public function __toString()
     {
-        return $this->getContent();
+        return 'ASN1 Object';
     }
 
     /**
@@ -169,7 +169,7 @@ abstract class Object
      */
     public function getTypeName()
     {
-        return Identifier::getName($this->getType());
+        return $this->getIdentifier()->getCode();
     }
 
     /**
@@ -382,7 +382,7 @@ abstract class Object
             throw new ParserException('Can not parse content length from data: Offset index larger than input size', $offsetIndex);
         }
 
-        $contentLengthOctets = $binaryData[$offsetIndex++];
+        $contentLengthOctets = $binaryData[$offsetIndex++];https://github.com/apiaryio/api-blueprint/blob/master/API Blueprint Specification.md
         $firstOctet = ord($contentLengthOctets);
 
         if (($firstOctet & 0x80) != 0) {

@@ -17,16 +17,10 @@ use FG\ASN1\Universal\Integer;
 
 class IntegerTest extends ASN1TestCase
 {
-    public function testGetType()
-    {
-        $object = new Integer(123);
-        $this->assertEquals(Identifier::INTEGER, $object->getType());
-    }
-
     public function testGetIdentifier()
     {
-        $object = new Integer(123);
-        $this->assertEquals(chr(Identifier::INTEGER), $object->getIdentifier());
+        $object = Integer::create(123);
+        $this->assertEquals(Identifier::INTEGER, $object->getIdentifier()->getTagNumber());
     }
 
     /**
@@ -34,73 +28,73 @@ class IntegerTest extends ASN1TestCase
      */
     public function testCreateInstanceCanFail()
     {
-        new Integer('a');
+        Integer::create('a');
     }
 
     public function testContent()
     {
-        $object = new Integer(1234);
-        $this->assertEquals(1234, $object->getContent());
+        $object = Integer::create(1234);
+        $this->assertEquals(1234, $object->getStringValue());
 
-        $object = new Integer(-1234);
-        $this->assertEquals(-1234, $object->getContent());
+        $object = Integer::create(-1234);
+        $this->assertEquals(-1234, $object->getStringValue());
 
-        $object = new Integer(0);
-        $this->assertEquals(0, $object->getContent());
+        $object = Integer::create(0);
+        $this->assertEquals(0, $object->getStringValue());
 
         // test with maximum integer value
-        $object = new Integer(PHP_INT_MAX);
-        $this->assertEquals(PHP_INT_MAX, $object->getContent());
+        $object = Integer::create(PHP_INT_MAX);
+        $this->assertEquals(PHP_INT_MAX, $object->getStringValue());
 
         // test with minimum integer value by negating the max value
-        $object = new Integer(~PHP_INT_MAX);
-        $this->assertEquals(~PHP_INT_MAX, $object->getContent());
+        $object = Integer::create(~PHP_INT_MAX);
+        $this->assertEquals(~PHP_INT_MAX, $object->getStringValue());
     }
 
     public function testGetObjectLength()
     {
-        $positiveObj = new Integer(0);
+        $positiveObj = Integer::create(0);
         $expectedSize = 2 + 1;
         $this->assertEquals($expectedSize, $positiveObj->getObjectLength());
 
-        $positiveObj = new Integer(127);
-        $negativeObj = new Integer(-127);
+        $positiveObj = Integer::create(127);
+        $negativeObj = Integer::create(-127);
         $expectedSize = 2 + 1;
         $this->assertEquals($expectedSize, $positiveObj->getObjectLength());
         $this->assertEquals($expectedSize, $negativeObj->getObjectLength());
 
-        $positiveObj = new Integer(128);
-        $negativeObj = new Integer(-128);
+        $positiveObj = Integer::create(128);
+        $negativeObj = Integer::create(-128);
         $expectedSize = 2 + 2;
         $this->assertEquals($expectedSize, $positiveObj->getObjectLength());
         $this->assertEquals($expectedSize, $negativeObj->getObjectLength());
 
-        $positiveObj = new Integer(0x7FFF);
-        $negativeObj = new Integer(-0x7FFF);
+        $positiveObj = Integer::create(0x7FFF);
+        $negativeObj = Integer::create(-0x7FFF);
         $expectedSize = 2 + 2;
         $this->assertEquals($expectedSize, $positiveObj->getObjectLength());
         $this->assertEquals($expectedSize, $negativeObj->getObjectLength());
 
-        $positiveObj = new Integer(0x8000);
-        $negativeObj = new Integer(-0x8000);
+        $positiveObj = Integer::create(0x8000);
+        $negativeObj = Integer::create(-0x8000);
         $expectedSize = 2 + 3;
         $this->assertEquals($expectedSize, $positiveObj->getObjectLength());
         $this->assertEquals($expectedSize, $negativeObj->getObjectLength());
 
-        $positiveObj = new Integer(0x7FFFFF);
-        $negativeObj = new Integer(-0x7FFFFF);
+        $positiveObj = Integer::create(0x7FFFFF);
+        $negativeObj = Integer::create(-0x7FFFFF);
         $expectedSize = 2 + 3;
         $this->assertEquals($expectedSize, $positiveObj->getObjectLength());
         $this->assertEquals($expectedSize, $negativeObj->getObjectLength());
 
-        $positiveObj = new Integer(0x800000);
-        $negativeObj = new Integer(-0x800000);
+        $positiveObj = Integer::create(0x800000);
+        $negativeObj = Integer::create(-0x800000);
         $expectedSize = 2 + 4;
         $this->assertEquals($expectedSize, $positiveObj->getObjectLength());
         $this->assertEquals($expectedSize, $negativeObj->getObjectLength());
 
-        $positiveObj = new Integer(0x7FFFFFFF);
-        $negativeObj = new Integer(-0x7FFFFFFF);
+        $positiveObj = Integer::create(0x7FFFFFFF);
+        $negativeObj = Integer::create(-0x7FFFFFFF);
         $expectedSize = 2 + 4;
         $this->assertEquals($expectedSize, $positiveObj->getObjectLength());
         $this->assertEquals($expectedSize, $negativeObj->getObjectLength());
@@ -111,37 +105,37 @@ class IntegerTest extends ASN1TestCase
         $expectedType = chr(Identifier::INTEGER);
         $expectedLength = chr(0x01);
 
-        $object = new Integer(0);
+        $object = Integer::create(0);
         $expectedContent = chr(0x00);
         $this->assertEquals($expectedType.$expectedLength.$expectedContent, $object->getBinary());
 
-        $object = new Integer(127);
+        $object = Integer::create(127);
         $expectedContent = chr(0x7F);
         $this->assertEquals($expectedType.$expectedLength.$expectedContent, $object->getBinary());
 
-        $object = new Integer(-127);
+        $object = Integer::create(-127);
         $expectedContent = chr(0x81);
         $this->assertEquals($expectedType.$expectedLength.$expectedContent, $object->getBinary());
 
-        $object = new Integer(200);
+        $object = Integer::create(200);
         $expectedLength = chr(0x02);
         $expectedContent = chr(0x00);
         $expectedContent .= chr(0xC8);
         $this->assertEquals($expectedType.$expectedLength.$expectedContent, $object->getBinary());
 
-        $object = new Integer(-546);
+        $object = Integer::create(-546);
         $expectedLength = chr(0x02);
         $expectedContent = chr(0xFD);
         $expectedContent .= chr(0xDE);
         $this->assertEquals($expectedType.$expectedLength.$expectedContent, $object->getBinary());
 
-        $object = new Integer(7420);
+        $object = Integer::create(7420);
         $expectedLength   = chr(0x02);
         $expectedContent  = chr(0x1C);
         $expectedContent .= chr(0xFC);
         $this->assertEquals($expectedType.$expectedLength.$expectedContent, $object->getBinary());
 
-        $object = new Integer(-1891004);
+        $object = Integer::create(-1891004);
         $expectedLength   = chr(0x03);
         $expectedContent  = chr(0xE3);
         $expectedContent .= chr(0x25);
@@ -160,7 +154,7 @@ class IntegerTest extends ASN1TestCase
         $expectedContent .= "\xff\xff\xff\xff\xff\xff\xff\xff";
 
         $bigint = gmp_strval(gmp_sub(gmp_pow(2, 255), 1));
-        $object = new Integer($bigint);
+        $object = Integer::create($bigint);
         $binary = $object->getBinary();
         $this->assertEquals($expectedType.$expectedLength.$expectedContent, $binary);
 
@@ -174,7 +168,7 @@ class IntegerTest extends ASN1TestCase
         $expectedContent .= "\x00\x00\x00\x00\x00\x00\x00\x00";
         $expectedContent .= "\x00\x00\x00\x00\x00\x00\x00\x00";
         $bigint = gmp_strval(gmp_pow(2, 255));
-        $object = new Integer($bigint);
+        $object = Integer::create($bigint);
         $binary = $object->getBinary();
         $this->assertEquals($expectedType.$expectedLength.$expectedContent, $binary);
 
@@ -187,7 +181,7 @@ class IntegerTest extends ASN1TestCase
      */
     public function testSerializeBigIntegers($i)
     {
-        $object = new Integer($i);
+        $object = Integer::create($i);
         $binary = $object->getBinary();
 
         $obj = Object::fromBinary($binary);
@@ -212,17 +206,17 @@ class IntegerTest extends ASN1TestCase
      */
     public function testFromBinary()
     {
-        $originalObject = new Integer(200);
+        $originalObject = Integer::create(200);
         $binaryData = $originalObject->getBinary();
         $parsedObject = Integer::fromBinary($binaryData);
         $this->assertEquals($originalObject, $parsedObject);
 
-        $originalObject = new Integer(12345);
+        $originalObject = Integer::create(12345);
         $binaryData = $originalObject->getBinary();
         $parsedObject = Integer::fromBinary($binaryData);
         $this->assertEquals($originalObject, $parsedObject);
 
-        $originalObject = new Integer(-1891004);
+        $originalObject = Integer::create(-1891004);
         $binaryData = $originalObject->getBinary();
         $parsedObject = Integer::fromBinary($binaryData);
         $this->assertEquals($originalObject, $parsedObject);
@@ -233,8 +227,8 @@ class IntegerTest extends ASN1TestCase
      */
     public function testFromBinaryWithOffset()
     {
-        $originalObject1 = new Integer(12345);
-        $originalObject2 = new Integer(67890);
+        $originalObject1 = Integer::create(12345);
+        $originalObject2 = Integer::create(67890);
 
         $binaryData  = $originalObject1->getBinary();
         $binaryData .= $originalObject2->getBinary();
@@ -246,18 +240,5 @@ class IntegerTest extends ASN1TestCase
         $parsedObject = Integer::fromBinary($binaryData, $offset);
         $this->assertEquals($originalObject2, $parsedObject);
         $this->assertEquals(9, $offset);
-    }
-
-    /**
-     * @expectedException \FG\ASN1\Exception\ParserException
-     * @expectedExceptionMessage ASN.1 Parser Exception at offset 2: A FG\ASN1\Universal\Integer should have a content length of at least 1. Extracted length was 0
-     * @depends testFromBinary
-     */
-    public function testFromBinaryWithInvalidLength01()
-    {
-        $binaryData  = chr(Identifier::INTEGER);
-        $binaryData .= chr(0x00);
-        $binaryData .= chr(0xA0);
-        Integer::fromBinary($binaryData);
     }
 }
