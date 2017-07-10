@@ -106,23 +106,11 @@ abstract class Object
     abstract public function getContent();
 
     /**
-     * Returns all identifier octets. If an inheriting class models a tag with
-     * the long form identifier format, it MUST reimplement this method to
-     * return all octets of the identifier.
-     *
-     * @throws LogicException If the identifier format is long form
-     *
-     * @return string Identifier as a set of octets
+     * @return Identifier
      */
-    public function getIdentifier()
+    public function getIdentifier(): Identifier
     {
-        $firstOctet = $this->getType();
-
-        if (Identifier::isLongForm($firstOctet)) {
-            throw new LogicException(sprintf('Identifier of %s uses the long form and must therefor override "Object::getIdentifier()".', get_class($this)));
-        }
-
-        return chr($firstOctet);
+        return $this->identifier;
     }
 
     protected function getNumberOfLengthOctets($contentLength = null)
@@ -160,7 +148,7 @@ abstract class Object
      */
     public function getObjectLength()
     {
-        $nrOfIdentifierOctets = strlen($this->getIdentifier());
+        $nrOfIdentifierOctets = $this->getIdentifier()->getNrOfOctets();
         $contentLength = $this->getContentLength();
         $nrOfLengthOctets = $this->getNumberOfLengthOctets($contentLength);
 
