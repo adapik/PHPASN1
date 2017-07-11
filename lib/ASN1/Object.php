@@ -111,7 +111,7 @@ abstract class Object
     /**
      * @return Identifier
      */
-    public function getIdentifier()
+    public function getIdentifier(): Identifier
     {
         return $this->identifier;
     }
@@ -382,7 +382,7 @@ abstract class Object
             throw new ParserException('Can not parse content length from data: Offset index larger than input size', $offsetIndex);
         }
 
-        $contentLengthOctets = $binaryData[$offsetIndex++];https://github.com/apiaryio/api-blueprint/blob/master/API Blueprint Specification.md
+        $contentLengthOctets = $binaryData[$offsetIndex++];
         $firstOctet = ord($contentLengthOctets);
 
         if (($firstOctet & 0x80) != 0) {

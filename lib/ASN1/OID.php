@@ -75,7 +75,7 @@ class OID
      *
      * @return string
      */
-    public static function getName($oidString, $loadFromWeb = true)
+    public static function getName($oidString, $loadFromWeb = false)
     {
         switch ($oidString) {
             case self::RSA_ENCRYPTION:
