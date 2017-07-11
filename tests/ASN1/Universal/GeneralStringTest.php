@@ -10,41 +10,36 @@
 
 namespace FG\Test\ASN1\Universal;
 
+use FG\ASN1\ContentLength;
 use FG\Test\ASN1TestCase;
 use FG\ASN1\Identifier;
 use FG\ASN1\Universal\GeneralString;
 
 class GeneralStringTest extends ASN1TestCase
 {
-    public function testGetType()
-    {
-        $object = new GeneralString('Hello World');
-        $this->assertEquals(Identifier::GENERAL_STRING, $object->getType());
-    }
-
     public function testGetIdentifier()
     {
-        $object = new GeneralString('Hello World');
-        $this->assertEquals(chr(Identifier::GENERAL_STRING), $object->getIdentifier());
+        $object = GeneralString::createFromString('Hello World');
+        $this->assertEquals(Identifier::GENERAL_STRING, $object->getIdentifier()->getTagNumber());
     }
 
-    public function testContent()
+    public function testGetStringValue()
     {
-        $object = new GeneralString('Hello World');
-        $this->assertEquals('Hello World', $object->getContent());
+        $object = GeneralString::createFromString('Hello World');
+        $this->assertEquals('Hello World', $object->getStringValue());
 
-        $object = new GeneralString('');
-        $this->assertEquals('', $object->getContent());
+        $object = GeneralString::createFromString('');
+        $this->assertEquals('', $object->getStringValue());
 
-        $object = new GeneralString('             ');
-        $this->assertEquals('             ', $object->getContent());
+        $object = GeneralString::createFromString('             ');
+        $this->assertEquals('             ', $object->getStringValue());
     }
 
     public function testGetObjectLength()
     {
         $string = 'Hello World';
-        $object = new GeneralString($string);
-        $expectedSize = 2 + strlen($string);
+        $object = GeneralString::createFromString($string);
+        $expectedSize = 2 + strlen($string) + 2;
         $this->assertEquals($expectedSize, $object->getObjectLength());
     }
 
@@ -54,8 +49,8 @@ class GeneralStringTest extends ASN1TestCase
         $expectedType = chr(Identifier::GENERAL_STRING);
         $expectedLength = chr(strlen($string));
 
-        $object = new GeneralString($string);
-        $this->assertEquals($expectedType.$expectedLength.$string, $object->getBinary());
+        $object = GeneralString::createFromString($string, ['lengthForm' => ContentLength::LONG_FORM]);
+        $this->assertSame($expectedType.$expectedLength.$string, $object->getBinary());
     }
 
     /**
@@ -63,7 +58,7 @@ class GeneralStringTest extends ASN1TestCase
      */
     public function testFromBinary()
     {
-        $originalObject = new GeneralString('Hello World');
+        $originalObject = GeneralString::createFromString('Hello World');
         $binaryData = $originalObject->getBinary();
         $parsedObject = GeneralString::fromBinary($binaryData);
         $this->assertEquals($originalObject, $parsedObject);
@@ -74,8 +69,8 @@ class GeneralStringTest extends ASN1TestCase
      */
     public function testFromBinaryWithOffset()
     {
-        $originalObject1 = new GeneralString('Hello ');
-        $originalObject2 = new GeneralString(' World');
+        $originalObject1 = GeneralString::createFromString('Hello ', ['lengthForm' => ContentLength::SHORT_FORM]);
+        $originalObject2 = GeneralString::createFromString(' World', ['lengthForm' => ContentLength::SHORT_FORM]);
 
         $binaryData  = $originalObject1->getBinary();
         $binaryData .= $originalObject2->getBinary();

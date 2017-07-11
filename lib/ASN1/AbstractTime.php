@@ -30,11 +30,23 @@ abstract class AbstractTime extends Object
         }
     }
 
-    abstract function setValue(Content $content);
+    abstract public function setValue(Content $content);
 
-    public function getContent()
+    /**
+     * @param string $dateTime Format YYYYMMDDHHmmss.mcsZ
+     *
+     * @return string
+     */
+    public function encodeValue(string $dateTime)
     {
-        return $this->value;
+        $dateTime = rtrim($dateTime, '0Z.');
+
+        return $dateTime;
+    }
+
+    public function getStringValue()
+    {
+        return $this->value->format("Y-m-d\tH:i:s");
     }
 
     protected function getLastDateTimeErrors()
@@ -69,4 +81,6 @@ abstract class AbstractTime extends Object
 
         return $dateTime;
     }
+
+    abstract public static function createFormDateTime(\DateTimeInterface $dateTime, array $options = []);
 }

@@ -24,38 +24,30 @@ class GeneralizedTimeTest extends ASN1TestCase
         $this->UTC = new \DateTimeZone('UTC');
     }
 
-    public function testGetType()
-    {
-        $object = new GeneralizedTime();
-        $this->assertEquals(Identifier::GENERALIZED_TIME, $object->getType());
-    }
-
     public function testGetIdentifier()
     {
-        $object = new GeneralizedTime();
-        $this->assertEquals(chr(Identifier::GENERALIZED_TIME), $object->getIdentifier());
+        $object = GeneralizedTime::createFormDateTime(new DateTime());
+        $this->assertEquals(Identifier::GENERALIZED_TIME, $object->getIdentifier()->getTagNumber());
     }
 
-    public function testGetContent()
+    public function testGetStringValue()
     {
         $now = new DateTime();
         $now->setTimezone($this->UTC);
-        $object = new GeneralizedTime($now, 'UTC');
-        $content = $object->getContent();
-        $this->assertTrue($content instanceof DateTime);
-        $this->assertEquals($now->format(DATE_RFC3339), $content->format(DATE_RFC3339));
+        $object = GeneralizedTime::createFormDateTime($now);
+        $value  = $object->getStringValue();
+        $this->assertEquals($now->format(DATE_RFC3339), $value);
 
         $timeString = '2012-09-23 20:27';
-        $dateTime = new DateTime($timeString, $this->UTC);
-        $object = new GeneralizedTime($timeString);
-        $content = $object->getContent();
-        $this->assertTrue($content instanceof DateTime);
-        $this->assertEquals($dateTime->format(DATE_RFC3339), $content->format(DATE_RFC3339));
+        $dateTime   = new DateTime($timeString, $this->UTC);
+        $object     = GeneralizedTime::createFormDateTime($dateTime);
+        $value      = $object->getStringValue();
+        $this->assertEquals($now->format(DATE_RFC3339), $value);
     }
 
     public function testGetObjectLength()
     {
-        $object = new GeneralizedTime();
+        $object = GeneralizedTime::createFormDateTime(new DateTime());
         $expectedSize = 2 + 15; // Identifier + length + YYYYMMDDHHmmSSZ
         $this->assertEquals($expectedSize, $object->getObjectLength());
 

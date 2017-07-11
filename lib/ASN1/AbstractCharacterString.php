@@ -27,11 +27,6 @@ abstract class AbstractCharacterString extends Object implements CharacterString
         $this->value = $content->binaryData;
     }
 
-    public function getContent()
-    {
-        return $this->value;
-    }
-
     protected function allowCharacter($character)
     {
         $this->allowedCharacters[] = $character;

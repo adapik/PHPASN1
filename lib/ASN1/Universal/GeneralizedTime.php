@@ -12,6 +12,7 @@ namespace FG\ASN1\Universal;
 
 use FG\ASN1\AbstractTime;
 use FG\ASN1\Content;
+use FG\ASN1\ElementBuilder;
 use FG\ASN1\IdentifierManager;
 use FG\ASN1\Parsable;
 use FG\ASN1\Identifier;
@@ -50,7 +51,7 @@ class GeneralizedTime extends AbstractTime
         }
     }
 
-    public function getType()
+    public static function getType()
     {
         return Identifier::GENERALIZED_TIME;
     }
@@ -165,6 +166,29 @@ class GeneralizedTime extends AbstractTime
 
     public function getStringValue()
     {
-        return $this->value->format('ymdHis').'Z';
+        if ($this->containsFractionalSecondsElement()) {
+            return $this->value->format('Y-m-d\TH:i:s.uP');
+        } else {
+            return $this->value->format('Y-m-d\TH:i:sP');
+        }
+    }
+
+    public static function createFormDateTime(\DateTimeInterface $dateTime = null, array $options = [])
+    {
+        $dateTime      = $dateTime ?? new DateTime();
+
+        $isConstructed = false;
+        $lengthForm    = $options['lengthForm'] ?? ContentLength::SHORT_FORM;
+
+        $string = $dateTime->format('YmdHis.u').'Z';
+
+        return
+            ElementBuilder::createObject(
+                Identifier::CLASS_UNIVERSAL,
+                static::getType(),
+                $isConstructed,
+                $string,
+                $lengthForm
+            );
     }
 }

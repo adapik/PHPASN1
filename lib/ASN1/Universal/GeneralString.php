@@ -29,7 +29,7 @@ class GeneralString extends AbstractCharacterString
         parent::__construct($identifier, $contentLength, $content, $children);
     }
 
-    public function getType()
+    public static function getType()
     {
         return Identifier::GENERAL_STRING;
     }

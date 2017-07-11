@@ -23,10 +23,10 @@ class CharacterStringTest extends ASN1TestCase
         $this->assertEquals(Identifier::CHARACTER_STRING, $object->getIdentifier()->getTagNumber());
     }
 
-    public function testContent()
+    public function testGetStringValue()
     {
         $object = CharacterString::createFromString('Hello World');
-        $this->assertEquals('Hello World', $object->getContent());
+        $this->assertEquals('Hello World', $object->getStringValue());
     }
 
     public function testGetObjectLength()
