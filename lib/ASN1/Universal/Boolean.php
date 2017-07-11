@@ -29,6 +29,11 @@ class Boolean extends Object
         }
     }
 
+    public function __toString(): string
+    {
+        return $this->value ? 'true' : 'false';
+    }
+
     public function getType()
     {
         return Identifier::BOOLEAN;
