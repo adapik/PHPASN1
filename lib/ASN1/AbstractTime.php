@@ -39,7 +39,14 @@ abstract class AbstractTime extends Object
      */
     public function encodeValue(string $dateTime)
     {
-        $dateTime = rtrim($dateTime, '0Z.');
+        $hasTimeZone = true;
+
+        if(is_numeric(substr($dateTime, -1, 1))) {
+            $hasTimeZone = false;
+        }
+
+        $trimString = str_pad(rtrim($dateTime, '0Z.'), 14, '0');
+        $dateTime = $trimString . ($hasTimeZone ? 'Z' : '');
 
         return $dateTime;
     }

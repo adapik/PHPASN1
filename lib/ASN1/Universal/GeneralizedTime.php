@@ -85,9 +85,9 @@ class GeneralizedTime extends AbstractTime
     public function __toString()
     {
         if ($this->containsFractionalSecondsElement()) {
-            return $this->value->format("Y-m-d\tH:i:s.uP");
+            return $this->value->format("Y-m-d\TH:i:s.uP");
         } else {
-            return $this->value->format("Y-m-d\tH:i:sP");
+            return $this->value->format("Y-m-d\TH:i:sP");
         }
     }
 
@@ -109,6 +109,7 @@ class GeneralizedTime extends AbstractTime
         if ($contentLength == $lengthOfMinimumTimeString) {
             $localTimeZone = new \DateTimeZone(date_default_timezone_get());
             $dateTime = \DateTime::createFromFormat($format, $dateTimeString, $localTimeZone);
+            $this->value = $dateTime;
         } else {
             if ($binaryData[$offsetIndex] == '.') {
                 $maximumBytesToRead--; // account for the '.'
@@ -166,16 +167,12 @@ class GeneralizedTime extends AbstractTime
 
     public function getStringValue()
     {
-        if ($this->containsFractionalSecondsElement()) {
-            return $this->value->format('Y-m-d\TH:i:s.uP');
-        } else {
-            return $this->value->format('Y-m-d\TH:i:sP');
-        }
+        return (string) $this;
     }
 
     public static function createFormDateTime(\DateTimeInterface $dateTime = null, array $options = [])
     {
-        $dateTime      = $dateTime ?? new DateTime();
+        $dateTime      = $dateTime ?? new DateTime('now', 'UTC');
 
         $isConstructed = false;
         $lengthForm    = $options['lengthForm'] ?? ContentLength::SHORT_FORM;

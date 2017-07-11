@@ -35,61 +35,61 @@ class GeneralizedTimeTest extends ASN1TestCase
         $now = new DateTime();
         $now->setTimezone($this->UTC);
         $object = GeneralizedTime::createFormDateTime($now);
-        $value  = $object->getStringValue();
+        $value  = (string) $object;
         $this->assertEquals($now->format(DATE_RFC3339), $value);
 
         $timeString = '2012-09-23 20:27';
         $dateTime   = new DateTime($timeString, $this->UTC);
         $object     = GeneralizedTime::createFormDateTime($dateTime);
-        $value      = $object->getStringValue();
-        $this->assertEquals($now->format(DATE_RFC3339), $value);
+        $value      = (string) $object;
+        $this->assertEquals($dateTime->format(DATE_RFC3339), $value);
     }
 
     public function testGetObjectLength()
     {
-        $object = GeneralizedTime::createFormDateTime(new DateTime());
+        $object       = GeneralizedTime::createFormDateTime(new DateTime());
         $expectedSize = 2 + 15; // Identifier + length + YYYYMMDDHHmmSSZ
         $this->assertEquals($expectedSize, $object->getObjectLength());
 
         // without specified daytime
-        $object = new GeneralizedTime('2012-09-23');
+        $object = GeneralizedTime::createFormDateTime(new DateTime('2012-09-23'));
         $this->assertEquals($expectedSize, $object->getObjectLength());
 
         // with fractional-seconds elements
-        $object = new GeneralizedTime('2012-09-23 22:21:03.5435440');
+        $object = GeneralizedTime::createFormDateTime(new DateTime('2012-09-23 22:21:03.5435440'));
         $this->assertEquals($expectedSize + 7, $object->getObjectLength());
     }
 
     public function testGetBinary()
     {
-        $expectedType = chr(Identifier::GENERALIZED_TIME);
+        $expectedType   = chr(Identifier::GENERALIZED_TIME);
         $expectedLength = chr(15); // YYYYMMDDHHmmSSZ
 
-        $object = new GeneralizedTime();
-        $now = new DateTime();
+        $now    = new DateTime();
         $now->setTimezone($this->UTC);
-        $expectedContent  = $now->format('YmdHis').'Z';
-        $this->assertEquals($expectedType.$expectedLength.$expectedContent, $object->getBinary());
+        $object = GeneralizedTime::createFormDateTime($now);
+        $expectedContent = $now->format('YmdHis').'Z';
+        $this->assertSame($expectedType.$expectedLength.$expectedContent, $object->getBinary());
 
         $dateString = '2012-09-23';
-        $object = new GeneralizedTime($dateString);
-        $expectedContent  = '20120923000000Z';
+        $object = GeneralizedTime::createFormDateTime(new DateTime($dateString));
+        $expectedContent = '20120923000000Z';
         $this->assertEquals($expectedType.$expectedLength.$expectedContent, $object->getBinary());
 
         $dateString = '1987-01-15 12:12';
-        $object = new GeneralizedTime($dateString);
+        $object = GeneralizedTime::createFormDateTime(new DateTime($dateString));
         $expectedContent  = '19870115121200Z';
         $this->assertEquals($expectedType.$expectedLength.$expectedContent, $object->getBinary());
 
         $dateString = '2008-07-01 22:35:17.02';
         $expectedLength = chr(18);
-        $object = new GeneralizedTime($dateString);
+        $object = GeneralizedTime::createFormDateTime(new DateTime($dateString));
         $expectedContent  = '20080701223517.02Z';
         $this->assertEquals($expectedType.$expectedLength.$expectedContent, $object->getBinary());
 
         $dateString = '2008-07-01 22:35:17.024540';
         $expectedLength = chr(21);
-        $object = new GeneralizedTime($dateString);
+        $object = GeneralizedTime::createFormDateTime(new DateTime($dateString));
         $expectedContent  = '20080701223517.02454Z';
         $this->assertEquals($expectedType.$expectedLength.$expectedContent, $object->getBinary());
     }
@@ -104,7 +104,7 @@ class GeneralizedTimeTest extends ASN1TestCase
         $binaryData .= chr(15);
         $binaryData .= '20120923202316Z';
         $parsedObject = GeneralizedTime::fromBinary($binaryData);
-        $this->assertEquals($dateTime, $parsedObject->getContent());
+        $this->assertEquals($dateTime->format(DATE_RFC3339), (string) $parsedObject);
     }
 
     /**
@@ -117,11 +117,11 @@ class GeneralizedTimeTest extends ASN1TestCase
         $binaryData .= chr(22);
         $binaryData .= '20120923222103.543544Z';
         $parsedObject = GeneralizedTime::fromBinary($binaryData);
-        $this->assertEquals($dateTime, $parsedObject->getContent());
+        $this->assertEquals($dateTime->format('Y-m-d\TH:i:s.uP'), (string) $parsedObject);
     }
 
     /**
-     * @depends testGetBinary
+     *
      */
     public function testFromBinaryWithBEREncodingWithLocalTimeZone()
     {
@@ -130,7 +130,7 @@ class GeneralizedTimeTest extends ASN1TestCase
         $binaryData .= chr(14);
         $binaryData .= '20120923202316';
         $parsedObject = GeneralizedTime::fromBinary($binaryData);
-        $this->assertEquals($dateTime, $parsedObject->getContent());
+        $this->assertEquals($dateTime->format('Y-m-d\TH:i:sP'), (string) $parsedObject);
     }
 
     /**
@@ -143,14 +143,14 @@ class GeneralizedTimeTest extends ASN1TestCase
         $binaryData .= chr(19);
         $binaryData .= '20120923161359-0600';
         $parsedObject = GeneralizedTime::fromBinary($binaryData);
-        $this->assertEquals($dateTime, $parsedObject->getContent());
+        $this->assertEquals($dateTime->format('Y-m-d\TH:i:sP'), (string) $parsedObject);
 
         $dateTime = new DateTime('2012-09-23 22:13:59', $this->UTC);
         $binaryData  = chr(Identifier::GENERALIZED_TIME);
         $binaryData .= chr(19);
         $binaryData .= '20120924021359+0400';
         $parsedObject = GeneralizedTime::fromBinary($binaryData);
-        $this->assertEquals($dateTime, $parsedObject->getContent());
+        $this->assertEquals($dateTime->format('Y-m-d\TH:i:sP'), (string) $parsedObject);
     }
 
     /**
@@ -163,6 +163,6 @@ class GeneralizedTimeTest extends ASN1TestCase
         $binaryData .= chr(23);
         $binaryData .= '20120923161359.525-0600';
         $parsedObject = GeneralizedTime::fromBinary($binaryData);
-        $this->assertEquals($dateTime, $parsedObject->getContent());
+        $this->assertEquals($dateTime->format('Y-m-d\TH:i:s.uP'), (string) $parsedObject);
     }
 }
