@@ -27,7 +27,6 @@ class ObjectIdentifier extends Object
 
     public function __construct(Identifier $identifier, ContentLength $contentLength, Content $content, array $children = [])
     {
-
         parent::__construct($identifier, $contentLength, $content, $children);
 
         $this->setValue($content);

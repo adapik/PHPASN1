@@ -36,7 +36,7 @@ class NullObject extends Object
         return 'null';
     }
 
-    public function encodeValue($value)
+    public static function encodeValue($value)
     {
         return '';
     }

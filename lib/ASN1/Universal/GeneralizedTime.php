@@ -170,7 +170,7 @@ class GeneralizedTime extends AbstractTime
      *
      * @return string
      */
-    public function encodeValue(string $dateTime)
+    public static function encodeValue(string $dateTime)
     {
         $hasTimeZone = true;
 

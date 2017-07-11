@@ -39,7 +39,7 @@ abstract class AbstractTime extends Object
      *
      * @return string
      */
-    public function encodeValue(string $dateTime)
+    public static function encodeValue(string $dateTime)
     {
         $hasTimeZone = true;
 

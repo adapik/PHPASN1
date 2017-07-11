@@ -58,7 +58,7 @@ class UTCTime extends AbstractTime implements Parsable
      *
      * @return string
      */
-    public function encodeValue(string $dateTime)
+    public static function encodeValue(string $dateTime)
     {
         $hasTimeZone = true;
 
