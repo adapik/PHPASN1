@@ -1,12 +1,4 @@
 <?php
-/*
- * This file is part of the PHPASN1 library.
- *
- * Copyright © Friedrich Große <friedrich.grosse@gmail.com>
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
 
 namespace FG\Test\ASN1\Universal;
 
@@ -16,34 +8,29 @@ use FG\ASN1\Universal\IA5String;
 
 class IA5StringTest extends ASN1TestCase
 {
-    public function testGetType()
-    {
-        $object = new IA5String('Hello World');
-        $this->assertEquals(Identifier::IA5_STRING, $object->getType());
-    }
 
     public function testGetIdentifier()
     {
-        $object = new IA5String('Hello World');
-        $this->assertEquals(chr(Identifier::IA5_STRING), $object->getIdentifier());
+        $object = IA5String::createFromString('Hello World');
+        $this->assertEquals(Identifier::IA5_STRING, $object->getIdentifier()->getTagNumber());
     }
 
     public function testContent()
     {
-        $object = new IA5String('Hello World');
-        $this->assertEquals('Hello World', $object->getContent());
+        $object = IA5String::createFromString('Hello World');
+        $this->assertEquals('Hello World', (string) $object);
 
-        $object = new IA5String('');
-        $this->assertEquals('', $object->getContent());
+        $object = IA5String::createFromString('');
+        $this->assertEquals('', (string) $object);
 
-        $object = new IA5String('             ');
-        $this->assertEquals('             ', $object->getContent());
+        $object = IA5String::createFromString('             ');
+        $this->assertEquals('             ', (string) $object);
     }
 
     public function testGetObjectLength()
     {
         $string = 'Hello World';
-        $object = new IA5String($string);
+        $object = IA5String::createFromString($string);
         $expectedSize = 2 + strlen($string);
         $this->assertEquals($expectedSize, $object->getObjectLength());
     }
@@ -54,7 +41,7 @@ class IA5StringTest extends ASN1TestCase
         $expectedType = chr(Identifier::IA5_STRING);
         $expectedLength = chr(strlen($string));
 
-        $object = new IA5String($string);
+        $object = IA5String::createFromString($string);
         $this->assertEquals($expectedType.$expectedLength.$string, $object->getBinary());
     }
 
@@ -63,7 +50,7 @@ class IA5StringTest extends ASN1TestCase
      */
     public function testFromBinary()
     {
-        $originalObject = new IA5String('Hello World');
+        $originalObject = IA5String::createFromString('Hello World');
         $binaryData = $originalObject->getBinary();
         $parsedObject = IA5String::fromBinary($binaryData);
         $this->assertEquals($originalObject, $parsedObject);
@@ -74,8 +61,8 @@ class IA5StringTest extends ASN1TestCase
      */
     public function testFromBinaryWithOffset()
     {
-        $originalObject1 = new IA5String('Hello ');
-        $originalObject2 = new IA5String(' World');
+        $originalObject1 = IA5String::createFromString('Hello ');
+        $originalObject2 = IA5String::createFromString(' World');
 
         $binaryData  = $originalObject1->getBinary();
         $binaryData .= $originalObject2->getBinary();

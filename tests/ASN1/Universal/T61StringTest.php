@@ -16,28 +16,22 @@ use FG\ASN1\Universal\T61String;
 
 class T61StringTest extends ASN1TestCase
 {
-    public function testGetType()
-    {
-        $object = new T61String('Hello World');
-        $this->assertEquals(Identifier::T61_STRING, $object->getType());
-    }
-
     public function testGetIdentifier()
     {
-        $object = new T61String('Hello World');
-        $this->assertEquals(chr(Identifier::T61_STRING), $object->getIdentifier());
+        $object = T61String::createFromString('Hello World');
+        $this->assertEquals(Identifier::T61_STRING, $object->getIdentifier()->getTagNumber());
     }
 
     public function testContent()
     {
-        $object = new T61String('Hello World');
-        $this->assertEquals('Hello World', $object->getContent());
+        $object = T61String::createFromString('Hello World');
+        $this->assertEquals('Hello World', (string) $object);
     }
 
     public function testGetObjectLength()
     {
         $string = 'Hello World';
-        $object = new T61String($string);
+        $object = T61String::createFromString($string);
         $expectedSize = 2 + strlen($string);
         $this->assertEquals($expectedSize, $object->getObjectLength());
     }
@@ -48,7 +42,7 @@ class T61StringTest extends ASN1TestCase
         $expectedType = chr(Identifier::T61_STRING);
         $expectedLength = chr(strlen($string));
 
-        $object = new T61String($string);
+        $object = $object = T61String::createFromString($string);
         $this->assertEquals($expectedType.$expectedLength.$string, $object->getBinary());
     }
 
@@ -57,7 +51,7 @@ class T61StringTest extends ASN1TestCase
      */
     public function testFromBinary()
     {
-        $originalObject = new T61String('Hello World');
+        $originalObject = $object = T61String::createFromString('Hello World');
         $binaryData = $originalObject->getBinary();
         $parsedObject = T61String::fromBinary($binaryData);
         $this->assertEquals($originalObject, $parsedObject);
@@ -68,8 +62,8 @@ class T61StringTest extends ASN1TestCase
      */
     public function testFromBinaryWithOffset()
     {
-        $originalObject1 = new T61String('Hello ');
-        $originalObject2 = new T61String(' World');
+        $originalObject1 = T61String::createFromString('Hello ');
+        $originalObject2 = T61String::createFromString(' World');
 
         $binaryData  = $originalObject1->getBinary();
         $binaryData .= $originalObject2->getBinary();

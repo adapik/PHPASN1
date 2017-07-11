@@ -31,9 +31,4 @@ class EOC extends Object
     {
         return null;
     }
-
-    public function getContent()
-    {
-        return null;
-    }
 }

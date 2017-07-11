@@ -28,13 +28,13 @@ class NumericString extends AbstractCharacterString
      */
     public function __construct(Identifier $identifier, ContentLength $contentLength, Content $content, array $children = [])
     {
-
-        parent::__construct($identifier, $contentLength, $content, $children);
         $this->allowNumbers();
         $this->allowSpaces();
+
+        parent::__construct($identifier, $contentLength, $content, $children);
     }
 
-    public function getType()
+    public static function getType()
     {
         return Identifier::NUMERIC_STRING;
     }

@@ -39,7 +39,7 @@ class GeneralStringTest extends ASN1TestCase
     {
         $string = 'Hello World';
         $object = GeneralString::createFromString($string);
-        $expectedSize = 2 + strlen($string) + 2;
+        $expectedSize = 2 + strlen($string);
         $this->assertEquals($expectedSize, $object->getObjectLength());
     }
 

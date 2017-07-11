@@ -16,55 +16,37 @@ use FG\ASN1\Universal\OctetString;
 
 class OctetStringTest extends ASN1TestCase
 {
-    public function testGetType()
-    {
-        $object = new OctetString('30 14 06 08 2B 06 01 05 05 07 03 01 06 08 2B 06 01 05 05 07 03 02');
-        $this->assertEquals(Identifier::OCTETSTRING, $object->getType());
-    }
-
     public function testGetIdentifier()
     {
-        $object = new OctetString('30 14 06 08 2B 06 01 05 05 07 03 01 06 08 2B 06 01 05 05 07 03 02');
-        $this->assertEquals(chr(Identifier::OCTETSTRING), $object->getIdentifier());
+        $object = OctetString::createFromString(hex2bin('301406082B0601050507030106082B06010505070302'));
+        $this->assertEquals(Identifier::OCTETSTRING, $object->getIdentifier()->getTagNumber());
     }
 
     public function testContent()
     {
-        $object = new OctetString('A01200C3');
-        $this->assertEquals('A01200C3', $object->getContent());
-
-        $object = new OctetString('A0 12 00 C3');
-        $this->assertEquals('A01200C3', $object->getContent());
-
-        $object = new OctetString('a0 12 00 c3');
-        $this->assertEquals('A01200C3', $object->getContent());
-
-        $object = new OctetString('A0 12 00 c3');
-        $this->assertEquals('A01200C3', $object->getContent());
-
-        $object = new OctetString(0xA01200C3);
-        $this->assertEquals('A01200C3', $object->getContent());
+        $object = OctetString::createFromString('A01200C3');
+        $this->assertEquals('A01200C3', (string) $object);
     }
 
     public function testGetObjectLength()
     {
-        $object = new OctetString(0x00);
+        $object = OctetString::createFromString(hex2bin('00'));
         $this->assertEquals(3, $object->getObjectLength());
 
-        $object = new OctetString(0xFF);
+        $object = OctetString::createFromString(hex2bin('FF'));
         $this->assertEquals(3, $object->getObjectLength());
 
-        $object = new OctetString(0xA000);
+        $object = OctetString::createFromString(hex2bin('A000'));
         $this->assertEquals(4, $object->getObjectLength());
 
-        $object = new OctetString(0x3F2001);
+        $object = OctetString::createFromString(hex2bin('3F2001'));
         $this->assertEquals(5, $object->getObjectLength());
     }
 
     public function testGetObjectLengthWithVeryLongOctetString()
     {
-        $hexString = '0x'.str_repeat('FF', 1024);
-        $object = new OctetString($hexString);
+        $hexString = str_repeat('FF', 1024);
+        $object = OctetString::createFromString(hex2bin($hexString));
         $this->assertEquals(1 + 3 + 1024, $object->getObjectLength());
     }
 
@@ -73,11 +55,11 @@ class OctetStringTest extends ASN1TestCase
         $expectedType = chr(Identifier::OCTETSTRING);
         $expectedLength = chr(0x01);
 
-        $object = new OctetString(0xFF);
+        $object = OctetString::createFromString(hex2bin('FF'));
         $expectedContent = chr(0xFF);
         $this->assertEquals($expectedType.$expectedLength.$expectedContent, $object->getBinary());
 
-        $object = new OctetString(0xFFA034);
+        $object = OctetString::createFromString(hex2bin('FFA034'));
         $expectedLength = chr(0x03);
         $expectedContent  = chr(0xFF);
         $expectedContent .= chr(0xA0);
@@ -88,8 +70,8 @@ class OctetStringTest extends ASN1TestCase
     public function testGetBinaryForLargeOctetStrings()
     {
         $nrOfBytes = 1024;
-        $hexString = '0x'.str_repeat('FF', $nrOfBytes);
-        $object = new OctetString($hexString);
+        $hexString = str_repeat('FF', $nrOfBytes);
+        $object = OctetString::createFromString(hex2bin($hexString));
 
         $expectedType = chr(Identifier::OCTETSTRING);
         $expectedLength = chr(0x80 | 0x02);  // long length form: 2 length octets
@@ -108,12 +90,12 @@ class OctetStringTest extends ASN1TestCase
      */
     public function testFromBinary()
     {
-        $originalObject = new OctetString(0x12);
+        $originalObject = OctetString::createFromString(hex2bin('12'));
         $binaryData = $originalObject->getBinary();
         $parsedObject = OctetString::fromBinary($binaryData);
         $this->assertEquals($originalObject, $parsedObject);
 
-        $originalObject = new OctetString(0x010203A0);
+        $originalObject = OctetString::createFromString(hex2bin('010203A0'));
         $binaryData = $originalObject->getBinary();
         $parsedObject = OctetString::fromBinary($binaryData);
         $this->assertEquals($originalObject, $parsedObject);
@@ -124,8 +106,8 @@ class OctetStringTest extends ASN1TestCase
      */
     public function testFromBinaryWithOffset()
     {
-        $originalObject1 = new OctetString(0xA0);
-        $originalObject2 = new OctetString(0x314510);
+        $originalObject1 = OctetString::createFromString(hex2bin('A0'));
+        $originalObject2 = OctetString::createFromString(hex2bin('314510'));
 
         $binaryData  = $originalObject1->getBinary();
         $binaryData .= $originalObject2->getBinary();

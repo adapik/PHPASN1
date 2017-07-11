@@ -10,6 +10,7 @@
 
 namespace FG\Test\ASN1\Universal;
 
+use DateTime;
 use FG\Test\ASN1TestCase;
 use FG\ASN1\Identifier;
 use FG\ASN1\Universal\UTCTime;
@@ -23,45 +24,35 @@ class UTCTimeTest extends ASN1TestCase
         $this->UTC = new \DateTimeZone('UTC');
     }
 
-    public function testGetType()
-    {
-        $object = new UTCTime();
-        $this->assertEquals(Identifier::UTC_TIME, $object->getType());
-    }
-
     public function testGetIdentifier()
     {
-        $object = new UTCTime();
-        $this->assertEquals(chr(Identifier::UTC_TIME), $object->getIdentifier());
+        $object = UTCTime::createFormDateTime();
+        $this->assertEquals(Identifier::UTC_TIME, $object->getIdentifier()->getTagNumber());
     }
 
     public function testGetContent()
     {
         $now = new \DateTime();
         $now->setTimezone($this->UTC);
-        $object = new UTCTime();
-        $content = $object->getContent();
-        $this->assertTrue($content instanceof \DateTime);
-        $this->assertEquals($now->format(DATE_RFC3339), $content->format(DATE_RFC3339));
+        $object = UTCTime::createFormDateTime($now);
+        $this->assertEquals($now->format(DateTime::ATOM), (string) $object);
 
         $timeString = '2012-09-23 20:27';
-        $dateTime = new \DateTime($timeString, $this->UTC);
-        $object = new UTCTime($timeString);
-        $content = $object->getContent();
-        $this->assertTrue($content instanceof \DateTime);
-        $this->assertEquals($dateTime->format(DATE_RFC3339), $content->format(DATE_RFC3339));
+        $dateTime   = new \DateTime($timeString, $this->UTC);
+        $object     = UTCTime::createFormDateTime($dateTime);
+        $this->assertEquals($dateTime->format(DateTime::ATOM), (string) $object);
     }
 
     public function testGetObjectLength()
     {
-        $object = new UTCTime();
+        $object       = UTCTime::createFormDateTime();
         $expectedSize = 2 + 13; // Identifier + length + YYMMDDHHmmssZ
         $this->assertEquals($expectedSize, $object->getObjectLength());
 
-        $object = new UTCTime('2012-09-23');
+        $object = UTCTime::createFormDateTime(new DateTime('2012-09-23'));
         $this->assertEquals($expectedSize, $object->getObjectLength());
 
-        $object = new UTCTime('1987-01-15 12:12:16');
+        $object = UTCTime::createFormDateTime(new DateTime('1987-01-15 12:12:16'));
         $this->assertEquals($expectedSize, $object->getObjectLength());
     }
 
@@ -70,21 +61,21 @@ class UTCTimeTest extends ASN1TestCase
         $expectedType = chr(Identifier::UTC_TIME);
         $expectedLength = chr(13);
 
-        $object = new UTCTime();
         $now = new \DateTime();
         $now->setTimezone($this->UTC);
-        $expectedContent  = $now->format('ymdHis').'Z';
+        $object = UTCTime::createFormDateTime($now);
+        $expectedContent = $now->format('ymdHis').'Z';
         $this->assertEquals($expectedType.$expectedLength.$expectedContent, $object->getBinary());
 
         $dateString = '2012-09-23';
-        $object = new UTCTime($dateString);
         $date = new \DateTime($dateString, $this->UTC);
+        $object = UTCTime::createFormDateTime($date);
         $expectedContent  = $date->format('ymdHis').'Z';
         $this->assertEquals($expectedType.$expectedLength.$expectedContent, $object->getBinary());
 
         $dateString = '1987-01-15 12:12';
-        $object = new UTCTime($dateString);
         $date = new \DateTime($dateString, $this->UTC);
+        $object = UTCTime::createFormDateTime($date);
         $expectedContent  = $date->format('ymdHis').'Z';
         $this->assertEquals($expectedType.$expectedLength.$expectedContent, $object->getBinary());
     }
@@ -99,40 +90,7 @@ class UTCTimeTest extends ASN1TestCase
         $binaryData .= chr(13);
         $binaryData .= '120923202316Z';
         $parsedObject = UTCTime::fromBinary($binaryData);
-        $this->assertEquals($dateTime, $parsedObject->getContent());
-    }
-
-    /**
-     * @depends testGetBinary
-     */
-    public function testFromBinaryWithBEREncodingWithoutSecondsInUTC()
-    {
-        $dateTime = new \DateTime('1987-01-15 13:15:00', $this->UTC);
-        $binaryData  = chr(Identifier::UTC_TIME);
-        $binaryData .= chr(13);
-        $binaryData .= '8701151315Z';
-        $parsedObject = UTCTime::fromBinary($binaryData);
-        $this->assertEquals($dateTime, $parsedObject->getContent());
-    }
-
-    /**
-     * @depends testGetBinary
-     */
-    public function testFromBinaryWithBEREncodingWithoutSecondsInOtherTimeZone()
-    {
-        $dateTime = new \DateTime('2012-09-23 22:13:00', $this->UTC);
-        $binaryData  = chr(Identifier::UTC_TIME);
-        $binaryData .= chr(13);
-        $binaryData .= '1209231613-0600';
-        $parsedObject = UTCTime::fromBinary($binaryData);
-        $this->assertEquals($dateTime, $parsedObject->getContent());
-
-        $dateTime = new \DateTime('2012-09-23 22:13:00', $this->UTC);
-        $binaryData  = chr(Identifier::UTC_TIME);
-        $binaryData .= chr(13);
-        $binaryData .= '1209240213+0400';
-        $parsedObject = UTCTime::fromBinary($binaryData);
-        $this->assertEquals($dateTime, $parsedObject->getContent());
+        $this->assertEquals($dateTime->format(DateTime::ATOM), (string) $parsedObject);
     }
 
     /**
@@ -142,30 +100,28 @@ class UTCTimeTest extends ASN1TestCase
     {
         $dateTime = new \DateTime('2012-09-23 22:13:32', $this->UTC);
         $binaryData  = chr(Identifier::UTC_TIME);
-        $binaryData .= chr(13);
+        $binaryData .= chr(15);
         $binaryData .= '120923161332-0600';
         $parsedObject = UTCTime::fromBinary($binaryData);
-        $this->assertEquals($dateTime, $parsedObject->getContent());
+        $this->assertEquals($dateTime->format(DateTime::ATOM), (string) $parsedObject);
 
         $dateTime = new \DateTime('2012-09-23 22:13:32', $this->UTC);
         $binaryData  = chr(Identifier::UTC_TIME);
-        $binaryData .= chr(13);
+        $binaryData .= chr(15);
         $binaryData .= '120924021332+0400';
         $parsedObject = UTCTime::fromBinary($binaryData);
-        $this->assertEquals($dateTime, $parsedObject->getContent());
+        $this->assertEquals($dateTime->format(DateTime::ATOM), (string) $parsedObject);
     }
 
     /**
      * @depends testFromBinaryWithDEREncoding
-     * @depends testFromBinaryWithBEREncodingWithoutSecondsInUTC
-     * @depends testFromBinaryWithBEREncodingWithoutSecondsInOtherTimeZone
      * @depends testFromBinaryWithBEREncodingWithSecondsInOtherTimeZone
      */
     public function testFromBinaryWithOffset()
     {
         $binaryData  = chr(Identifier::UTC_TIME);
-        $binaryData .= chr(11);
-        $binaryData .= '1209231613Z';
+        $binaryData .= chr(13);
+        $binaryData .= '120923161300Z';
         $dateTime1 = new \DateTime('2012-09-23 16:13:00', $this->UTC);
         $binaryData .= chr(Identifier::UTC_TIME);
         $binaryData .= chr(13);
@@ -178,22 +134,13 @@ class UTCTimeTest extends ASN1TestCase
 
         $offset = 0;
         $parsedObject = UTCTime::fromBinary($binaryData, $offset);
-        $this->assertEquals($dateTime1, $parsedObject->getContent());
-        $this->assertEquals(13, $offset);
+        $this->assertEquals($dateTime1->format(DateTime::ATOM), (string) $parsedObject);
+        $this->assertEquals(15, $offset);
         $parsedObject = UTCTime::fromBinary($binaryData, $offset);
-        $this->assertEquals($dateTime2, $parsedObject->getContent());
-        $this->assertEquals(28, $offset);
+        $this->assertEquals($dateTime2->format(DateTime::ATOM), (string) $parsedObject);
+        $this->assertEquals(30, $offset);
         $parsedObject = UTCTime::fromBinary($binaryData, $offset);
-        $this->assertEquals($dateTime3, $parsedObject->getContent());
-        $this->assertEquals(47, $offset);
-    }
-
-    public function testToString()
-    {
-        $object = new UTCTime('2012-09-23');
-        $this->assertEquals("2012-09-23\t00:00:00", $object->__toString());
-
-        $object = new UTCTime('2012-09-23 22:13:43');
-        $this->assertEquals("2012-09-23\t22:13:43", $object->__toString());
+        $this->assertEquals($dateTime3->format(DateTime::ATOM), (string) $parsedObject);
+        $this->assertEquals(49, $offset);
     }
 }

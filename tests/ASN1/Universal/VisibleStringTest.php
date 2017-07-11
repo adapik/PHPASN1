@@ -16,34 +16,28 @@ use FG\ASN1\Universal\VisibleString;
 
 class VisibleStringTest extends ASN1TestCase
 {
-    public function testGetType()
-    {
-        $object = new VisibleString('Hello World');
-        $this->assertEquals(Identifier::VISIBLE_STRING, $object->getType());
-    }
-
     public function testGetIdentifier()
     {
-        $object = new VisibleString('Hello World');
-        $this->assertEquals(chr(Identifier::VISIBLE_STRING), $object->getIdentifier());
+        $object = VisibleString::createFromString('Hello World');
+        $this->assertEquals(Identifier::VISIBLE_STRING, $object->getIdentifier()->getTagNumber());
     }
 
     public function testContent()
     {
-        $object = new VisibleString('Hello World');
-        $this->assertEquals('Hello World', $object->getContent());
+        $object = VisibleString::createFromString('Hello World');
+        $this->assertEquals('Hello World', (string) $object);
 
-        $object = new VisibleString('');
-        $this->assertEquals('', $object->getContent());
+        $object = VisibleString::createFromString('');
+        $this->assertEquals('', (string) $object);
 
-        $object = new VisibleString('             ');
-        $this->assertEquals('             ', $object->getContent());
+        $object = VisibleString::createFromString('             ');
+        $this->assertEquals('             ', (string) $object);
     }
 
     public function testGetObjectLength()
     {
         $string = 'Hello World';
-        $object = new VisibleString($string);
+        $object = VisibleString::createFromString($string);
         $expectedSize = 2 + strlen($string);
         $this->assertEquals($expectedSize, $object->getObjectLength());
     }
@@ -54,7 +48,7 @@ class VisibleStringTest extends ASN1TestCase
         $expectedType = chr(Identifier::VISIBLE_STRING);
         $expectedLength = chr(strlen($string));
 
-        $object = new VisibleString($string);
+        $object = VisibleString::createFromString($string);
         $this->assertEquals($expectedType.$expectedLength.$string, $object->getBinary());
     }
 
@@ -63,7 +57,7 @@ class VisibleStringTest extends ASN1TestCase
      */
     public function testFromBinary()
     {
-        $originalObject = new VisibleString('Hello World');
+        $originalObject = VisibleString::createFromString('Hello World');
         $binaryData = $originalObject->getBinary();
         $parsedObject = VisibleString::fromBinary($binaryData);
         $this->assertEquals($originalObject, $parsedObject);
@@ -74,8 +68,8 @@ class VisibleStringTest extends ASN1TestCase
      */
     public function testFromBinaryWithOffset()
     {
-        $originalObject1 = new VisibleString('Hello ');
-        $originalObject2 = new VisibleString(' World');
+        $originalObject1 = VisibleString::createFromString('Hello ');
+        $originalObject2 = VisibleString::createFromString(' World');
 
         $binaryData  = $originalObject1->getBinary();
         $binaryData .= $originalObject2->getBinary();

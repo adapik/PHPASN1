@@ -12,6 +12,8 @@ namespace FG\ASN1\Universal;
 
 use FG\ASN1\AbstractTime;
 use FG\ASN1\Content;
+use FG\ASN1\ContentLength;
+use FG\ASN1\ElementBuilder;
 use FG\ASN1\IdentifierManager;
 use FG\ASN1\Parsable;
 use FG\ASN1\Identifier;
@@ -31,7 +33,7 @@ use Exception;
  */
 class UTCTime extends AbstractTime implements Parsable
 {
-    public function getType()
+    public static function getType()
     {
         return Identifier::UTC_TIME;
     }
@@ -49,6 +51,25 @@ class UTCTime extends AbstractTime implements Parsable
     protected function getEncodedValue()
     {
         return $this->value->format('ymdHis').'Z';
+    }
+
+    /**
+     * @param string $dateTime Format YYYYMMDDHHmmss.mcsZ
+     *
+     * @return string
+     */
+    public function encodeValue(string $dateTime)
+    {
+        $hasTimeZone = true;
+
+        if(is_numeric(substr($dateTime, -1, 1))) {
+            $hasTimeZone = false;
+        }
+
+        $trimString = str_pad(rtrim($dateTime, '0Z.'), 12, '0');
+        $dateTime = $trimString . ($hasTimeZone ? 'Z' : '');
+
+        return $dateTime;
     }
 
     public function setValue(Content $content)
@@ -75,7 +96,7 @@ class UTCTime extends AbstractTime implements Parsable
         if ($binaryData[$offsetIndex] == '+'
             || $binaryData[$offsetIndex] == '-') {
             $dateTime = static::extractTimeZoneData($binaryData, $offsetIndex, $dateTime);
-        } elseif ($binaryData[$offsetIndex++] != 'Z') {
+        } elseif ($binaryData[$offsetIndex] !== 'Z') {
             throw new ParserException('Invalid UTC String', $offsetIndex);
         }
 
@@ -95,5 +116,23 @@ class UTCTime extends AbstractTime implements Parsable
         }
 
         $this->value = $dateTime;
+    }
+
+    public static function createFormDateTime(\DateTimeInterface $dateTime = null, array $options = []) {
+        $dateTime = $dateTime ?? new DateTime('now', new DateTimeZone('UTC'));
+
+        $isConstructed = false;
+        $lengthForm    = $options['lengthForm'] ?? ContentLength::SHORT_FORM;
+
+        $string = $dateTime->format('ymdHis').'Z';
+
+        return
+            ElementBuilder::createObject(
+                Identifier::CLASS_UNIVERSAL,
+                static::getType(),
+                $isConstructed,
+                $string,
+                $lengthForm
+            );
     }
 }

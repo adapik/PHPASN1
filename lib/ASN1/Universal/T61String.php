@@ -27,13 +27,12 @@ class T61String extends AbstractCharacterString
      */
     public function __construct(Identifier $identifier, ContentLength $contentLength, Content $content, array $children = [])
     {
+        $this->allowAll();
 
         parent::__construct($identifier, $contentLength, $content, $children);
-
-        $this->allowAll();
     }
 
-    public function getType()
+    public static function getType()
     {
         return Identifier::T61_STRING;
     }

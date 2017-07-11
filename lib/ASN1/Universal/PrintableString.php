@@ -41,16 +41,15 @@ class PrintableString extends AbstractCharacterString
      */
     public function __construct(Identifier $identifier, ContentLength $contentLength, Content $content, array $children = [])
     {
-
-        parent::__construct($identifier, $contentLength, $content, $children);
-
         $this->allowNumbers();
         $this->allowAllLetters();
         $this->allowSpaces();
         $this->allowCharacters("'", '(', ')', '+', '-', '.', ',', '/', ':', '=', '?');
+
+        parent::__construct($identifier, $contentLength, $content, $children);
     }
 
-    public function getType()
+    public static function getType()
     {
         return Identifier::PRINTABLE_STRING;
     }

@@ -14,7 +14,7 @@ use FG\ASN1\Identifier;
 
 class Enumerated extends Integer
 {
-    public function getType()
+    public static function getType()
     {
         return Identifier::ENUMERATED;
     }

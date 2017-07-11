@@ -19,7 +19,7 @@ class ObjectDescriptor extends GraphicString
         parent::__construct($objectDescription);
     }
 
-    public function getType()
+    public static function getType()
     {
         return Identifier::OBJECT_DESCRIPTOR;
     }

@@ -33,7 +33,7 @@ class BMPStringTest extends ASN1TestCase
     {
         $string = 'Hello World';
         $object = BMPString::createFromString($string);
-        $expectedSize = 4 + strlen($string);
+        $expectedSize = 2 + strlen($string);
         $this->assertEquals($expectedSize, $object->getObjectLength());
     }
 

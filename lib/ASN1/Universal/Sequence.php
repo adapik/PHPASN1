@@ -32,9 +32,4 @@ class Sequence extends Object
 
         return $result;
     }
-
-    public function getContent()
-    {
-        return $this->children;
-    }
 }

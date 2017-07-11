@@ -16,31 +16,25 @@ use FG\ASN1\Universal\NumericString;
 
 class NumericStringTest extends ASN1TestCase
 {
-    public function testGetType()
-    {
-        $object = new NumericString('1234');
-        $this->assertEquals(Identifier::NUMERIC_STRING, $object->getType());
-    }
-
     public function testGetIdentifier()
     {
-        $object = new NumericString('1234');
-        $this->assertEquals(chr(Identifier::NUMERIC_STRING), $object->getIdentifier());
+        $object = NumericString::createFromString('1234');
+        $this->assertEquals(Identifier::NUMERIC_STRING, $object->getIdentifier()->getTagNumber());
     }
 
     public function testContent()
     {
-        $object = new NumericString('123 45 67890');
-        $this->assertEquals('123 45 67890', $object->getContent());
+        $object = NumericString::createFromString('123 45 67890');
+        $this->assertEquals('123 45 67890', (string) $object);
 
-        $object = new NumericString('             ');
-        $this->assertEquals('             ', $object->getContent());
+        $object = NumericString::createFromString('             ');
+        $this->assertEquals('             ', (string) $object);
     }
 
     public function testGetObjectLength()
     {
         $string = '123  4 55677 0987';
-        $object = new NumericString($string);
+        $object = NumericString::createFromString($string);
         $expectedSize = 2 + strlen($string);
         $this->assertEquals($expectedSize, $object->getObjectLength());
     }
@@ -51,7 +45,7 @@ class NumericStringTest extends ASN1TestCase
         $expectedType = chr(Identifier::NUMERIC_STRING);
         $expectedLength = chr(strlen($string));
 
-        $object = new NumericString($string);
+        $object = NumericString::createFromString($string);
         $this->assertEquals($expectedType.$expectedLength.$string, $object->getBinary());
     }
 
@@ -60,7 +54,7 @@ class NumericStringTest extends ASN1TestCase
      */
     public function testFromBinary()
     {
-        $originalObject = new NumericString('123 45  5322');
+        $originalObject = NumericString::createFromString('123 45  5322');
         $binaryData = $originalObject->getBinary();
         $parsedObject = NumericString::fromBinary($binaryData);
         $this->assertEquals($originalObject, $parsedObject);
@@ -71,8 +65,8 @@ class NumericStringTest extends ASN1TestCase
      */
     public function testFromBinaryWithOffset()
     {
-        $originalObject1 = new NumericString('1324 0');
-        $originalObject2 = new NumericString('1 2 3 ');
+        $originalObject1 = NumericString::createFromString('1324 0');
+        $originalObject2 = NumericString::createFromString('1 2 3 ');
 
         $binaryData  = $originalObject1->getBinary();
         $binaryData .= $originalObject2->getBinary();
@@ -88,48 +82,32 @@ class NumericStringTest extends ASN1TestCase
 
     public function testCreateStringWithValidCharacters()
     {
-        $object = new NumericString('1234');
+        $object = NumericString::createFromString('1234');
         $this->assertEquals(pack('H*', '120431323334'), $object->getBinary());
-        $object = new NumericString('321 98 76');
+        $object = NumericString::createFromString('321 98 76');
         $this->assertEquals(pack('H*', '1209333231203938203736'), $object->getBinary());
     }
 
     public function testCreateStringWithInvalidCharacters()
     {
         $invalidString = 'Hello World';
-        try {
-            $object = new NumericString($invalidString);
-            $object->getBinary();
-            $this->fail('Should have thrown an exception');
-        } catch (\Exception $exception) {
-            $this->assertEquals("Could not create a ASN.1 Numeric String from the character sequence '{$invalidString}'.", $exception->getMessage());
-        }
+        $this->expectExceptionMessage("Could not create a ASN.1 Numeric String from the character sequence '{$invalidString}'.");
+        $object = NumericString::createFromString($invalidString);
+        $object->getBinary();
 
         $invalidString = '123,456';
-        try {
-            $object = new NumericString($invalidString);
-            $object->getBinary();
-            $this->fail('Should have thrown an exception');
-        } catch (\Exception $exception) {
-            $this->assertEquals("Could not create a ASN.1 Numeric String from the character sequence '{$invalidString}'.", $exception->getMessage());
-        }
+        $this->expectExceptionMessage("Could not create a ASN.1 Numeric String from the character sequence '{$invalidString}'.");
+        $object = NumericString::createFromString($invalidString);
+        $object->getBinary();
 
         $invalidString = '+123456';
-        try {
-            $object = new NumericString($invalidString);
-            $object->getBinary();
-            $this->fail('Should have thrown an exception');
-        } catch (\Exception $exception) {
-            $this->assertEquals("Could not create a ASN.1 Numeric String from the character sequence '{$invalidString}'.", $exception->getMessage());
-        }
+        $this->expectExceptionMessage("Could not create a ASN.1 Numeric String from the character sequence '{$invalidString}'.");
+        $object = NumericString::createFromString($invalidString);
+        $object->getBinary();
 
         $invalidString = '-123456';
-        try {
-            $object = new NumericString($invalidString);
-            $object->getBinary();
-            $this->fail('Should have thrown an exception');
-        } catch (\Exception $exception) {
-            $this->assertEquals("Could not create a ASN.1 Numeric String from the character sequence '{$invalidString}'.", $exception->getMessage());
-        }
+        $this->expectExceptionMessage("Could not create a ASN.1 Numeric String from the character sequence '{$invalidString}'.");
+        $object = NumericString::createFromString($invalidString);
+        $object->getBinary();
     }
 }

@@ -16,28 +16,22 @@ use FG\ASN1\Universal\UniversalString;
 
 class UniversalStringTest extends ASN1TestCase
 {
-    public function testGetType()
-    {
-        $object = new UniversalString('Hello World');
-        $this->assertEquals(Identifier::UNIVERSAL_STRING, $object->getType());
-    }
-
     public function testGetIdentifier()
     {
-        $object = new UniversalString('Hello World');
-        $this->assertEquals(chr(Identifier::UNIVERSAL_STRING), $object->getIdentifier());
+        $object = UniversalString::createFromString('Hello World');
+        $this->assertEquals(Identifier::UNIVERSAL_STRING, $object->getIdentifier()->getTagNumber());
     }
 
     public function testContent()
     {
-        $object = new UniversalString('Hello World');
-        $this->assertEquals('Hello World', $object->getContent());
+        $object = UniversalString::createFromString('Hello World');
+        $this->assertEquals('Hello World', (string) $object);
     }
 
     public function testGetObjectLength()
     {
         $string = 'Hello World';
-        $object = new UniversalString($string);
+        $object = UniversalString::createFromString($string);
         $expectedSize = 2 + strlen($string);
         $this->assertEquals($expectedSize, $object->getObjectLength());
     }
@@ -48,7 +42,7 @@ class UniversalStringTest extends ASN1TestCase
         $expectedType = chr(Identifier::UNIVERSAL_STRING);
         $expectedLength = chr(strlen($string));
 
-        $object = new UniversalString($string);
+        $object = UniversalString::createFromString($string);
         $this->assertEquals($expectedType.$expectedLength.$string, $object->getBinary());
     }
 
@@ -57,7 +51,7 @@ class UniversalStringTest extends ASN1TestCase
      */
     public function testFromBinary()
     {
-        $originalObject = new UniversalString('Hello World');
+        $originalObject = UniversalString::createFromString('Hello World');
         $binaryData = $originalObject->getBinary();
         $parsedObject = UniversalString::fromBinary($binaryData);
         $this->assertEquals($originalObject, $parsedObject);
@@ -68,8 +62,8 @@ class UniversalStringTest extends ASN1TestCase
      */
     public function testFromBinaryWithOffset()
     {
-        $originalObject1 = new UniversalString('Hello ');
-        $originalObject2 = new UniversalString(' World');
+        $originalObject1 = UniversalString::createFromString('Hello ');
+        $originalObject2 = UniversalString::createFromString(' World');
 
         $binaryData  = $originalObject1->getBinary();
         $binaryData .= $originalObject2->getBinary();

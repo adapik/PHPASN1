@@ -31,7 +31,7 @@ class UTF8String extends AbstractCharacterString
         $this->allowAll();
     }
 
-    public function getType()
+    public static function getType()
     {
         return Identifier::UTF8_STRING;
     }

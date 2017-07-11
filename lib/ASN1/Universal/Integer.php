@@ -36,7 +36,7 @@ class Integer extends Object
 
     }
 
-    public function getType()
+    public static function getType()
     {
         return Identifier::INTEGER;
     }
@@ -129,7 +129,7 @@ class Integer extends Object
         return
             ElementBuilder::createObject(
                 Identifier::CLASS_UNIVERSAL,
-                Identifier::ENUMERATED,
+                static::getType(),
                 $isConstructed,
                 $integer,
                 $lengthForm

@@ -33,11 +33,6 @@ class ObjectIdentifier extends Object
         $this->setValue($content);
     }
 
-    public function getContent()
-    {
-        return $this->value;
-    }
-
     public function getType()
     {
         return Identifier::OBJECT_IDENTIFIER;

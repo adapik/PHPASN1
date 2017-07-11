@@ -32,6 +32,8 @@ abstract class AbstractTime extends Object
 
     abstract public function setValue(Content $content);
 
+    abstract public static function getType();
+
     /**
      * @param string $dateTime Format YYYYMMDDHHmmss.mcsZ
      *
@@ -69,7 +71,7 @@ abstract class AbstractTime extends Object
 
     public function __toString()
     {
-        return $this->value->format("Y-m-d\tH:i:s");
+        return $this->value->format("Y-m-d\TH:i:sP");
     }
 
     protected static function extractTimeZoneData(&$binaryData, &$offsetIndex, DateTime $dateTime)
@@ -89,5 +91,5 @@ abstract class AbstractTime extends Object
         return $dateTime;
     }
 
-    abstract public static function createFormDateTime(\DateTimeInterface $dateTime, array $options = []);
+    abstract public static function createFormDateTime(\DateTimeInterface $dateTime = null, array $options = []);
 }

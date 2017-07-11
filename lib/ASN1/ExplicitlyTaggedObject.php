@@ -57,11 +57,6 @@ class ExplicitlyTaggedObject extends Object
 
     protected function getEncodedValue()
     {
-        return $this->content->binaryData;
-    }
-
-    public function getContent()
-    {
-        return $this->children;
+        return $this->getBinaryContent();
     }
 }

@@ -30,4 +30,9 @@ class IA5String extends AbstractCharacterString
             $this->allowCharacter(chr($i));
         }
     }
+
+    public static function getType()
+    {
+        return Identifier::IA5_STRING;
+    }
 }

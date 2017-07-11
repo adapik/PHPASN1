@@ -77,18 +77,26 @@ class OctetString extends Object
         return $value;
     }
 
-    public static function createFromBinaryString(string $binaryString, $options = [])
+    /**
+     * @return string
+     */
+    public function __toString(): string
     {
+        return $this->value;
+    }
 
+    public static function createFromString(string $string, $options = [])
+    {
         $isConstructed = $options['isConstructed'] ?? false;
-        $lengthForm    = $options['lengthForm'] ?? ContentLength::INDEFINITE_FORM;
+        $lengthForm    = strlen($string) > 127 ? ContentLength::LONG_FORM : ContentLength::SHORT_FORM;
+        $lengthForm    = $options['lengthForm'] ?? $lengthForm;
 
         return
             ElementBuilder::createObject(
                 Identifier::CLASS_UNIVERSAL,
                 Identifier::OCTETSTRING,
                 $isConstructed,
-                $binaryString,
+                $string,
                 $lengthForm
             );
     }

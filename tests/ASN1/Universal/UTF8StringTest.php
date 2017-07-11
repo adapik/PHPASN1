@@ -18,26 +18,26 @@ class UTF8StringTest extends ASN1TestCase
 {
     public function testGetType()
     {
-        $object = new UTF8String('Hello World');
+        $object = UTF8String::createFromString('Hello World');
         $this->assertEquals(Identifier::UTF8_STRING, $object->getType());
     }
 
     public function testGetIdentifier()
     {
-        $object = new UTF8String('Hello World');
-        $this->assertEquals(chr(Identifier::UTF8_STRING), $object->getIdentifier());
+        $object = UTF8String::createFromString('Hello World');
+        $this->assertEquals(Identifier::UTF8_STRING, $object->getIdentifier()->getTagNumber());
     }
 
     public function testContent()
     {
-        $object = new UTF8String('Hello World');
-        $this->assertEquals('Hello World', $object->getContent());
+        $object = UTF8String::createFromString('Hello World');
+        $this->assertEquals('Hello World', (string) $object);
     }
 
     public function testGetObjectLength()
     {
         $string = 'Hello World';
-        $object = new UTF8String($string);
+        $object = UTF8String::createFromString($string);
         $expectedSize = 2 + strlen($string);
         $this->assertEquals($expectedSize, $object->getObjectLength());
     }
@@ -48,7 +48,7 @@ class UTF8StringTest extends ASN1TestCase
         $expectedType = chr(Identifier::UTF8_STRING);
         $expectedLength = chr(strlen($string));
 
-        $object = new UTF8String($string);
+        $object = UTF8String::createFromString($string);
         $this->assertEquals($expectedType.$expectedLength.$string, $object->getBinary());
     }
 
@@ -57,7 +57,7 @@ class UTF8StringTest extends ASN1TestCase
      */
     public function testFromBinary()
     {
-        $originalObject = new UTF8String('Hello World');
+        $originalObject = UTF8String::createFromString('Hello World');
         $binaryData = $originalObject->getBinary();
         $parsedObject = UTF8String::fromBinary($binaryData);
         $this->assertEquals($originalObject, $parsedObject);
@@ -68,8 +68,8 @@ class UTF8StringTest extends ASN1TestCase
      */
     public function testFromBinaryWithOffset()
     {
-        $originalObject1 = new UTF8String('Hello ');
-        $originalObject2 = new UTF8String(' World');
+        $originalObject1 = UTF8String::createFromString('Hello ');
+        $originalObject2 = UTF8String::createFromString(' World');
 
         $binaryData  = $originalObject1->getBinary();
         $binaryData .= $originalObject2->getBinary();

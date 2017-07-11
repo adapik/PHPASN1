@@ -24,7 +24,10 @@ abstract class AbstractCharacterString extends Object implements CharacterString
 
         parent::__construct($identifier, $contentLength, $content, $children);
 
-        $this->value = $content->binaryData;
+        $this->value = $this->getBinaryContent();
+        if(count($this->allowedCharacters) > 0) {
+            $this->checkString();
+        }
     }
 
     protected function allowCharacter($character)
@@ -95,6 +98,14 @@ abstract class AbstractCharacterString extends Object implements CharacterString
         return $value;
     }
 
+    /**
+     * @return string
+     */
+    public function __toString(): string
+    {
+        return $this->value;
+    }
+
     protected function checkString()
     {
         $stringLength = $this->getContentLength();
@@ -109,7 +120,8 @@ abstract class AbstractCharacterString extends Object implements CharacterString
     public static function createFromString(string $string, $options = [])
     {
         $isConstructed = $options['isConstructed'] ?? false;
-        $lengthForm    = $options['lengthForm'] ?? ContentLength::INDEFINITE_FORM;
+        $lengthForm    = strlen($string) > 127 ? ContentLength::LONG_FORM : ContentLength::SHORT_FORM;
+        $lengthForm    = $options['lengthForm'] ?? $lengthForm;
 
         return
             ElementBuilder::createObject(
@@ -119,5 +131,16 @@ abstract class AbstractCharacterString extends Object implements CharacterString
                 $string,
                 $lengthForm
             );
+    }
+
+    public static function isValid($string)
+    {
+        try {
+            static::createFromString($string);
+
+            return true;
+        } catch (\Exception $exception) {
+            return false;
+        }
     }
 }

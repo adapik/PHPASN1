@@ -165,14 +165,32 @@ class GeneralizedTime extends AbstractTime
         }
     }
 
+    /**
+     * @param string $dateTime Format YYYYMMDDHHmmss.mcsZ
+     *
+     * @return string
+     */
+    public function encodeValue(string $dateTime)
+    {
+        $hasTimeZone = true;
+
+        if(is_numeric(substr($dateTime, -1, 1))) {
+            $hasTimeZone = false;
+        }
+
+        $trimString = str_pad(rtrim($dateTime, '0Z.'), 14, '0');
+        $dateTime = $trimString . ($hasTimeZone ? 'Z' : '');
+
+        return $dateTime;
+    }
+
     public function getStringValue()
     {
         return (string) $this;
     }
 
-    public static function createFormDateTime(\DateTimeInterface $dateTime = null, array $options = [])
-    {
-        $dateTime      = $dateTime ?? new DateTime('now', 'UTC');
+    public static function createFormDateTime(\DateTimeInterface $dateTime = null, array $options = []) {
+        $dateTime = $dateTime ?? new DateTime('now', new DateTimeZone('UTC'));
 
         $isConstructed = false;
         $lengthForm    = $options['lengthForm'] ?? ContentLength::SHORT_FORM;
