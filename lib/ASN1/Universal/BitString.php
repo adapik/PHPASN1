@@ -104,9 +104,9 @@ class BitString extends OctetString implements Parsable
     public static function createFromHexString(string $hexString, $options = []) : self
     {
         $isConstructed = $options['isConstructed'] ?? false;
-        $lengthForm    = $options['lengthForm'] ?? ContentLength::LONG_FORM;
-
-        $value = chr(0x00) . hex2bin($hexString);
+        $value         = chr(0x00) . hex2bin($hexString);
+        $lengthForm    = strlen($value) > 127 ? ContentLength::LONG_FORM : ContentLength::SHORT_FORM;
+        $lengthForm    = $options['lengthForm'] ?? $lengthForm;
 
         return
             ElementBuilder::createObject(

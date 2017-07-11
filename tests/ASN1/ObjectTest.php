@@ -73,14 +73,14 @@ class ObjectTest extends ASN1TestCase
         /* @var BitString $parsedObject */
         $binaryData = chr(Identifier::BITSTRING);
         $binaryData .= chr(0x03);
-        $binaryData .= chr(0x05);
+        $binaryData .= chr(0x00);
         $binaryData .= chr(0xFF);
         $binaryData .= chr(0xA0);
 
-        $expectedObject = BitString::createFromInt(0xFFA0, 5);
+        $expectedObject = BitString::createFromHexString('FFA0');
         $parsedObject = Object::fromBinary($binaryData);
         $this->assertTrue($parsedObject instanceof BitString);
-        $this->assertEquals($expectedObject->getContent(), $parsedObject->getContent());
+        $this->assertEquals($expectedObject, $parsedObject);
         $this->assertEquals($expectedObject->getNumberOfUnusedBits(), $parsedObject->getNumberOfUnusedBits());
 
         /* @var OctetString $parsedObject */
@@ -89,30 +89,30 @@ class ObjectTest extends ASN1TestCase
         $binaryData .= chr(0xFF);
         $binaryData .= chr(0xA0);
 
-        $expectedObject = new OctetString(0xFFA0);
+        $expectedObject = OctetString::createFromString(hex2bin('FFA0'));
         $parsedObject = Object::fromBinary($binaryData);
         $this->assertTrue($parsedObject instanceof OctetString);
-        $this->assertEquals($expectedObject->getContent(), $parsedObject->getContent());
+        $this->assertEquals($expectedObject, $parsedObject);
 
         /* @var \FG\ASN1\Universal\Boolean $parsedObject */
         $binaryData = chr(Identifier::BOOLEAN);
         $binaryData .= chr(0x01);
         $binaryData .= chr(0xFF);
 
-        $expectedObject = new Boolean(true);
+        $expectedObject = Boolean::create(true);
         $parsedObject = Object::fromBinary($binaryData);
         $this->assertTrue($parsedObject instanceof Boolean);
-        $this->assertEquals($expectedObject->getContent(), $parsedObject->getContent());
+        $this->assertEquals($expectedObject, $parsedObject);
 
         /* @var Enumerated $parsedObject */
         $binaryData = chr(Identifier::ENUMERATED);
         $binaryData .= chr(0x01);
         $binaryData .= chr(0x03);
 
-        $expectedObject = new Enumerated(3);
+        $expectedObject = Enumerated::create(3);
         $parsedObject = Object::fromBinary($binaryData);
         $this->assertTrue($parsedObject instanceof Enumerated);
-        $this->assertEquals($expectedObject->getContent(), $parsedObject->getContent());
+        $this->assertEquals($expectedObject, $parsedObject);
 
         /* @var IA5String $parsedObject */
         $string = 'Hello Foo World!!!11EinsEins!1';
@@ -120,29 +120,29 @@ class ObjectTest extends ASN1TestCase
         $binaryData .= chr(strlen($string));
         $binaryData .= $string;
 
-        $expectedObject = new IA5String($string);
+        $expectedObject = IA5String::createFromString($string);
         $parsedObject = Object::fromBinary($binaryData);
         $this->assertTrue($parsedObject instanceof IA5String);
-        $this->assertEquals($expectedObject->getContent(), $parsedObject->getContent());
+        $this->assertEquals($expectedObject, $parsedObject);
 
         /* @var \FG\ASN1\Universal\Integer $parsedObject */
         $binaryData = chr(Identifier::INTEGER);
         $binaryData .= chr(0x01);
         $binaryData .= chr(123);
 
-        $expectedObject = new Integer(123);
+        $expectedObject = Integer::create(123);
         $parsedObject = Object::fromBinary($binaryData);
         $this->assertTrue($parsedObject instanceof Integer);
-        $this->assertEquals($expectedObject->getContent(), $parsedObject->getContent());
+        $this->assertEquals($expectedObject, $parsedObject);
 
         /* @var \FG\ASN1\Universal\NullObject $parsedObject */
         $binaryData = chr(Identifier::NULL);
         $binaryData .= chr(0x00);
 
-        $expectedObject = new NullObject();
-        $parsedObject = Object::fromBinary($binaryData);
+        $expectedObject = NullObject::create();
+        $parsedObject   = Object::fromBinary($binaryData);
         $this->assertTrue($parsedObject instanceof NullObject);
-        $this->assertEquals($expectedObject->getContent(), $parsedObject->getContent());
+        $this->assertEquals($expectedObject, $parsedObject);
 
         /* @var ObjectIdentifier $parsedObject */
         $binaryData = chr(Identifier::OBJECT_IDENTIFIER);
