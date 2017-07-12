@@ -6,8 +6,7 @@ dist: trusty
 php:
   - 7.0
   - 7.1
-  - 7.2
-  - hhvm
+  - master
 
 cache:
   directories:

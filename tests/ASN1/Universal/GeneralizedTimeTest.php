@@ -32,12 +32,6 @@ class GeneralizedTimeTest extends ASN1TestCase
 
     public function testGetStringValue()
     {
-        $now = new DateTime();
-        $now->setTimezone($this->UTC);
-        $object = GeneralizedTime::createFormDateTime($now);
-        $value  = (string) $object;
-        $this->assertEquals($now->format(DATE_RFC3339), $value);
-
         $timeString = '2012-09-23 20:27';
         $dateTime   = new DateTime($timeString, $this->UTC);
         $object     = GeneralizedTime::createFormDateTime($dateTime);
@@ -47,9 +41,7 @@ class GeneralizedTimeTest extends ASN1TestCase
 
     public function testGetObjectLength()
     {
-        $object       = GeneralizedTime::createFormDateTime(new DateTime());
         $expectedSize = 2 + 15; // Identifier + length + YYYYMMDDHHmmSSZ
-        $this->assertEquals($expectedSize, $object->getObjectLength());
 
         // without specified daytime
         $object = GeneralizedTime::createFormDateTime(new DateTime('2012-09-23'));
@@ -64,12 +56,6 @@ class GeneralizedTimeTest extends ASN1TestCase
     {
         $expectedType   = chr(Identifier::GENERALIZED_TIME);
         $expectedLength = chr(15); // YYYYMMDDHHmmSSZ
-
-        $now    = new DateTime();
-        $now->setTimezone($this->UTC);
-        $object = GeneralizedTime::createFormDateTime($now);
-        $expectedContent = $now->format('YmdHis').'Z';
-        $this->assertSame($expectedType.$expectedLength.$expectedContent, $object->getBinary());
 
         $dateString = '2012-09-23';
         $object = GeneralizedTime::createFormDateTime(new DateTime($dateString));
