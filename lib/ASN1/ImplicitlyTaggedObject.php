@@ -44,9 +44,4 @@ class ImplicitlyTaggedObject extends Object
     {
         return $this->content->binaryData;
     }
-
-    public function getContent()
-    {
-        return $this->children;
-    }
 }
