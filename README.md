@@ -1,15 +1,15 @@
 PHPASN1
 =======
 
-[![Build Status](https://secure.travis-ci.org/fgrosse/PHPASN1.png?branch=master)](http://travis-ci.org/fgrosse/PHPASN1)
-[![HHVM Status](http://hhvm.h4cc.de/badge/fgrosse/phpasn1.png)](http://hhvm.h4cc.de/package/fgrosse/phpasn1)
-[![PHP 7 ready](http://php7ready.timesplinter.ch/fgrosse/PHPASN1/badge.svg)](https://travis-ci.org/fgrosse/PHPASN1)
-[![Coverage Status](https://coveralls.io/repos/fgrosse/PHPASN1/badge.svg?branch=master&service=github)](https://coveralls.io/github/fgrosse/PHPASN1?branch=master)
+[![Build Status](https://secure.travis-ci.org/Adapik/PHPASN1.png?branch=master)](http://travis-ci.org/fgrosse/PHPASN1)
+[![HHVM Status](http://hhvm.h4cc.de/badge/Adapik/phpasn1.png)](http://hhvm.h4cc.de/package/fgrosse/phpasn1)
+[![PHP 7 ready](http://php7ready.timesplinter.ch/Adapik/PHPASN1/badge.svg)](https://travis-ci.org/fgrosse/PHPASN1)
+[![Coverage Status](https://coveralls.io/repos/Adapik/PHPASN1/badge.svg?branch=master&service=github)](https://coveralls.io/github/fgrosse/PHPASN1?branch=master)
 
-[![Latest Stable Version](https://poser.pugx.org/fgrosse/phpasn1/v/stable.png)](https://packagist.org/packages/fgrosse/phpasn1)
-[![Total Downloads](https://poser.pugx.org/fgrosse/phpasn1/downloads.png)](https://packagist.org/packages/fgrosse/phpasn1)
-[![Latest Unstable Version](https://poser.pugx.org/fgrosse/phpasn1/v/unstable.png)](https://packagist.org/packages/fgrosse/phpasn1)
-[![License](https://poser.pugx.org/fgrosse/phpasn1/license.png)](https://packagist.org/packages/fgrosse/phpasn1)
+[![Latest Stable Version](https://poser.pugx.org/Adapik/phpasn1/v/stable.png)](https://packagist.org/packages/fgrosse/phpasn1)
+[![Total Downloads](https://poser.pugx.org/Adapik/phpasn1/downloads.png)](https://packagist.org/packages/fgrosse/phpasn1)
+[![Latest Unstable Version](https://poser.pugx.org/Adapik/phpasn1/v/unstable.png)](https://packagist.org/packages/fgrosse/phpasn1)
+[![License](https://poser.pugx.org/Adapik/phpasn1/license.png)](https://packagist.org/packages/fgrosse/phpasn1)
 
 A PHP Framework that allows you to encode and decode arbitrary [ASN.1][3] structures
 using the [ITU-T X.690 Encoding Rules][4].
@@ -23,9 +23,7 @@ The **changelog** can now be found at [CHANGELOG.md](CHANGELOG.md).
 
 ## Dependencies
 
-PHPASN1 requires at least `PHP 5.6` and the `gmp` extension.
-It has also been successfully tested using `PHP 7` and `HHVM`
-For the loading of object identifier names directly from the web [curl][7] is used.
+PHPASN1 requires at least `PHP 7` and the `gmp` extension.
 
 ## Installation
 
@@ -54,25 +52,22 @@ use FG\ASN1\Universal\Sequence;
 use FG\ASN1\Universal\Set;
 use FG\ASN1\Universal\NullObject;
 
-$integer = new Integer(123456);        
-$boolean = new Boolean(true);
-$enum = new Enumerated(1);
-$ia5String = new IA5String('Hello world');
+$integer = Integer::create(123456);        
+$boolean = Boolean::create(true);
+$enum = Enumerated::create(1);
 
-$asnNull = new NullObject();
-$objectIdentifier1 = new ObjectIdentifier('1.2.250.1.16.9');
-$objectIdentifier2 = new ObjectIdentifier(OID::RSA_ENCRYPTION);
-$printableString = new PrintableString('Foo bar');
+$asnNull = NullObject::create();
+$objectIdentifier1 = ObjectIdentifier('1.2.250.1.16.9');
+$printableString = PrintableString::createFromString('Foo bar');
 
-$sequence = new Sequence($integer, $boolean, $enum, $ia5String);
-$set = new Set($sequence, $asnNull, $objectIdentifier1, $objectIdentifier2, $printableString);
+$sequence = Sequence::create([$integer, $boolean, $enum, $ia5String]);
+$set = Set([$sequence, $asnNull, $objectIdentifier1, $objectIdentifier2, $printableString]);
 
 $myBinary  = $sequence->getBinary();
 $myBinary .= $set->getBinary();
 
 echo base64_encode($myBinary);
 ```
-
 
 ### Decoding binary data
 
@@ -115,31 +110,6 @@ $object = $parser->parseBase64($data, $template);
 
 You can use this function to make sure your data has exactly the format you are expecting.
 
-### Navigating decoded data
-
-All constructed classes (i.e. `Sequence` and `Set`) can be navigated by array access or using an iterator.
-You can find examples
-[here](https://github.com/fgrosse/PHPASN1/blob/f6442cadda9d36f3518c737e32f28300a588b777/tests/ASN1/Universal/SequenceTest.php#L148-148),
-[here](https://github.com/fgrosse/PHPASN1/blob/f6442cadda9d36f3518c737e32f28300a588b777/tests/ASN1/Universal/SequenceTest.php#L121) and 
-[here](https://github.com/fgrosse/PHPASN1/blob/f6442cadda9d36f3518c737e32f28300a588b777/tests/ASN1/TemplateParserTest.php#L45).
-
-
-### Give me more examples!
-
-To see some example usage of the API classes or some generated output check out the [examples](https://github.com/fgrosse/PHPASN1/tree/master/examples).
-
-
-### How do I contribute?
-
-If you found an issue or have a question submit a github issue with detailed information.
-
-In case you already know what caused the issue and feel in the mood to fix it, your code contributions are always welcome. Just fork the repository, implement your changes and make sure that you covered everything with tests.
-Afterwards submit a pull request via github and be a little patient :) I usually try to comment and/or merge as soon as possible.
-
-#### Mailing list
-
-New features or questions can be discussed in [this google group/mailing list][12].
-
 ### Thanks
 
 To [all contributors][1] so far!
@@ -148,7 +118,7 @@ To [all contributors][1] so far!
 
 This library is distributed under the [MIT License](LICENSE).
 
-[1]: https://github.com/fgrosse/PHPASN1/graphs/contributors
+[1]: https://github.com/Adapik/PHPASN1/graphs/contributors
 [2]: https://getcomposer.org/
 [3]: http://www.itu.int/ITU-T/asn1/
 [4]: http://www.itu.int/ITU-T/recommendations/rec.aspx?rec=x.690
