@@ -13,6 +13,7 @@ namespace FG\ASN1\Universal;
 use Exception;
 use FG\ASN1\Base128;
 use FG\ASN1\Content;
+use FG\ASN1\ElementBuilder;
 use FG\ASN1\OID;
 use FG\ASN1\Object;
 use FG\ASN1\Parsable;
@@ -32,7 +33,7 @@ class ObjectIdentifier extends Object
         $this->setValue($content);
     }
 
-    public function getType()
+    public static function getType()
     {
         return Identifier::OBJECT_IDENTIFIER;
     }
@@ -104,20 +105,20 @@ class ObjectIdentifier extends Object
 
     public function setValue(Content $content)
     {
-        $binaryData = $content->binaryData;
+        $binaryData  = $content->binaryData;
         $offsetIndex = 0;
         $firstOctet = ord($binaryData[$offsetIndex++]);
-        $oidString = floor($firstOctet / 40).'.'.($firstOctet % 40);
+        $oidString  = floor($firstOctet / 40).'.'.($firstOctet % 40);
         $oidString .= '.'.self::parseOid($binaryData, $offsetIndex, $this->contentLength->length - 1);
         $this->value = $value = $oidString;
 
         $this->subIdentifiers = explode('.', $value);
-        $nrOfSubIdentifiers = count($this->subIdentifiers);
+        $nrOfSubIdentifiers   = count($this->subIdentifiers);
 
         for ($i = 0; $i < $nrOfSubIdentifiers; $i++) {
             if (is_numeric($this->subIdentifiers[$i])) {
                 // enforce the integer type
-                $this->subIdentifiers[$i] = intval($this->subIdentifiers[$i]);
+                $this->subIdentifiers[$i] = (int) $this->subIdentifiers[$i];
             } else {
                 throw new Exception("[{$value}] is no valid object identifier (sub identifier ".($i + 1).' is not numeric)!');
             }
@@ -135,13 +136,14 @@ class ObjectIdentifier extends Object
         $value = '';
         $parts = explode('.', $oid);
         $value = chr(40 * $parts[0] + $parts[1]);
-        for ($i = 2; $i < count($parts); $i++) {
+        $iMax  = count($parts);
+        for ($i = 2; $i < $iMax; $i++) {
             $temp = '';
             if (!$parts[$i]) {
                 $temp = "\0";
             } else {
                 while ($parts[$i]) {
-                    $temp = chr(0x80 | ($parts[$i] & 0x7F)) . $temp;
+                    $temp        = chr(0x80 | ($parts[$i] & 0x7F)) . $temp;
                     $parts[$i] >>= 7;
                 }
                 $temp[strlen($temp) - 1] = $temp[strlen($temp) - 1] & chr(0x7F);
@@ -150,6 +152,27 @@ class ObjectIdentifier extends Object
         }
 
         return $value;
+    }
+
+    public static function create(string $oid)
+    {
+        $subIdentifiers     = explode('.', $oid);
+        $nrOfSubIdentifiers = count($subIdentifiers);
+
+        for ($i = 0; $i < $nrOfSubIdentifiers; $i++) {
+            if (!is_numeric($subIdentifiers[$i])) {
+                throw new Exception("[{$oid}] is no valid object identifier (sub identifier ".($i + 1).' is not numeric)!');
+            }
+        }
+
+        return
+            ElementBuilder::createObject(
+                Identifier::CLASS_UNIVERSAL,
+                static::getType(),
+                false,
+                $oid,
+                ContentLength::SHORT_FORM
+            );
     }
 
 }

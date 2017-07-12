@@ -53,7 +53,7 @@ abstract class Object
 
     /** @var \FG\ASN1\Object[] */
     protected $children = [];
-    public $parent = null;
+    private $parent;
 
     public $identifier;
     public $contentLength;
@@ -61,7 +61,7 @@ abstract class Object
     public $eoc;
     public $modified = false;
 
-    protected function __construct(Identifier $identifier, ContentLength $contentLength, Content $content, array $children = [])
+    public function __construct(Identifier $identifier, ContentLength $contentLength, Content $content, array $children = [])
     {
         $this->identifier = $identifier;
         $this->contentLength = $contentLength;
@@ -321,7 +321,6 @@ abstract class Object
                     if ($identifier->isConstructed) {
                         return new UnknownConstructedObject($identifier, $contentLength, $content, $children);
                     } else {
-
                         return new UnknownObject($identifier, $contentLength, $content, $children);
                     }
             }
@@ -607,13 +606,7 @@ abstract class Object
      */
     public function getParent()
     {
-        if($this->parent) {
-
-            return $this->parent;
-        } else {
-
-            return null;
-        }
+        return $this->parent;
     }
 
     public function insertAfter(Object $object)

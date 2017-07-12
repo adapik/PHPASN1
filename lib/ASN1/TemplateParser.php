@@ -51,9 +51,11 @@ class TemplateParser
             $this->assertTypeId($key, $object);
 
             /* @var Construct $object */
-            foreach ($value as $key => $child) {
-                $this->validate($object->current(), $key, $child);
-                $object->next();
+            $childrenCount = count($value);
+            reset($value);
+            for ($i = 0; $i < $childrenCount; $i++) {
+                $this->validate($object->getChildren()[$i], key($value), current($value));
+                next($value);
             }
         } else {
             $this->assertTypeId($value, $object);
@@ -62,7 +64,7 @@ class TemplateParser
 
     private function assertTypeId($expectedTypeId, Object $object)
     {
-        $actualType = $object->getType();
+        $actualType = $object->getIdentifier()->getTagNumber();
         if ($expectedTypeId != $actualType) {
             throw new Exception("Expected type ($expectedTypeId) does not match actual type ($actualType");
         }

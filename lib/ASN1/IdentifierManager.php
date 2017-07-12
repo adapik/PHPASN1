@@ -111,7 +111,7 @@ class IdentifierManager
 
     public static function isLongForm($identifierOctet)
     {
-        return (ord($identifierOctet) & self::LONG_FORM) === self::LONG_FORM;
+        return ((int) $identifierOctet & self::LONG_FORM) === self::LONG_FORM;
     }
 
     /**

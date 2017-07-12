@@ -62,7 +62,7 @@ class SequenceTest extends ASN1TestCase
         $child1 = Boolean::create(true);
         $object = Sequence::create([$child1]);
 
-        $expectedType    = chr(Identifier::SEQUENCE) & Identifier::IS_CONSTRUCTED;
+        $expectedType    = chr(Identifier::IS_CONSTRUCTED | Identifier::SEQUENCE);
         $expectedLength  = chr(0x03);
         $expectedContent = $child1->getBinary();
         $this->assertEquals($expectedType . $expectedLength . $expectedContent, $object->getBinary());

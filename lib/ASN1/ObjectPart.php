@@ -16,4 +16,9 @@ abstract class ObjectPart
     {
         return strlen($this->binaryData);
     }
+
+    public function getBinary()
+    {
+        return $this->binaryData;
+    }
 }

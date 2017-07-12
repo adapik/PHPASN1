@@ -112,7 +112,7 @@ abstract class AbstractCharacterString extends Object implements CharacterString
         for ($i = 0; $i < $stringLength; $i++) {
             if (in_array($this->value[$i], $this->allowedCharacters) == false) {
                 $typeName = IdentifierManager::getName($this->identifier->getTagNumber());
-                throw new Exception("Could not create a {$typeName} from the character sequence '{$this->value}'.");
+                throw new Exception("Could not create a {$typeName} from the character sequence '{$this->value}'. Symbol {$this->value[$i]}");
             }
         }
     }

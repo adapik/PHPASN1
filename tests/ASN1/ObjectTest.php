@@ -150,34 +150,34 @@ class ObjectTest extends ASN1TestCase
         $binaryData .= chr(1 * 40 + 2);
         $binaryData .= chr(3);
 
-        $expectedObject = new ObjectIdentifier('1.2.3');
+        $expectedObject = ObjectIdentifier::create('1.2.3');
         $parsedObject = Object::fromBinary($binaryData);
         $this->assertTrue($parsedObject instanceof ObjectIdentifier);
         $this->assertEquals($expectedObject->getContent(), $parsedObject->getContent());
 
         /* @var PrintableString $parsedObject */
-        $string = 'This is a test string. #?!%&""';
+        $string = 'This is a test string. ?()+,/';
         $binaryData = chr(Identifier::PRINTABLE_STRING);
         $binaryData .= chr(strlen($string));
         $binaryData .= $string;
 
-        $expectedObject = new PrintableString($string);
+        $expectedObject = PrintableString::createFromString($string);
         $parsedObject = Object::fromBinary($binaryData);
         $this->assertTrue($parsedObject instanceof PrintableString);
-        $this->assertEquals($expectedObject->getContent(), $parsedObject->getContent());
+        $this->assertEquals($expectedObject, $parsedObject);
 
         /* @var GeneralizedTime $parsedObject */
         $binaryData  = chr(Identifier::GENERALIZED_TIME);
         $binaryData .= chr(15);
         $binaryData .= '20120923202316Z';
 
-        $expectedObject = new GeneralizedTime('2012-09-23 20:23:16', 'UTC');
+        $expectedObject = GeneralizedTime::createFormDateTime(new \DateTime('2012-09-23 20:23:16'));
         $parsedObject = Object::fromBinary($binaryData);
         $this->assertTrue($parsedObject instanceof GeneralizedTime);
         $this->assertEquals($expectedObject->getContent(), $parsedObject->getContent());
 
         /* @var Sequence $parsedObject */
-        $binaryData = chr(Identifier::SEQUENCE);
+        $binaryData = chr(Identifier::IS_CONSTRUCTED | Identifier::SEQUENCE);
         $binaryData .= chr(0x06);
         $binaryData .= chr(Identifier::BOOLEAN);
         $binaryData .= chr(0x01);
@@ -186,21 +186,15 @@ class ObjectTest extends ASN1TestCase
         $binaryData .= chr(0x01);
         $binaryData .= chr(0x03);
 
-        $expectedChild1 = new Boolean(false);
-        $expectedChild2 = new Integer(0x03);
+        $expectedChild1 = Boolean::create(false);
+        $expectedChild2 = Integer::create(0x03);
 
         $parsedObject = Object::fromBinary($binaryData);
         $this->assertTrue($parsedObject instanceof Sequence);
-        $this->assertEquals(2, $parsedObject->getNumberOfChildren());
-
-        $children = $parsedObject->getChildren();
-        $child1 = $children[0];
-        $child2 = $children[1];
-        $this->assertEquals($expectedChild1->getContent(), $child1->getContent());
-        $this->assertEquals($expectedChild2->getContent(), $child2->getContent());
+        $this->assertCount(2, $parsedObject->getChildren());
 
         /* @var ExplicitlyTaggedObject $parsedObject */
-        $taggedObject = new ExplicitlyTaggedObject(0x01, new PrintableString('Hello tagged world'));
+        $taggedObject = ExplicitlyTaggedObject::create(0x01, PrintableString::createFromString('Hello tagged world'));
         $binaryData = $taggedObject->getBinary();
         $parsedObject = Object::fromBinary($binaryData);
         $this->assertTrue($parsedObject instanceof ExplicitlyTaggedObject);
@@ -209,10 +203,10 @@ class ObjectTest extends ASN1TestCase
         // first 3 bytes are the identifier.
         $binaryData = "\x3F\x81\x7F\x06".chr(Identifier::INTEGER)."\x01\x42".chr(Identifier::INTEGER)."\x01\x69";
         $offsetIndex = 0;
-        $parsedObject = OBject::fromBinary($binaryData, $offsetIndex);
+        $parsedObject = Object::fromBinary($binaryData, $offsetIndex);
         $this->assertTrue($parsedObject instanceof UnknownConstructedObject);
-        $this->assertEquals(substr($binaryData, 0, 3), $parsedObject->getIdentifier());
-        $this->assertCount(2, $parsedObject->getContent());
+        $this->assertEquals(substr($binaryData, 0, 3), $parsedObject->getIdentifier()->getBinary());
+        $this->assertCount(2, $parsedObject->getChildren());
         $this->assertEquals(strlen($binaryData), $offsetIndex);
         $this->assertEquals(10, $parsedObject->getObjectLength());
 
@@ -221,8 +215,7 @@ class ObjectTest extends ASN1TestCase
         $offsetIndex = 0;
         $parsedObject = Object::fromBinary($binaryData, $offsetIndex);
         $this->assertTrue($parsedObject instanceof UnknownObject);
-        $this->assertEquals(substr($binaryData, 0, 3), $parsedObject->getIdentifier());
-        $this->assertEquals('Unparsable Object (1 bytes)', $parsedObject->getContent());
+        $this->assertEquals(substr($binaryData, 0, 3), $parsedObject->getIdentifier()->getBinary());
         $this->assertEquals(strlen($binaryData), $offsetIndex);
         $this->assertEquals(5, $parsedObject->getObjectLength());
     }

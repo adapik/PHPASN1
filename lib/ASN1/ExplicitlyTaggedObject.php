@@ -41,7 +41,6 @@ class ExplicitlyTaggedObject extends Object
      */
     public function __construct(Identifier $identifier, ContentLength $contentLength, Content $content, array $children = [])
     {
-
         parent::__construct($identifier, $contentLength, $content, $children);
     }
 
@@ -58,5 +57,25 @@ class ExplicitlyTaggedObject extends Object
     protected function getEncodedValue()
     {
         return $this->getBinaryContent();
+    }
+
+    public static function create(int $tagNumber, Object $object, $class = Identifier::CLASS_CONTEXT_SPECIFIC)
+    {
+        $hasIndefiniteLength = $object->getContentLength()->getLengthForm() === ContentLength::INDEFINITE_FORM;
+
+        return
+            ElementBuilder::createObject(
+                $class,
+                $tagNumber,
+                true,
+                null,
+                $hasIndefiniteLength ? ContentLength::INDEFINITE_FORM : ContentLength::SHORT_FORM,
+                [$object]
+            );
+    }
+
+    public function __toString()
+    {
+        return '['.$this->getIdentifier()->getTagNumber().']' . (implode("\n", $this->getChildren()));
     }
 }

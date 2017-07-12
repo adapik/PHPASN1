@@ -38,6 +38,9 @@ class ElementBuilder
                 case Identifier::OBJECT_IDENTIFIER:
                     $value = Universal\ObjectIdentifier::encodeValue($value);
                     break;
+                case Identifier::RELATIVE_OID:
+                    $value = Universal\RelativeObjectIdentifier::encodeValue($value);
+                    break;
                 case Identifier::OCTETSTRING:
                     $value = Universal\OctetString::encodeValue($value);
                     break;

@@ -14,11 +14,6 @@ use FG\ASN1\Identifier;
 
 class ObjectDescriptor extends GraphicString
 {
-    public function __construct($objectDescription)
-    {
-        parent::__construct($objectDescription);
-    }
-
     public static function getType()
     {
         return Identifier::OBJECT_DESCRIPTOR;
