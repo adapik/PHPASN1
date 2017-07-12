@@ -108,7 +108,7 @@ abstract class AbstractCharacterString extends Object implements CharacterString
 
     protected function checkString()
     {
-        $stringLength = $this->getContentLength();
+        $stringLength = $this->getContentLength()->getLength();
         for ($i = 0; $i < $stringLength; $i++) {
             if (in_array($this->value[$i], $this->allowedCharacters) == false) {
                 $typeName = IdentifierManager::getName($this->identifier->getTagNumber());

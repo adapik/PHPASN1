@@ -19,63 +19,61 @@ use FG\ASN1\Universal\Boolean;
 
 class SequenceTest extends ASN1TestCase
 {
-    public function testGetType()
-    {
-        $object = new Sequence();
-        $this->assertEquals(Identifier::SEQUENCE, $object->getType());
-    }
-
     public function testGetIdentifier()
     {
-        $object = new Sequence();
-        $this->assertEquals(chr(Identifier::SEQUENCE), $object->getIdentifier());
+        $object = Sequence::create();
+        $this->assertEquals(Identifier::SEQUENCE, $object->getIdentifier()->getTagNumber());
     }
 
-    public function testContent()
+    public function testGetChildren()
     {
-        $child1 = new Integer(123);
-        $child2 = new PrintableString('Hello Wold');
-        $child3 = new Boolean(true);
-        $object = new Sequence($child1, $child2, $child3);
+        $child1 = Integer::create(123);
+        $child2 = PrintableString::createFromString('Hello Wold');
+        $child3 = Boolean::create(true);
+        $object = Sequence::create([$child1, $child2, $child3]);
 
-        $this->assertEquals([$child1, $child2, $child3], $object->getContent());
+        $this->assertEquals([$child1, $child2, $child3], $object->getChildren());
+        $this->assertEquals(
+            $child1->getBinary() . $child2->getBinary() . $child3->getBinary(),
+            $object->getBinaryContent()
+        );
     }
 
     public function testGetObjectLength()
     {
-        $child1 = new Boolean(true);
-        $object = new Sequence($child1);
+        $child1 = Boolean::create(true);
+        $object = Sequence::create([$child1]);
         $this->assertEquals(5, $object->getObjectLength());
 
-        $child1 = new Integer(123);
-        $child2 = new Boolean(true);
-        $object = new Sequence($child1, $child2);
+        $child1 = Integer::create(123);
+        $child2 = Boolean::create(true);
+        $object = Sequence::create([$child1, $child2]);
         $this->assertEquals(8, $object->getObjectLength());
 
-        $child1 = new Integer(123);
-        $child2 = new PrintableString('Hello Wold');
-        $child3 = new Boolean(true);
-        $object = new Sequence($child1, $child2, $child3);
+        $child1 = Integer::create(123);
+        $child2 = PrintableString::createFromString('Hello Wold');
+        $child3 = Boolean::create(true);
+        $object = Sequence::create([$child1, $child2, $child3]);
         $this->assertEquals(20, $object->getObjectLength());
     }
 
     public function testGetBinary()
     {
-        $child1 = new Boolean(true);
-        $object = new Sequence($child1);
+        $child1 = Boolean::create(true);
+        $object = Sequence::create([$child1]);
 
-        $expectedType = chr(Identifier::SEQUENCE);
-        $expectedLength = chr(0x03);
+        $expectedType    = chr(Identifier::SEQUENCE) & Identifier::IS_CONSTRUCTED;
+        $expectedLength  = chr(0x03);
         $expectedContent = $child1->getBinary();
-        $this->assertEquals($expectedType.$expectedLength.$expectedContent, $object->getBinary());
+        $this->assertEquals($expectedType . $expectedLength . $expectedContent, $object->getBinary());
 
-        $child1 = new Integer(123);
-        $child2 = new Boolean(true);
-        $object = new Sequence($child1, $child2);
-        $expectedLength = chr(0x06);
-        $expectedContent  = $child1->getBinary();
+        $child1          = Integer::create(123);
+        $child2          = Boolean::create(true);
+        $object          = Sequence::create([$child1, $child2]);
+        $expectedLength  = chr(0x06);
+        $expectedContent = $child1->getBinary();
         $expectedContent .= $child2->getBinary();
-        $this->assertEquals($expectedType.$expectedLength.$expectedContent, $object->getBinary());
+        $this->assertEquals($expectedType . $expectedLength . $expectedContent, $object->getBinary());
     }
 
     /**
@@ -83,12 +81,12 @@ class SequenceTest extends ASN1TestCase
      */
     public function testFromBinary()
     {
-        $originalObject = new Sequence(
-            new Boolean(true),
-            new Integer(1234567)
-        );
-        $binaryData = $originalObject->getBinary();
-        $parsedObject = Sequence::fromBinary($binaryData);
+        $originalObject = Sequence::create([
+            Boolean::create(true),
+            Integer::create(1234567),
+        ]);
+        $binaryData     = $originalObject->getBinary();
+        $parsedObject   = Sequence::fromBinary($binaryData);
         $this->assertEquals($originalObject, $parsedObject);
     }
 
@@ -97,19 +95,19 @@ class SequenceTest extends ASN1TestCase
      */
     public function testFromBinaryWithOffset()
     {
-        $originalObject1 = new Sequence(
-            new Boolean(true),
-            new Integer(123)
-        );
-        $originalObject2 = new Sequence(
-            new Integer(64),
-            new Boolean(false)
-        );
+        $originalObject1 = Sequence::create([
+            Boolean::create(true),
+            Integer::create(123),
+        ]);
+        $originalObject2 = Sequence::create([
+            Integer::create(64),
+            Boolean::create(false),
+        ]);
 
-        $binaryData  = $originalObject1->getBinary();
+        $binaryData = $originalObject1->getBinary();
         $binaryData .= $originalObject2->getBinary();
 
-        $offset = 0;
+        $offset       = 0;
         $parsedObject = Sequence::fromBinary($binaryData, $offset);
         $this->assertEquals($originalObject1, $parsedObject);
         $this->assertEquals(8, $offset);
@@ -118,49 +116,9 @@ class SequenceTest extends ASN1TestCase
         $this->assertEquals(16, $offset);
     }
 
-    public function testSequenceAsArray()
-    {
-        $sequence = new Sequence();
-        $child1 = new Integer(123);
-        $child2 = new PrintableString('Hello Wold');
-        $child3 = new Boolean(true);
-        $child4 = new Integer(1234567);
-
-        $sequence[] = $child1;
-        $sequence[] = $child2;
-        $sequence['foo'] = $child3;
-
-        $this->assertEquals($child1, $sequence[0]);
-        $this->assertEquals($child2, $sequence[1]);
-        $this->assertEquals($child3, $sequence['foo']);
-        $this->assertEquals(3, count($sequence));
-
-        unset($sequence[1]);
-        $sequence['bar'] = $child4;
-
-        $this->assertEquals($child1, $sequence[0]);
-        $this->assertFalse(isset($sequence[1]));
-        $this->assertEquals($child3, $sequence['foo']);
-        $this->assertEquals($child4, $sequence['bar']);
-        $this->assertEquals(3, count($sequence));
-    }
-
-    public function testIterateSequence()
-    {
-        $sequence = new Sequence(
-            new Integer(1),
-            new Integer(2),
-            new Integer(3)
-        );
-
-        foreach ($sequence as $object) {
-            $this->assertInstanceOf(Integer::class, $object);
-        }
-    }
-
     public function testCreateEmptySequence()
     {
-        $sequence = new Sequence(); // this should be legal
-        $this->assertEmpty($sequence);
+        $sequence = Sequence::create();
+        $this->assertEmpty($sequence->getChildren());
     }
 }

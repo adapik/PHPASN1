@@ -49,7 +49,7 @@ class UnknownObject extends Object
 
     protected function calculateContentLength()
     {
-        return $this->getContentLength();
+        return $this->getContentLength()->getLength();
     }
 
     protected function getEncodedValue()

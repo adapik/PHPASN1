@@ -58,7 +58,7 @@ abstract class Object
     public $identifier;
     public $contentLength;
     public $content;
-    public $eoc = null;
+    public $eoc;
     public $modified = false;
 
     protected function __construct(Identifier $identifier, ContentLength $contentLength, Content $content, array $children = [])
@@ -120,7 +120,7 @@ abstract class Object
     {
         if (!isset($this->nrOfLengthOctets)) {
             if ($contentLength === null) {
-                $contentLength = $this->getContentLength();
+                $contentLength = $this->getContentLength()->getLength();
             }
 
             $this->nrOfLengthOctets = 1;
@@ -135,12 +135,12 @@ abstract class Object
         return $this->nrOfLengthOctets;
     }
 
-    protected function getContentLength()
+    protected function getContentLength(): ContentLength
     {
-        return $this->contentLength->length;
+        return $this->contentLength;
     }
 
-    protected function setContentLength($newContentLength)
+    protected function setContentLength(ContentLength $newContentLength)
     {
         $this->contentLength = $newContentLength;
         $this->getNumberOfLengthOctets($newContentLength);

@@ -86,4 +86,14 @@ class ContentLength extends ObjectPart
 
         return $contentLength;
     }
+
+    public function getLength()
+    {
+        return $this->length;
+    }
+
+    public function getLengthForm()
+    {
+        return $this->form;
+    }
 }

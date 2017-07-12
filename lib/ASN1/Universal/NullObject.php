@@ -68,7 +68,7 @@ class NullObject extends Object
     {
         $nullObject = parent::fromBinary($binaryData, $offsetIndex);
 
-        $contentLength = $nullObject->getContentLength();
+        $contentLength = $nullObject->getContentLength()->getLength();
 
         if ($contentLength !== 0) {
             throw new ParserException(

@@ -112,7 +112,7 @@ class Boolean extends Object
     {
         $boolean = parent::fromBinary($binaryData, $offsetIndex);
 
-        $contentLength = $boolean->getContentLength();
+        $contentLength = $boolean->getContentLength()->getLength();
 
         if ($contentLength !== 1) {
             throw new ParserException(
