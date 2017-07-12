@@ -52,7 +52,7 @@ abstract class Object
     private $nrOfLengthOctets;
 
     /** @var \FG\ASN1\Object[] */
-    protected $children;
+    protected $children = [];
     public $parent = null;
 
     public $identifier;
