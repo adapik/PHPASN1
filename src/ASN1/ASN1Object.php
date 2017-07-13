@@ -10,6 +10,7 @@
 
 namespace FG\ASN1;
 
+use FG\ASN1\Exception\Exception;
 use FG\ASN1\Exception\ParserException;
 use FG\ASN1\Universal\BitString;
 use FG\ASN1\Universal\Boolean;
@@ -209,7 +210,7 @@ abstract class ASN1Object
      * @param int $offsetIndex
      *
      * @throws ParserException
-     * @return \FG\ASN1\ASN1Object
+     * @return ASN1Object
      */
     public static function fromBinary(&$binaryData, &$offsetIndex = 0)
     {
@@ -400,7 +401,12 @@ abstract class ASN1Object
     public function findByOid(string $oidString): array
     {
         $objects = [];
-        if($this->identifier->isConstructed() && count($this->children) > 0) {
+
+        if ($this instanceof ObjectIdentifier && (string) $this === $oidString) {
+            return [$this];
+        }
+
+        if($this->isConstructed()) {
             foreach ($this->children as $child) {
                 $objectsFound = $child->findByOid($oidString);
                 if(count($objectsFound) > 0) {
@@ -409,8 +415,6 @@ abstract class ASN1Object
             }
 
             return $objects;
-        } elseif ($this instanceof ObjectIdentifier && (string) $this === $oidString) {
-            return [$this];
         }
 
         return [];
@@ -572,7 +576,9 @@ abstract class ASN1Object
      */
     public function findChildrenByType($className)
     {
-        if(!class_exists($className)) throw new \Exception('Class not defined');
+        if(!class_exists($className)) {
+            throw new Exception('Unknown class type object');
+        }
 
         $children = array_filter($this->children, function($value) use ($className) {
             return is_a($value, $className);
@@ -613,7 +619,7 @@ abstract class ASN1Object
     }
 
     /**
-     * @return \FG\ASN1\ASN1Object|\FG\ASN1\Universal\Sequence
+     * @return ASN1Object|Sequence
      */
     public function getRoot()
     {

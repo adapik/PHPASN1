@@ -13,7 +13,6 @@ namespace FG\ASN1;
 use ArrayAccess;
 use ArrayIterator;
 use Countable;
-use FG\ASN1\Universal\EOC;
 use Iterator;
 
 abstract class Construct extends ASN1Object implements Countable, ArrayAccess, Iterator, Parsable
