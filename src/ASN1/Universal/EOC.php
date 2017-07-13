@@ -29,4 +29,9 @@ class EOC extends ASN1Object
     {
         return null;
     }
+
+    public function __toString(): string
+    {
+        return '';
+    }
 }

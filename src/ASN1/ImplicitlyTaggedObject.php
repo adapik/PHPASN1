@@ -33,4 +33,9 @@ class ImplicitlyTaggedObject extends ASN1Object
     {
         return $this->content->binaryData;
     }
+
+    public function __toString(): string
+    {
+        return '['.$this->getIdentifier()->getTagNumber().']' . implode("\n", $this->decoratedObjects);
+    }
 }
