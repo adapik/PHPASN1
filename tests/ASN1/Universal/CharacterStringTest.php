@@ -10,34 +10,29 @@
 
 namespace FG\Test\ASN1\Universal;
 
+use FG\ASN1\ContentLength;
 use FG\Test\ASN1TestCase;
 use FG\ASN1\Identifier;
 use FG\ASN1\Universal\CharacterString;
 
 class CharacterStringTest extends ASN1TestCase
 {
-    public function testGetType()
-    {
-        $object = new CharacterString('Hello World');
-        $this->assertEquals(Identifier::CHARACTER_STRING, $object->getType());
-    }
-
     public function testGetIdentifier()
     {
-        $object = new CharacterString('Hello World');
-        $this->assertEquals(chr(Identifier::CHARACTER_STRING), $object->getIdentifier());
+        $object = CharacterString::createFromString('Hello World');
+        $this->assertEquals(Identifier::CHARACTER_STRING, $object->getIdentifier()->getTagNumber());
     }
 
-    public function testContent()
+    public function testGetStringValue()
     {
-        $object = new CharacterString('Hello World');
-        $this->assertEquals('Hello World', $object->getContent());
+        $object = CharacterString::createFromString('Hello World');
+        $this->assertEquals('Hello World', (string) $object);
     }
 
     public function testGetObjectLength()
     {
         $string = 'Hello World';
-        $object = new CharacterString($string);
+        $object = CharacterString::createFromString($string, ['lengthForm' => ContentLength::SHORT_FORM]);
         $expectedSize = 2 + strlen($string);
         $this->assertEquals($expectedSize, $object->getObjectLength());
     }
@@ -48,7 +43,7 @@ class CharacterStringTest extends ASN1TestCase
         $expectedType = chr(Identifier::CHARACTER_STRING);
         $expectedLength = chr(strlen($string));
 
-        $object = new CharacterString($string);
+        $object = CharacterString::createFromString($string, ['lengthForm' => ContentLength::SHORT_FORM]);
         $this->assertEquals($expectedType.$expectedLength.$string, $object->getBinary());
     }
 
@@ -57,7 +52,7 @@ class CharacterStringTest extends ASN1TestCase
      */
     public function testFromBinary()
     {
-        $originalObject = new CharacterString('Hello World');
+        $originalObject = CharacterString::createFromString('Hello World');
         $binaryData = $originalObject->getBinary();
         $parsedObject = CharacterString::fromBinary($binaryData);
         $this->assertEquals($originalObject, $parsedObject);
@@ -68,8 +63,8 @@ class CharacterStringTest extends ASN1TestCase
      */
     public function testFromBinaryWithOffset()
     {
-        $originalObject1 = new CharacterString('Hello ');
-        $originalObject2 = new CharacterString(' World');
+        $originalObject1 = CharacterString::createFromString('Hello ', ['lengthForm' => ContentLength::SHORT_FORM]);
+        $originalObject2 = CharacterString::createFromString(' World', ['lengthForm' => ContentLength::SHORT_FORM]);
 
         $binaryData  = $originalObject1->getBinary();
         $binaryData .= $originalObject2->getBinary();

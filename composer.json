@@ -1,10 +1,16 @@
 {
-    "name": "fgrosse/phpasn1",
+    "name": "adapik/phpasn1",
     "description": "A PHP Framework that allows you to encode and decode arbitrary ASN.1 structures using the ITU-T X.690 Encoding Rules.",
     "type": "library",
-    "homepage": "https://github.com/FGrosse/PHPASN1",
+    "homepage": "https://github.com/Adapik/PHPASN1",
     "license": "MIT",
     "authors": [
+        {
+            "name": "Alexander Danilov",
+            "email": "adapik@yandex.ru",
+            "homepage": "https://github.com/Adapik",
+            "role": "Author"
+        },
         {
             "name": "Friedrich Große",
             "email": "friedrich.grosse@gmail.com",
@@ -13,17 +19,17 @@
         },
         {
             "name": "All contributors",
-            "homepage": "https://github.com/FGrosse/PHPASN1/contributors"
+            "homepage": "https://github.com/Adapik/PHPASN1/contributors"
         }
     ],
     "keywords": [ "x690", "x.690", "x.509", "x509", "asn1", "asn.1", "ber", "der", "binary", "encoding", "decoding" ],
 
     "require": {
-        "php": ">=5.6.0",
+        "php": ">=7.0",
         "ext-gmp": "*"
     },
     "require-dev": {
-        "phpunit/phpunit": "~4.5",
+        "phpunit/phpunit": "~6.2",
         "satooshi/php-coveralls": "dev-master"
     },
     "suggest": {
@@ -31,7 +37,7 @@
     },
     "autoload": {
         "psr-4": {
-            "FG\\": "lib/"
+            "FG\\": "src/"
         }
     },
     "autoload-dev": {

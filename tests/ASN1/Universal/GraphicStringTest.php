@@ -10,6 +10,7 @@
 
 namespace FG\Test\ASN1\Universal;
 
+use FG\ASN1\ContentLength;
 use FG\Test\ASN1TestCase;
 use FG\ASN1\Identifier;
 use FG\ASN1\Universal\GraphicString;
@@ -18,32 +19,32 @@ class GraphicStringTest extends ASN1TestCase
 {
     public function testGetType()
     {
-        $object = new GraphicString('Hello World');
-        $this->assertEquals(Identifier::GRAPHIC_STRING, $object->getType());
+        $object = GraphicString::createFromString('Hello World');
+        $this->assertEquals(Identifier::GRAPHIC_STRING, $object->getIdentifier()->getTagNumber());
     }
 
     public function testGetIdentifier()
     {
-        $object = new GraphicString('Hello World');
-        $this->assertEquals(chr(Identifier::GRAPHIC_STRING), $object->getIdentifier());
+        $object = GraphicString::createFromString('Hello World');
+        $this->assertEquals(Identifier::GRAPHIC_STRING, $object->getIdentifier()->getTagNumber());
     }
 
     public function testContent()
     {
-        $object = new GraphicString('Hello World');
-        $this->assertEquals('Hello World', $object->getContent());
+        $object = GraphicString::createFromString('Hello World');
+        $this->assertEquals('Hello World', (string) $object);
 
-        $object = new GraphicString('');
-        $this->assertEquals('', $object->getContent());
+        $object = GraphicString::createFromString('');
+        $this->assertEquals('', (string) $object);
 
-        $object = new GraphicString('             ');
-        $this->assertEquals('             ', $object->getContent());
+        $object = GraphicString::createFromString('             ');
+        $this->assertEquals('             ', (string) $object);
     }
 
     public function testGetObjectLength()
     {
         $string = 'Hello World';
-        $object = new GraphicString($string);
+        $object = GraphicString::createFromString($string, ['lengthForm' => ContentLength::SHORT_FORM]);
         $expectedSize = 2 + strlen($string);
         $this->assertEquals($expectedSize, $object->getObjectLength());
     }
@@ -54,7 +55,7 @@ class GraphicStringTest extends ASN1TestCase
         $expectedType = chr(Identifier::GRAPHIC_STRING);
         $expectedLength = chr(strlen($string));
 
-        $object = new GraphicString($string);
+        $object = GraphicString::createFromString($string, ['lengthForm' => ContentLength::SHORT_FORM]);
         $this->assertEquals($expectedType.$expectedLength.$string, $object->getBinary());
     }
 
@@ -63,7 +64,7 @@ class GraphicStringTest extends ASN1TestCase
      */
     public function testFromBinary()
     {
-        $originalObject = new GraphicString('Hello World');
+        $originalObject = GraphicString::createFromString('Hello world', ['lengthForm' => ContentLength::SHORT_FORM]);
         $binaryData = $originalObject->getBinary();
         $parsedObject = GraphicString::fromBinary($binaryData);
         $this->assertEquals($originalObject, $parsedObject);
@@ -74,8 +75,8 @@ class GraphicStringTest extends ASN1TestCase
      */
     public function testFromBinaryWithOffset()
     {
-        $originalObject1 = new GraphicString('Hello ');
-        $originalObject2 = new GraphicString(' World');
+        $originalObject1 = GraphicString::createFromString('Hello ', ['lengthForm' => ContentLength::SHORT_FORM]);
+        $originalObject2 = GraphicString::createFromString(' World', ['lengthForm' => ContentLength::SHORT_FORM]);
 
         $binaryData  = $originalObject1->getBinary();
         $binaryData .= $originalObject2->getBinary();

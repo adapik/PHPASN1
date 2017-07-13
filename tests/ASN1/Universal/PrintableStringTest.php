@@ -16,34 +16,28 @@ use FG\ASN1\Universal\PrintableString;
 
 class PrintableStringTest extends ASN1TestCase
 {
-    public function testGetType()
-    {
-        $object = new PrintableString('Hello World');
-        $this->assertEquals(Identifier::PRINTABLE_STRING, $object->getType());
-    }
-
     public function testGetIdentifier()
     {
-        $object = new PrintableString('Hello World');
-        $this->assertEquals(chr(Identifier::PRINTABLE_STRING), $object->getIdentifier());
+        $object = PrintableString::createFromString('Hello World');
+        $this->assertEquals(Identifier::PRINTABLE_STRING, $object->getIdentifier()->getTagNumber());
     }
 
     public function testContent()
     {
-        $object = new PrintableString('Hello World');
-        $this->assertEquals('Hello World', $object->getContent());
+        $object = PrintableString::createFromString('Hello World');
+        $this->assertEquals('Hello World', (string) $object);
 
-        $object = new PrintableString('');
-        $this->assertEquals('', $object->getContent());
+        $object = PrintableString::createFromString('');
+        $this->assertEquals('', (string) $object);
 
-        $object = new PrintableString('             ');
-        $this->assertEquals('             ', $object->getContent());
+        $object = PrintableString::createFromString('             ');
+        $this->assertEquals('             ', (string) $object);
     }
 
     public function testGetObjectLength()
     {
         $string = 'Hello World';
-        $object = new PrintableString($string);
+        $object = PrintableString::createFromString($string);
         $expectedSize = 2 + strlen($string);
         $this->assertEquals($expectedSize, $object->getObjectLength());
     }
@@ -54,7 +48,7 @@ class PrintableStringTest extends ASN1TestCase
         $expectedType = chr(Identifier::PRINTABLE_STRING);
         $expectedLength = chr(strlen($string));
 
-        $object = new PrintableString($string);
+        $object = PrintableString::createFromString($string);
         $this->assertEquals($expectedType.$expectedLength.$string, $object->getBinary());
     }
 
@@ -63,7 +57,7 @@ class PrintableStringTest extends ASN1TestCase
      */
     public function testFromBinary()
     {
-        $originalObject = new PrintableString('Hello World');
+        $originalObject = PrintableString::createFromString('Hello World');
         $binaryData = $originalObject->getBinary();
         $parsedObject = PrintableString::fromBinary($binaryData);
         $this->assertEquals($originalObject, $parsedObject);
@@ -74,8 +68,8 @@ class PrintableStringTest extends ASN1TestCase
      */
     public function testFromBinaryWithOffset()
     {
-        $originalObject1 = new PrintableString('Hello ');
-        $originalObject2 = new PrintableString(' World');
+        $originalObject1 = PrintableString::createFromString('Hello ');
+        $originalObject2 = PrintableString::createFromString(' World');
 
         $binaryData  = $originalObject1->getBinary();
         $binaryData .= $originalObject2->getBinary();
@@ -91,26 +85,22 @@ class PrintableStringTest extends ASN1TestCase
 
     public function testCreateStringWithValidCharacters()
     {
-        $object = new PrintableString('Hello World');
+        $object = PrintableString::createFromString('Hello World');
         $this->assertEquals(pack('H*', '130b48656c6c6f20576f726c64'), $object->getBinary());
-        $object = new PrintableString('Hello, World?');
+        $object = PrintableString::createFromString('Hello, World?');
         $this->assertEquals(pack('H*', '130d48656c6c6f2c20576f726c643f'), $object->getBinary());
-        $object = new PrintableString("(Hello) 0001100 'World'?");
+        $object = PrintableString::createFromString("(Hello) 0001100 'World'?");
         $this->assertEquals(pack('H*', '13182848656c6c6f2920303030313130302027576f726c64273f'), $object->getBinary());
-        $object = new PrintableString('Hello := World');
+        $object = PrintableString::createFromString('Hello := World');
         $this->assertEquals(pack('H*', '130e48656c6c6f203a3d20576f726c64'), $object->getBinary());
     }
 
     public function testCreateStringWithInvalidCharacters()
     {
         $invalidString = 'Hello ♥♥♥ World';
-        try {
-            $object = new PrintableString($invalidString);
-            $object->getBinary();
-            $this->fail('Should have thrown an exception');
-        } catch (\Exception $exception) {
-            $this->assertEquals("Could not create a ASN.1 Printable String from the character sequence '{$invalidString}'.", $exception->getMessage());
-        }
+        $this->expectExceptionMessage("Could not create a ASN.1 Printable String from the character sequence '{$invalidString}'");
+        $object = PrintableString::createFromString($invalidString);
+        $object->getBinary();
     }
 
     public function testIsPrintableString()

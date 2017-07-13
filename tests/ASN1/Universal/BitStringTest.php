@@ -10,61 +10,44 @@
 
 namespace FG\Test\ASN1\Universal;
 
+use FG\ASN1\ContentLength;
 use FG\Test\ASN1TestCase;
 use FG\ASN1\Identifier;
 use FG\ASN1\Universal\BitString;
 
 class BitStringTest extends ASN1TestCase
 {
-    public function testGetType()
-    {
-        $object = new BitString('A0 12 00 43');
-        $this->assertEquals(Identifier::BITSTRING, $object->getType());
-    }
-
     public function testGetIdentifier()
     {
-        $object = new BitString('A0 12 00 43');
-        $this->assertEquals(chr(Identifier::BITSTRING), $object->getIdentifier());
+        $object = BitString::createFromHexString('A0120043');
+        $this->assertEquals(Identifier::BITSTRING, $object->getIdentifier()->getTagNumber());
     }
 
-    public function testContent()
+    public function testGetStringValue()
     {
-        $object = new BitString('A01200C3');
-        $this->assertEquals('A01200C3', $object->getContent());
-
-        $object = new BitString('A0 12 00 C3');
-        $this->assertEquals('A01200C3', $object->getContent());
-
-        $object = new BitString('a0 12 00 c3');
-        $this->assertEquals('A01200C3', $object->getContent());
-
-        $object = new BitString('A0 12 00 c3');
-        $this->assertEquals('A01200C3', $object->getContent());
-
-        $object = new BitString(0xA01200C3);
-        $this->assertEquals('A01200C3', $object->getContent());
+        $object = BitString::createFromHexString('A0120043');
+        $this->assertEquals('A0120043', $object->getStringValue());
     }
 
     public function testGetObjectLength()
     {
-        $object = new BitString(0x00);
+        $object = BitString::createFromHexString('00');
         $this->assertEquals(4, $object->getObjectLength());
 
-        $object = new BitString(0xFF);
+        $object = BitString::createFromHexString('FF');
         $this->assertEquals(4, $object->getObjectLength());
 
-        $object = new BitString(0xA000);
+        $object = BitString::createFromHexString('A000');
         $this->assertEquals(5, $object->getObjectLength());
 
-        $object = new BitString(0x3F2001);
+        $object = BitString::createFromHexString('3F2001');
         $this->assertEquals(6, $object->getObjectLength());
     }
 
     public function testGetObjectLengthWithVeryLongBitString()
     {
-        $hexString = '0x'.str_repeat('FF', 1024);
-        $object = new BitString($hexString);
+        $hexString = str_repeat('FF', 1024);
+        $object = BitString::createFromHexString($hexString);
         $this->assertEquals(1 + 3 + 1 + 1024, $object->getObjectLength());
     }
 
@@ -73,31 +56,32 @@ class BitStringTest extends ASN1TestCase
         $expectedType = chr(Identifier::BITSTRING);
         $expectedLength = chr(0x02);
 
-        $object = new BitString(0xFF);
-        $expectedContent  = chr(0x00);
+        $object = BitString::createFromHexString('FF');
+        $expectedContent = chr(0x00);
         $expectedContent .= chr(0xFF);
-        $this->assertEquals($expectedType.$expectedLength.$expectedContent, $object->getBinary());
+        $this->assertEquals($expectedType . $expectedLength . $expectedContent, $object->getBinary());
 
-        $object = new BitString(0xFFA034);
+        $object = BitString::createFromHexString('FFA034');
         $expectedLength = chr(0x04);
-        $expectedContent  = chr(0x00);
+        $expectedContent = chr(0x00);
         $expectedContent .= chr(0xFF);
         $expectedContent .= chr(0xA0);
         $expectedContent .= chr(0x34);
-        $this->assertEquals($expectedType.$expectedLength.$expectedContent, $object->getBinary());
+        $this->assertEquals($expectedType . $expectedLength . $expectedContent, $object->getBinary());
 
-        $object = new BitString(0xA8, 3);
-        $expectedLength = chr(0x02);
-        $expectedContent  = chr(0x03);
-        $expectedContent .= chr(0xA8);
-        $this->assertEquals($expectedType.$expectedLength.$expectedContent, $object->getBinary());
+        $object = BitString::createFromBitString('10101000101');
+        $expectedLength = chr(0x03);
+        $expectedContent = chr(0x03);
+        $expectedContent .= chr(0x2A);
+        $expectedContent .= chr(0x28);
+        $this->assertEquals($expectedType . $expectedLength . $expectedContent, $object->getBinary());
     }
 
     public function testGetBinaryForLargeBitStrings()
     {
         $nrOfBytes = 1024;
-        $hexString = '0x'.str_repeat('FF', $nrOfBytes);
-        $object = new BitString($hexString);
+        $hexString = str_repeat('FF', $nrOfBytes);
+        $object = BitString::createFromHexString($hexString);
 
         $expectedType = chr(Identifier::BITSTRING);
         $expectedLength = chr(0x80 | 0x02);  // long length form: 2 length octets
@@ -108,7 +92,7 @@ class BitStringTest extends ASN1TestCase
             $expectedContent .= chr(0xFF);   // content
         }
 
-        $this->assertEquals($expectedType.$expectedLength.$expectedContent, $object->getBinary());
+        $this->assertEquals($expectedType . $expectedLength . $expectedContent, $object->getBinary());
     }
 
     /**
@@ -116,14 +100,14 @@ class BitStringTest extends ASN1TestCase
      */
     public function testFromBinary()
     {
-        $originalObject = new BitString(0x12);
-        $binaryData = $originalObject->getBinary();
-        $parsedObject = BitString::fromBinary($binaryData);
+        $originalObject = BitString::createFromHexString('12');
+        $binaryData     = $originalObject->getBinary();
+        $parsedObject   = BitString::fromBinary($binaryData);
         $this->assertEquals($originalObject, $parsedObject);
 
-        $originalObject = new BitString(0x010203A0, 3);
-        $binaryData = $originalObject->getBinary();
-        $parsedObject = BitString::fromBinary($binaryData);
+        $originalObject = BitString::createFromHexString('010203A0');
+        $binaryData     = $originalObject->getBinary();
+        $parsedObject   = BitString::fromBinary($binaryData);
         $this->assertEquals($originalObject, $parsedObject);
     }
 
@@ -132,13 +116,13 @@ class BitStringTest extends ASN1TestCase
      */
     public function testFromBinaryWithOffset()
     {
-        $originalObject1 = new BitString(0xA0);
-        $originalObject2 = new BitString(0x314510);
+        $originalObject1 = BitString::createFromHexString('A0');
+        $originalObject2 = BitString::createFromHexString('314510');
 
         $binaryData  = $originalObject1->getBinary();
         $binaryData .= $originalObject2->getBinary();
 
-        $offset = 0;
+        $offset       = 0;
         $parsedObject = BitString::fromBinary($binaryData, $offset);
         $this->assertEquals($originalObject1, $parsedObject);
         $this->assertEquals(4, $offset);
@@ -149,8 +133,8 @@ class BitStringTest extends ASN1TestCase
 
     /**
      * @expectedException \FG\ASN1\Exception\ParserException
-     * @expectedExceptionMessage ASN.1 Parser Exception at offset 2: A FG\ASN1\Universal\BitString should have a content length of at least 2. Extracted length was 1
-     * @depends testFromBinary
+     * @expectedExceptionMessage ASN.1 Parser Exception at offset 3: Malformed bit string
+     * @depends                  testFromBinary
      */
     public function testFromBinaryWithInvalidLength01()
     {

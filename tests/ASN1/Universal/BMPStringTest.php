@@ -10,34 +10,29 @@
 
 namespace FG\Test\ASN1\Universal;
 
+use FG\ASN1\ContentLength;
 use FG\Test\ASN1TestCase;
 use FG\ASN1\Identifier;
 use FG\ASN1\Universal\BMPString;
 
 class BMPStringTest extends ASN1TestCase
 {
-    public function testGetType()
-    {
-        $object = new BMPString('Hello World');
-        $this->assertEquals(Identifier::BMP_STRING, $object->getType());
-    }
-
     public function testGetIdentifier()
     {
-        $object = new BMPString('Hello World');
-        $this->assertEquals(chr(Identifier::BMP_STRING), $object->getIdentifier());
+        $object = BMPString::createFromString('Hello World');
+        $this->assertEquals(Identifier::BMP_STRING, $object->getIdentifier()->getTagNumber());
     }
 
-    public function testContent()
+    public function testGetStringValue()
     {
-        $object = new BMPString('Hello World');
-        $this->assertEquals('Hello World', $object->getContent());
+        $object = BMPString::createFromString('Hello World');
+        $this->assertEquals('Hello World', (string) $object);
     }
 
     public function testGetObjectLength()
     {
         $string = 'Hello World';
-        $object = new BMPString($string);
+        $object = BMPString::createFromString($string);
         $expectedSize = 2 + strlen($string);
         $this->assertEquals($expectedSize, $object->getObjectLength());
     }
@@ -48,7 +43,7 @@ class BMPStringTest extends ASN1TestCase
         $expectedType = chr(Identifier::BMP_STRING);
         $expectedLength = chr(strlen($string));
 
-        $object = new BMPString($string);
+        $object = BMPString::createFromString($string, ['lengthForm' => ContentLength::SHORT_FORM]);
         $this->assertEquals($expectedType.$expectedLength.$string, $object->getBinary());
     }
 
@@ -57,7 +52,7 @@ class BMPStringTest extends ASN1TestCase
      */
     public function testFromBinary()
     {
-        $originalObject = new BMPString('Hello World');
+        $originalObject = BMPString::createFromString('Hello World', ['lengthForm' => ContentLength::SHORT_FORM]);
         $binaryData = $originalObject->getBinary();
         $parsedObject = BMPString::fromBinary($binaryData);
         $this->assertEquals($originalObject, $parsedObject);
@@ -68,8 +63,8 @@ class BMPStringTest extends ASN1TestCase
      */
     public function testFromBinaryWithOffset()
     {
-        $originalObject1 = new BMPString('Hello ');
-        $originalObject2 = new BMPString(' World');
+        $originalObject1 = BMPString::createFromString('Hello ', ['lengthForm' => ContentLength::SHORT_FORM]);
+        $originalObject2 = BMPString::createFromString(' World', ['lengthForm' => ContentLength::SHORT_FORM]);
 
         $binaryData  = $originalObject1->getBinary();
         $binaryData .= $originalObject2->getBinary();

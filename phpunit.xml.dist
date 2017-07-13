@@ -10,20 +10,16 @@
     syntaxCheck="false"
     bootstrap="vendor/autoload.php"
     colors="true">
+
     <testsuites>
-        <testsuite name="PHPASN1 Test Suite">
-            <directory suffix="Test.php">./tests</directory>
+        <testsuite name="Project Test Suite">
+            <directory>tests</directory>
         </testsuite>
     </testsuites>
 
     <filter>
         <whitelist>
-            <directory suffix=".php">./</directory>
-            <exclude>
-                <directory>./tests</directory>
-                <directory>./examples</directory>
-                <directory>./vendor</directory>
-            </exclude>
+            <directory>src</directory>
         </whitelist>
     </filter>
 </phpunit>

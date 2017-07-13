@@ -16,39 +16,33 @@ use FG\ASN1\Universal\Enumerated;
 
 class EnumeratedTest extends ASN1TestCase
 {
-    public function testGetType()
-    {
-        $object = new Enumerated(1);
-        $this->assertEquals(Identifier::ENUMERATED, $object->getType());
-    }
-
     public function testGetIdentifier()
     {
-        $object = new Enumerated(1);
-        $this->assertEquals(chr(Identifier::ENUMERATED), $object->getIdentifier());
+        $object = Enumerated::create(1);
+        $this->assertEquals(Identifier::ENUMERATED, $object->getIdentifier()->getTagNumber());
     }
 
     public function testContent()
     {
-        $object = new Enumerated(0);
-        $this->assertEquals(0, $object->getContent());
+        $object = Enumerated::create(0);
+        $this->assertEquals('0', (string) $object);
 
-        $object = new Enumerated(1);
-        $this->assertEquals(1, $object->getContent());
+        $object = Enumerated::create(1);
+        $this->assertEquals('1', (string) $object);
 
-        $object = new Enumerated(512);
-        $this->assertEquals(512, $object->getContent());
+        $object = Enumerated::create(512);
+        $this->assertEquals('512', (string) $object);
     }
 
     public function testGetObjectLength()
     {
-        $object = new Enumerated(0);
+        $object = Enumerated::create(0);
         $this->assertEquals(3, $object->getObjectLength());
 
-        $object = new Enumerated(127);
+        $object = Enumerated::create(127);
         $this->assertEquals(3, $object->getObjectLength());
 
-        $object = new Enumerated(128);
+        $object = Enumerated::create(128);
         $this->assertEquals(4, $object->getObjectLength());
     }
 
@@ -57,15 +51,15 @@ class EnumeratedTest extends ASN1TestCase
         $expectedType = chr(Identifier::ENUMERATED);
         $expectedLength = chr(0x01);
 
-        $object = new Enumerated(0);
+        $object = Enumerated::create(0);
         $expectedContent = chr(0x00);
         $this->assertEquals($expectedType.$expectedLength.$expectedContent, $object->getBinary());
 
-        $object = new Enumerated(127);
+        $object = Enumerated::create(127);
         $expectedContent = chr(0x7F);
         $this->assertEquals($expectedType.$expectedLength.$expectedContent, $object->getBinary());
 
-        $object = new Enumerated(7420);
+        $object = Enumerated::create(7420);
         $expectedLength   = chr(0x02);
         $expectedContent  = chr(0x1C);
         $expectedContent .= chr(0xFC);
@@ -77,17 +71,17 @@ class EnumeratedTest extends ASN1TestCase
      */
     public function testFromBinary()
     {
-        $originalObject = new Enumerated(0);
+        $originalObject = Enumerated::create(0);
         $binaryData = $originalObject->getBinary();
         $parsedObject = Enumerated::fromBinary($binaryData);
         $this->assertEquals($originalObject, $parsedObject);
 
-        $originalObject = new Enumerated(127);
+        $originalObject = Enumerated::create(127);
         $binaryData = $originalObject->getBinary();
         $parsedObject = Enumerated::fromBinary($binaryData);
         $this->assertEquals($originalObject, $parsedObject);
 
-        $originalObject = new Enumerated(200);
+        $originalObject = Enumerated::create(200);
         $binaryData = $originalObject->getBinary();
         $parsedObject = Enumerated::fromBinary($binaryData);
         $this->assertEquals($originalObject, $parsedObject);
@@ -98,8 +92,8 @@ class EnumeratedTest extends ASN1TestCase
      */
     public function testFromBinaryWithOffset()
     {
-        $originalObject1 = new Enumerated(1);
-        $originalObject2 = new Enumerated(2);
+        $originalObject1 = Enumerated::create(1);
+        $originalObject2 = Enumerated::create(2);
 
         $binaryData  = $originalObject1->getBinary();
         $binaryData .= $originalObject2->getBinary();
