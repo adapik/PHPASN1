@@ -30,7 +30,7 @@ use FG\ASN1\Universal\Sequence;
 use FG\ASN1\Universal\IA5String;
 use FG\ASN1\Universal\PrintableString;
 
-class ObjectTest extends ASN1TestCase
+class ASN1ObjectTest extends ASN1TestCase
 {
     /**
      * @var Object
@@ -329,7 +329,6 @@ class ObjectTest extends ASN1TestCase
             $booleanObject
         ]);
 
-
         $children = $sequence->findChildrenByType(\FG\ASN1\Universal\Boolean::class);
         $this->assertSame([$booleanObject], $children);
 
@@ -342,5 +341,24 @@ class ObjectTest extends ASN1TestCase
         $this->expectException(Exception::class);
         $this->expectExceptionMessage('Unknown class type object');
         $sequence->findChildrenByType('Unknown class type');
+    }
+
+    public function testGetSiblings()
+    {
+        $integerObject   = Integer::create(42);
+        $oidObject       = ObjectIdentifier::create('1.2.250.1.16.9');
+        $bitStringObject = BitString::createFromHexString('A0120043');
+        $booleanObject   = Boolean::create(true);
+        Sequence::create([
+            $integerObject,
+            $oidObject,
+            $bitStringObject,
+            $booleanObject
+        ]);
+
+        $this->assertSame([$integerObject, $oidObject, $booleanObject], $bitStringObject->getSiblings());
+
+        $integerObject   = Integer::create(42);
+        $this->assertSame([], $integerObject->getSiblings());
     }
 }

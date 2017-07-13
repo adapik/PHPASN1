@@ -49,8 +49,6 @@ use FG\ASN1\Universal\ObjectDescriptor;
  */
 abstract class ASN1Object
 {
-    private $nrOfLengthOctets;
-
     /** @var \FG\ASN1\ASN1Object[] */
     protected $children = [];
     private $parent;
@@ -59,29 +57,32 @@ abstract class ASN1Object
     public $contentLength;
     public $content;
     public $eoc;
-    public $modified = false;
 
-    public function __construct(Identifier $identifier, ContentLength $contentLength, Content $content, array $children = [])
-    {
-        $this->identifier = $identifier;
+    public function __construct(
+        Identifier $identifier,
+        ContentLength $contentLength,
+        Content $content,
+        array $children = []
+    ) {
+        $this->identifier    = $identifier;
         $this->contentLength = $contentLength;
-        $this->content = $content;
-        if($identifier->isConstructed()) {
+        $this->content       = $content;
+        if ($identifier->isConstructed()) {
             $this->addChildren($children);
         }
 
-        if($this->contentLength->form === ContentLength::INDEFINITE_FORM) {
+        if ($this->contentLength->getLengthForm() === ContentLength::INDEFINITE_FORM) {
             $this->eoc = new \FG\ASN1\EOC();
         }
     }
 
-    public function addChild(ASN1Object $child)
+    private function addChild(ASN1Object $child)
     {
         $this->children[] = $child;
         $child->parent    = $this;
     }
 
-    public function addChildren(array $children)
+    private function addChildren(array $children)
     {
         foreach ($children as $child) {
             $this->addChild($child);
@@ -98,9 +99,6 @@ abstract class ASN1Object
     abstract protected function getEncodedValue();
 
     /**
-     * Return the content of this object in a non encoded form.
-     * This can be used to print the value in human readable form.
-     *
      * @return Content
      */
     public function getContent(): Content
@@ -141,16 +139,6 @@ abstract class ASN1Object
     abstract public function __toString(): string;
 
     /**
-     * Returns the name of the ASN.1 Type of this object.
-     *
-     * @see Identifier::getName()
-     */
-    public function getTypeName()
-    {
-        return $this->getIdentifier()->getCode();
-    }
-
-    /**
      * @param $binaryData
      * @param int $offsetIndex
      * @param Identifier $identifier
@@ -167,7 +155,7 @@ abstract class ASN1Object
                 $newChild = ASN1Object::fromBinary($binaryData, $offsetIndex);
                 if(is_null($newChild)) throw new ParserException('Children not found', $offsetIndex);
                 $octetsToRead -= ($newChild->contentLength->getLength() + $newChild->identifier->getNrOfOctets() + $newChild->contentLength->getNrOfOctets());
-                $children[] = $newChild;
+                $children[]    = $newChild;
             }
         } else {
             /*try {*/
@@ -363,7 +351,10 @@ abstract class ASN1Object
         return $contentLengthOctets;
     }
 
-    public function getBinary()
+    /**
+     * @return string
+     */
+    public function getBinary(): string
     {
         return $this->identifier->getBinary()
             . $this->contentLength->getBinary()
@@ -415,7 +406,10 @@ abstract class ASN1Object
         return null;
     }
 
-    public function getNrOfOctets()
+    /**
+     * @return int
+     */
+    public function getNrOfOctets(): int
     {
         return $this->identifier->getNrOfOctets() + $this->contentLength->getNrOfOctets() + $this->content->getNrOfOctets() + ($this->eoc ? $this->eoc->getNrOfOctets() : 0);
     }
@@ -453,12 +447,12 @@ abstract class ASN1Object
         }
     }
 
-    public function validateLengthContent()
+    private function validateLengthContent()
     {
         return $this->content->getNrOfOctets() === $this->contentLength->getLength();
     }
 
-    public function restoreContentFromParts()
+    private function restoreContentFromParts()
     {
         if($this->identifier->isConstructed()) {
             $contentOctets = '';
@@ -471,27 +465,28 @@ abstract class ASN1Object
         return $this->content->getBinary();
     }
 
-    final public function isConstructed()
+    /**
+     * @return bool
+     */
+    final public function isConstructed(): bool
     {
         return $this->identifier->isConstructed();
     }
 
     /**
-     * @return \FG\ASN1\ASN1Object[]
+     * @return ASN1Object[]
      */
-    public function getSiblings()
+    public function getSiblings(): array
     {
-        if($this->parent->isConstructed()) {
+        if($this->parent && $this->parent->isConstructed()) {
             $siblings = array_filter($this->parent->getChildren(), function($value) {
-                if($value === $this) return false;
-
-                return true;
+                return $value !== $this;
             });
 
             return array_values($siblings);
-        } else {
-            return [];
         }
+
+        return [];
     }
 
     /**
@@ -499,9 +494,6 @@ abstract class ASN1Object
      */
     public function getChildren()
     {
-        reset($this->children);
-        array_values($this->children);
-
         return $this->children;
     }
 
