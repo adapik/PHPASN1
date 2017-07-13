@@ -55,7 +55,7 @@ abstract class AbstractTime extends ASN1Object
         return substr($messages, 0, -2);
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return $this->value->format("Y-m-d\TH:i:sP");
     }

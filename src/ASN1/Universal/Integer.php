@@ -82,7 +82,7 @@ class Integer extends ASN1Object
         return $result;
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return (string) $this->value;
     }

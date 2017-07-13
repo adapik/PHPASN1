@@ -23,6 +23,11 @@ class NullObject extends ASN1Object
         return null;
     }
 
+    public function __toString(): string
+    {
+        return 'null';
+    }
+
     public function getStringValue()
     {
         return 'null';

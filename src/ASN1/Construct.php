@@ -93,7 +93,7 @@ abstract class Construct extends ASN1Object implements Countable, ArrayAccess, I
         $this->children[] = $child;
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         $nrOfChildren = $this->getNumberOfChildren();
         $childString = $nrOfChildren === 1 ? 'child' : 'children';

@@ -46,31 +46,6 @@ class ObjectTest extends ASN1TestCase
     }
 
     /**
-     * @dataProvider contentLengthDataProvider
-     */
-    public function testCalculateNumberOfLengthOctets($contentLength, $nrOfLengthOctets)
-    {
-
-        $calculatedNrOfLengthOctets = $this->callMethod($this->object, 'getNumberOfLengthOctets', $contentLength);
-        $this->assertEquals($nrOfLengthOctets, $calculatedNrOfLengthOctets);
-    }
-
-    /**
-     * @return array
-     */
-    public function contentLengthDataProvider()
-    {
-        return [
-            [32, 1],
-            [0, 1],
-            [127, 1],
-            [128, 2],
-            [255, 2],
-            [1025, 3],
-        ];
-    }
-
-    /**
      * For the real parsing tests look in the test cases of each single ASn object.
      */
     public function testFromBinary()

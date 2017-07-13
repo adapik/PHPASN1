@@ -21,4 +21,9 @@ class UnknownObject extends ASN1Object
     {
         return '';
     }
+
+    public function __toString(): string
+    {
+        return 'Unknown Object';
+    }
 }

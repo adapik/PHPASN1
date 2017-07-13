@@ -27,6 +27,11 @@ class Set extends ASN1Object
         return $result;
     }
 
+    public function __toString(): string
+    {
+        return implode("\n", $this->getChildren());
+    }
+
     public static function create(array $children = [], $options = [])
     {
         $hasIndefiniteLength = (bool) array_filter($children, function(ASN1Object $child) {

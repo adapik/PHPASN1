@@ -62,7 +62,7 @@ class ExplicitlyTaggedObject extends ASN1Object
             );
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return '['.$this->getIdentifier()->getTagNumber().']' . implode("\n", $this->getChildren());
     }

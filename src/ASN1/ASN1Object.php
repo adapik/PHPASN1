@@ -78,7 +78,7 @@ abstract class ASN1Object
     public function addChild(ASN1Object $child)
     {
         $this->children[] = $child;
-        $child->parent = $this;
+        $child->parent    = $this;
     }
 
     public function addChildren(array $children)
@@ -116,34 +116,12 @@ abstract class ASN1Object
         return $this->identifier;
     }
 
-    protected function getNumberOfLengthOctets($contentLength = null)
-    {
-        if (null === $this->nrOfLengthOctets) {
-            if ($contentLength === null) {
-                $contentLength = $this->getContentLength()->getLength();
-            }
-
-            $this->nrOfLengthOctets = 1;
-            if ($contentLength > 127) {
-                do { // long form
-                    $this->nrOfLengthOctets++;
-                    $contentLength >>= 8;
-                } while ($contentLength > 0);
-            }
-        }
-
-        return $this->nrOfLengthOctets;
-    }
-
+    /**
+     * @return ContentLength
+     */
     protected function getContentLength(): ContentLength
     {
         return $this->contentLength;
-    }
-
-    protected function setContentLength(ContentLength $newContentLength)
-    {
-        $this->contentLength = $newContentLength;
-        $this->getNumberOfLengthOctets($newContentLength);
     }
 
     /**
@@ -157,10 +135,10 @@ abstract class ASN1Object
             ($this->eoc ? $this->eoc->getNrOfOctets() : 0);
     }
 
-    public function __toString()
-    {
-        return 'ASN1 Object';
-    }
+    /**
+     * @return string
+     */
+    abstract public function __toString(): string;
 
     /**
      * Returns the name of the ASN.1 Type of this object.
