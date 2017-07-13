@@ -11,7 +11,8 @@ namespace FG\ASN1;
 
 class Content extends ObjectPart
 {
-    public function __construct($binaryData) {
+    public function __construct($binaryData)
+    {
         $this->binaryData = $binaryData;
     }
 }

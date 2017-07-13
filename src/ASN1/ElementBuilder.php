@@ -17,7 +17,7 @@ class ElementBuilder
     {
         $identifier = self::createIdentifier($tagClass, $tagName, $isConstructed);
 
-        if($identifier->tagClass === Identifier::CLASS_UNIVERSAL && $identifier->isConstructed === false) {
+        if ($identifier->tagClass === Identifier::CLASS_UNIVERSAL && $identifier->isConstructed === false) {
             //для простых элементов вызываем конструктор
             switch ($identifier->getTagNumber()) {
                 case Identifier::BITSTRING:
@@ -96,7 +96,7 @@ class ElementBuilder
             }
         }
 
-        if($children) {
+        if ($children) {
             $contentOctets = '';
             foreach ($children as $child) {
                 $contentOctets .= $child->getBinary();
@@ -190,7 +190,7 @@ class ElementBuilder
     public static function createContentLength($content, $lengthForm)
     {
         $length = strlen($content);
-        if($lengthForm === ContentLength::INDEFINITE_FORM) {
+        if ($lengthForm === ContentLength::INDEFINITE_FORM) {
             $lengthOctets = chr(128);
         } else {
             if ($length <= 127) {

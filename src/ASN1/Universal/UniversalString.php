@@ -20,7 +20,6 @@ class UniversalString extends AbstractCharacterString
     /**
      * Creates a new ASN.1 Universal String.
      * TODO The encodable characters of this type are not yet checked.
-     *
      * @see http://en.wikipedia.org/wiki/Universal_Character_Set
      *
      * @param string $string

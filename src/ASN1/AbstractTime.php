@@ -21,9 +21,9 @@ abstract class AbstractTime extends ASN1Object
     public function __construct(Identifier $identifier, ContentLength $contentLength, Content $content, array $children = [])
     {
 
-        parent::__construct($identifier, $contentLength, $content,$children);
+        parent::__construct($identifier, $contentLength, $content, $children);
 
-        if(!$this->identifier->isConstructed) {
+        if (!$this->identifier->isConstructed) {
             $this->setValue($content);
         }
     }
@@ -46,7 +46,7 @@ abstract class AbstractTime extends ASN1Object
 
     protected function getLastDateTimeErrors()
     {
-        $messages = '';
+        $messages   = '';
         $lastErrors = DateTime::getLastErrors();
         foreach ($lastErrors['errors'] as $errorMessage) {
             $messages .= "{$errorMessage}, ";
@@ -62,10 +62,10 @@ abstract class AbstractTime extends ASN1Object
 
     protected static function extractTimeZoneData(&$binaryData, &$offsetIndex, DateTime $dateTime)
     {
-        $sign = $binaryData[$offsetIndex++];
-        $timeOffsetHours   = (int) substr($binaryData, $offsetIndex, 2);
-        $timeOffsetMinutes = (int) substr($binaryData, $offsetIndex + 2, 2);
-        $offsetIndex += 4;
+        $sign              = $binaryData[$offsetIndex++];
+        $timeOffsetHours   = (int)substr($binaryData, $offsetIndex, 2);
+        $timeOffsetMinutes = (int)substr($binaryData, $offsetIndex + 2, 2);
+        $offsetIndex       += 4;
 
         $interval = new DateInterval("PT{$timeOffsetHours}H{$timeOffsetMinutes}M");
         if ($sign === '+') {

@@ -19,7 +19,6 @@ class PrintableString extends AbstractCharacterString
 {
     /**
      * Creates a new ASN.1 PrintableString.
-     *
      * The ITU-T X.680 Table 8 permits the following characters:
      * Latin capital letters A,B, ... Z
      * Latin small letters   a,b, ... z

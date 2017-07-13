@@ -22,12 +22,10 @@ use FG\ASN1\ContentLength;
 
 /**
  * This ASN.1 universal type contains date and time information according to ISO 8601.
- *
  * The type consists of values representing:
  * a) a calendar date, as defined in ISO 8601; and
  * b) a time of day, to any of the precisions defined in ISO 8601, except for the hours value 24 which shall not be used; and
  * c) the local time differential factor as defined in ISO 8601.
- *
  * Decoding of this type will accept the Basic Encoding Rules (BER)
  * The encoding will comply with the Distinguished Encoding Rules (DER).
  */
@@ -39,7 +37,7 @@ class GeneralizedTime extends AbstractTime
     {
         parent::__construct($identifier, $contentLength, $content, $children);
 
-        if(!$this->identifier->isConstructed) {
+        if (!$this->identifier->isConstructed) {
             $this->setValue($content);
         }
 
@@ -68,7 +66,7 @@ class GeneralizedTime extends AbstractTime
 
     public function containsFractionalSecondsElement()
     {
-        return (int) $this->microseconds > 0;
+        return (int)$this->microseconds > 0;
     }
 
     protected function getEncodedValue()
@@ -78,7 +76,7 @@ class GeneralizedTime extends AbstractTime
             $encodedContent .= ".{$this->microseconds}";
         }
 
-        return $encodedContent.'Z';
+        return $encodedContent . 'Z';
     }
 
     public function __toString(): string
@@ -92,23 +90,23 @@ class GeneralizedTime extends AbstractTime
 
     public function setValue(Content $content)
     {
-        $binaryData = $content->binaryData;
+        $binaryData  = $content->binaryData;
         $offsetIndex = 0;
 
         $lengthOfMinimumTimeString = 14; // YYYYMMDDHHmmSS
-        $contentLength = $this->contentLength->length;
-        $maximumBytesToRead = $contentLength;
+        $contentLength             = $this->contentLength->length;
+        $maximumBytesToRead        = $contentLength;
 
-        $format = 'YmdGis';
-        $contentOctets = substr($binaryData, $offsetIndex, $contentLength);
-        $dateTimeString = substr($contentOctets, 0, $lengthOfMinimumTimeString);
-        $offsetIndex += $lengthOfMinimumTimeString;
+        $format             = 'YmdGis';
+        $contentOctets      = substr($binaryData, $offsetIndex, $contentLength);
+        $dateTimeString     = substr($contentOctets, 0, $lengthOfMinimumTimeString);
+        $offsetIndex        += $lengthOfMinimumTimeString;
         $maximumBytesToRead -= $lengthOfMinimumTimeString;
 
         if ($contentLength === $lengthOfMinimumTimeString) {
             $localTimeZone = new \DateTimeZone(date_default_timezone_get());
-            $dateTime = \DateTime::createFromFormat($format, $dateTimeString, $localTimeZone);
-            $this->value = $dateTime;
+            $dateTime      = \DateTime::createFromFormat($format, $dateTimeString, $localTimeZone);
+            $this->value   = $dateTime;
         } else {
             if ($binaryData[$offsetIndex] === '.') {
                 $maximumBytesToRead--; // account for the '.'
@@ -123,15 +121,16 @@ class GeneralizedTime extends AbstractTime
                 }
 
                 $dateTimeString .= substr($binaryData, $offsetIndex, $nrOfFractionalSecondElements);
-                $offsetIndex += $nrOfFractionalSecondElements;
-                $format .= '.u';
+                $offsetIndex    += $nrOfFractionalSecondElements;
+                $format         .= '.u';
             }
 
             $dateTime = \DateTime::createFromFormat($format, $dateTimeString, new \DateTimeZone('UTC'));
 
             if ($maximumBytesToRead > 0) {
                 if ($binaryData[$offsetIndex] === '+'
-                    || $binaryData[$offsetIndex] === '-') {
+                    || $binaryData[$offsetIndex] === '-'
+                ) {
                     $dateTime = static::extractTimeZoneData($binaryData, $offsetIndex, $dateTime);
                 } elseif ($binaryData[$offsetIndex++] !== 'Z') {
                     throw new ParserException('Invalid ISO 8601 Time String', $offsetIndex);
@@ -141,11 +140,11 @@ class GeneralizedTime extends AbstractTime
             $dateTimeZone = 'UTC';
 
             if ($dateTime === null || is_string($dateTime)) {
-                $timeZone = new DateTimeZone($dateTimeZone);
+                $timeZone       = new DateTimeZone($dateTimeZone);
                 $dateTimeObject = new DateTime($dateTime, $timeZone);
                 if ($dateTimeObject === false) {
                     $errorMessage = $this->getLastDateTimeErrors();
-                    $className = IdentifierManager::getName(static::getType());
+                    $className    = IdentifierManager::getName(static::getType());
                     throw new \Exception(sprintf("Could not create %s from date time string '%s': %s", $className, $dateTime, $errorMessage));
                 }
                 $dateTime = $dateTimeObject;
@@ -173,28 +172,29 @@ class GeneralizedTime extends AbstractTime
     {
         $hasTimeZone = true;
 
-        if(is_numeric(substr($dateTime, -1, 1))) {
+        if (is_numeric(substr($dateTime, -1, 1))) {
             $hasTimeZone = false;
         }
 
         $trimString = str_pad(rtrim($dateTime, '0Z.'), 14, '0');
-        $dateTime = $trimString . ($hasTimeZone ? 'Z' : '');
+        $dateTime   = $trimString . ($hasTimeZone ? 'Z' : '');
 
         return $dateTime;
     }
 
     public function getStringValue()
     {
-        return (string) $this;
+        return (string)$this;
     }
 
-    public static function createFormDateTime(\DateTimeInterface $dateTime = null, array $options = []) {
+    public static function createFormDateTime(\DateTimeInterface $dateTime = null, array $options = [])
+    {
         $dateTime = $dateTime ?? new DateTime('now', new DateTimeZone('UTC'));
 
         $isConstructed = false;
         $lengthForm    = $options['lengthForm'] ?? ContentLength::SHORT_FORM;
 
-        $string = $dateTime->format('YmdHis.u').'Z';
+        $string = $dateTime->format('YmdHis.u') . 'Z';
 
         return
             ElementBuilder::createObject(

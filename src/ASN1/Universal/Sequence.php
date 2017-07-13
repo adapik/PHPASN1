@@ -34,7 +34,7 @@ class Sequence extends ASN1Object
 
     public static function create(array $children = [], $options = [])
     {
-        $hasIndefiniteLength = (bool) array_filter($children, function(ASN1Object $child) {
+        $hasIndefiniteLength = (bool)array_filter($children, function (ASN1Object $child) {
             return $child->getContentLength()->getLengthForm() === ContentLength::INDEFINITE_FORM;
         });
 

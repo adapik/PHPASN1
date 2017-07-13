@@ -28,9 +28,9 @@ class Boolean extends ASN1Object
     public function __construct(Identifier $identifier, ContentLength $contentLength, Content $content, array $children = [])
     {
 
-        parent::__construct($identifier, $contentLength, $content,$children);
+        parent::__construct($identifier, $contentLength, $content, $children);
 
-        if(!$this->identifier->isConstructed) {
+        if (!$this->identifier->isConstructed) {
             $this->setValue($content);
         }
     }
@@ -84,7 +84,7 @@ class Boolean extends ASN1Object
     }
 
     /**
-     * @param bool  $value
+     * @param bool $value
      *
      * @return self
      */
@@ -105,7 +105,6 @@ class Boolean extends ASN1Object
 
     /**
      * {@inheritdoc}
-     *
      * @return self
      */
     public static function fromBinary(&$binaryData, &$offsetIndex = 0)

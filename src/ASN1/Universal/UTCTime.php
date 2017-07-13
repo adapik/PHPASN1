@@ -24,10 +24,8 @@ use Exception;
 
 /**
  * This ASN.1 universal type contains the calendar date and time.
- *
  * The precision is one minute or one second and optionally a
  * local time differential from coordinated universal time.
- *
  * Decoding of this type will accept the Basic Encoding Rules (BER)
  * The encoding will comply with the Distinguished Encoding Rules (DER).
  */
@@ -45,12 +43,12 @@ class UTCTime extends AbstractTime implements Parsable
 
     public function getStringValue()
     {
-        return $this->value->format('ymdHis').'Z';
+        return $this->value->format('ymdHis') . 'Z';
     }
 
     protected function getEncodedValue()
     {
-        return $this->value->format('ymdHis').'Z';
+        return $this->value->format('ymdHis') . 'Z';
     }
 
     /**
@@ -62,39 +60,41 @@ class UTCTime extends AbstractTime implements Parsable
     {
         $hasTimeZone = true;
 
-        if(is_numeric(substr($dateTime, -1, 1))) {
+        if (is_numeric(substr($dateTime, -1, 1))) {
             $hasTimeZone = false;
         }
 
         $trimString = str_pad(rtrim($dateTime, '0Z.'), 12, '0');
-        $dateTime = $trimString . ($hasTimeZone ? 'Z' : '');
+        $dateTime   = $trimString . ($hasTimeZone ? 'Z' : '');
 
         return $dateTime;
     }
 
     public function setValue(Content $content)
     {
-        $binaryData = $content->binaryData;
+        $binaryData  = $content->binaryData;
         $offsetIndex = 0;
 
-        $format = 'ymdGi';
+        $format         = 'ymdGi';
         $dateTimeString = substr($binaryData, $offsetIndex, 10);
-        $offsetIndex += 10;
+        $offsetIndex    += 10;
 
         // extract optional seconds part
         if ($binaryData[$offsetIndex] !== 'Z'
             && $binaryData[$offsetIndex] !== '+'
-            && $binaryData[$offsetIndex] !== '-') {
+            && $binaryData[$offsetIndex] !== '-'
+        ) {
             $dateTimeString .= substr($binaryData, $offsetIndex, 2);
-            $offsetIndex += 2;
-            $format .= 's';
+            $offsetIndex    += 2;
+            $format         .= 's';
         }
 
         $dateTime = \DateTime::createFromFormat($format, $dateTimeString, new \DateTimeZone('UTC'));
 
         // extract time zone settings
         if ($binaryData[$offsetIndex] === '+'
-            || $binaryData[$offsetIndex] === '-') {
+            || $binaryData[$offsetIndex] === '-'
+        ) {
             $dateTime = static::extractTimeZoneData($binaryData, $offsetIndex, $dateTime);
         } elseif ($binaryData[$offsetIndex] !== 'Z') {
             throw new ParserException('Invalid UTC String', $offsetIndex);
@@ -103,11 +103,11 @@ class UTCTime extends AbstractTime implements Parsable
         $dateTimeZone = 'UTC';
 
         if ($dateTime === null || is_string($dateTime)) {
-            $timeZone = new DateTimeZone($dateTimeZone);
+            $timeZone       = new DateTimeZone($dateTimeZone);
             $dateTimeObject = new DateTime($dateTime, $timeZone);
             if ($dateTimeObject === false) {
                 $errorMessage = $this->getLastDateTimeErrors();
-                $className = IdentifierManager::getName(static::getType());
+                $className    = IdentifierManager::getName(static::getType());
                 throw new Exception(sprintf("Could not create %s from date time string '%s': %s", $className, $dateTime, $errorMessage));
             }
             $dateTime = $dateTimeObject;
@@ -118,13 +118,14 @@ class UTCTime extends AbstractTime implements Parsable
         $this->value = $dateTime;
     }
 
-    public static function createFormDateTime(\DateTimeInterface $dateTime = null, array $options = []) {
+    public static function createFormDateTime(\DateTimeInterface $dateTime = null, array $options = [])
+    {
         $dateTime = $dateTime ?? new DateTime('now', new DateTimeZone('UTC'));
 
         $isConstructed = false;
         $lengthForm    = $options['lengthForm'] ?? ContentLength::SHORT_FORM;
 
-        $string = $dateTime->format('ymdHis').'Z';
+        $string = $dateTime->format('ymdHis') . 'Z';
 
         return
             ElementBuilder::createObject(

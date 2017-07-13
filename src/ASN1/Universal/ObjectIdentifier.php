@@ -61,7 +61,7 @@ class ObjectIdentifier extends ASN1Object
 
     public function __toString(): string
     {
-        return (string) $this->value;
+        return (string)$this->value;
     }
 
     /**
@@ -74,7 +74,6 @@ class ObjectIdentifier extends ASN1Object
      * @param $octetsToRead
      *
      * @throws ParserException
-     *
      * @return string
      */
     protected static function parseOid(&$binaryData, &$offsetIndex, $octetsToRead)
@@ -90,7 +89,7 @@ class ObjectIdentifier extends ASN1Object
                 }
 
                 $octetsToRead--;
-                $octet = $binaryData[$offsetIndex++];
+                $octet  = $binaryData[$offsetIndex++];
                 $octets .= $octet;
             } while (ord($octet) & 0x80);
 
@@ -105,9 +104,9 @@ class ObjectIdentifier extends ASN1Object
     {
         $binaryData  = $content->binaryData;
         $offsetIndex = 0;
-        $firstOctet = ord($binaryData[$offsetIndex++]);
-        $oidString  = floor($firstOctet / 40).'.'.($firstOctet % 40);
-        $oidString .= '.'.self::parseOid($binaryData, $offsetIndex, $this->contentLength->length - 1);
+        $firstOctet  = ord($binaryData[$offsetIndex++]);
+        $oidString   = floor($firstOctet / 40) . '.' . ($firstOctet % 40);
+        $oidString   .= '.' . self::parseOid($binaryData, $offsetIndex, $this->contentLength->length - 1);
         $this->value = $value = $oidString;
 
         $this->subIdentifiers = explode('.', $value);
@@ -116,9 +115,9 @@ class ObjectIdentifier extends ASN1Object
         for ($i = 0; $i < $nrOfSubIdentifiers; $i++) {
             if (is_numeric($this->subIdentifiers[$i])) {
                 // enforce the integer type
-                $this->subIdentifiers[$i] = (int) $this->subIdentifiers[$i];
+                $this->subIdentifiers[$i] = (int)$this->subIdentifiers[$i];
             } else {
-                throw new Exception("[{$value}] is no valid object identifier (sub identifier ".($i + 1).' is not numeric)!');
+                throw new Exception("[{$value}] is no valid object identifier (sub identifier " . ($i + 1) . ' is not numeric)!');
             }
         }
 
@@ -140,7 +139,7 @@ class ObjectIdentifier extends ASN1Object
                 $temp = "\0";
             } else {
                 while ($parts[$i]) {
-                    $temp        = chr(0x80 | ($parts[$i] & 0x7F)) . $temp;
+                    $temp      = chr(0x80 | ($parts[$i] & 0x7F)) . $temp;
                     $parts[$i] >>= 7;
                 }
                 $temp[strlen($temp) - 1] = $temp[strlen($temp) - 1] & chr(0x7F);
@@ -158,7 +157,7 @@ class ObjectIdentifier extends ASN1Object
 
         for ($i = 0; $i < $nrOfSubIdentifiers; $i++) {
             if (!is_numeric($subIdentifiers[$i])) {
-                throw new Exception("[{$oid}] is no valid object identifier (sub identifier ".($i + 1).' is not numeric)!');
+                throw new Exception("[{$oid}] is no valid object identifier (sub identifier " . ($i + 1) . ' is not numeric)!');
             }
         }
 

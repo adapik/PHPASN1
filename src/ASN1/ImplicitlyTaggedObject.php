@@ -36,6 +36,6 @@ class ImplicitlyTaggedObject extends ASN1Object
 
     public function __toString(): string
     {
-        return '['.$this->getIdentifier()->getTagNumber().']' . implode("\n", $this->decoratedObjects);
+        return '[' . $this->getIdentifier()->getTagNumber() . ']' . implode("\n", $this->decoratedObjects);
     }
 }

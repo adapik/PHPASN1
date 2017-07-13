@@ -19,7 +19,6 @@ class NumericString extends AbstractCharacterString
 {
     /**
      * Creates a new ASN.1 NumericString.
-     *
      * The following characters are permitted:
      * Digits                0,1, ... 9
      * SPACE                 (space)

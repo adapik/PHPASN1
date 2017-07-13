@@ -25,7 +25,7 @@ abstract class AbstractCharacterString extends ASN1Object implements CharacterSt
         parent::__construct($identifier, $contentLength, $content, $children);
 
         $this->value = $this->getBinaryContent();
-        if(count($this->allowedCharacters) > 0) {
+        if (count($this->allowedCharacters) > 0) {
             $this->checkString();
         }
     }
@@ -45,7 +45,7 @@ abstract class AbstractCharacterString extends ASN1Object implements CharacterSt
     protected function allowNumbers()
     {
         foreach (range('0', '9') as $char) {
-            $this->allowedCharacters[] = (string) $char;
+            $this->allowedCharacters[] = (string)$char;
         }
     }
 

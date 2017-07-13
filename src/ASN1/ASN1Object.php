@@ -39,12 +39,11 @@ use FG\ASN1\Universal\T61String;
 use FG\ASN1\Universal\ObjectDescriptor;
 
 /**
- * @property ASN1Object $parent
- * @property ASN1Object[] $children
+ * @property ASN1Object    $parent
+ * @property ASN1Object[]  $children
  * @property ContentLength $contentLength
- * @property Content $content
- * @property Identifier $identifier
- *
+ * @property Content       $content
+ * @property Identifier    $identifier
  * Class Object is the base class for all concrete ASN.1 objects.
  */
 abstract class ASN1Object
@@ -63,7 +62,8 @@ abstract class ASN1Object
         ContentLength $contentLength,
         Content $content,
         array $children = []
-    ) {
+    )
+    {
         $this->identifier    = $identifier;
         $this->contentLength = $contentLength;
         $this->content       = $content;
@@ -91,9 +91,7 @@ abstract class ASN1Object
 
     /**
      * Encode the object using DER encoding.
-     *
      * @see http://en.wikipedia.org/wiki/X.690#DER_encoding
-     *
      * @return string the binary representation of an objects value
      */
     abstract protected function getEncodedValue();
@@ -139,10 +137,11 @@ abstract class ASN1Object
     abstract public function __toString(): string;
 
     /**
-     * @param $binaryData
-     * @param int $offsetIndex
-     * @param Identifier $identifier
+     * @param               $binaryData
+     * @param int           $offsetIndex
+     * @param Identifier    $identifier
      * @param ContentLength $contentLength
+     *
      * @return Object[]
      * @throws ParserException
      */
@@ -153,9 +152,9 @@ abstract class ASN1Object
             $octetsToRead = $contentLength->getLength();
             while ($octetsToRead > 0) {
                 $newChild = ASN1Object::fromBinary($binaryData, $offsetIndex);
-                if(is_null($newChild)) throw new ParserException('Children not found', $offsetIndex);
+                if (is_null($newChild)) throw new ParserException('Children not found', $offsetIndex);
                 $octetsToRead -= ($newChild->contentLength->getLength() + $newChild->identifier->getNrOfOctets() + $newChild->contentLength->getNrOfOctets());
-                $children[]    = $newChild;
+                $children[]   = $newChild;
             }
         } else {
             /*try {*/
@@ -173,7 +172,7 @@ abstract class ASN1Object
 
     /**
      * @param string $binaryData
-     * @param int $offsetIndex
+     * @param int    $offsetIndex
      *
      * @throws ParserException
      * @return ASN1Object
@@ -199,11 +198,11 @@ abstract class ASN1Object
             //разница между текущем положением сдвига и стартовым - длина детей, блина контента составного элемента
             $contentLength->length = abs($startPos - $offsetIndex);
         } else {
-            if($contentLength->form === ContentLength::INDEFINITE_FORM) {
+            if ($contentLength->form === ContentLength::INDEFINITE_FORM) {
                 for (; ;) {
-                    $firstOctet = $binaryData[$offsetIndex];
+                    $firstOctet  = $binaryData[$offsetIndex];
                     $secondOctet = $binaryData[$offsetIndex++];
-                    if($firstOctet.$secondOctet === chr(0) . chr(0)) {
+                    if ($firstOctet . $secondOctet === chr(0) . chr(0)) {
                         $contentLength->length = abs($startPos - $offsetIndex) + 1;
                         break;
                     }
@@ -217,7 +216,7 @@ abstract class ASN1Object
         }
 
         //todo exception raises when object not constructed and length form is indefinite - its wrong
-        if(!is_int($contentLength->length)) {
+        if (!is_int($contentLength->length)) {
             throw new ParserException('Length of Object not determined', $offsetIndex);
         }
 
@@ -316,7 +315,7 @@ abstract class ASN1Object
             if (strlen($binaryData) <= $offsetIndex) {
                 throw new ParserException('Can not parse identifier (long form) from data: Offset index larger than input size', $offsetIndex);
             }
-            $nextOctet = $binaryData[$offsetIndex++];
+            $nextOctet  = $binaryData[$offsetIndex++];
             $identifier .= $nextOctet;
 
             if ((ord($nextOctet) & 0x80) === 0) {
@@ -335,7 +334,7 @@ abstract class ASN1Object
         }
 
         $contentLengthOctets = $binaryData[$offsetIndex++];
-        $firstOctet = ord($contentLengthOctets);
+        $firstOctet          = ord($contentLengthOctets);
 
         if (($firstOctet & 0x80) != 0) {
             // bit 8 is set -> this is the long form
@@ -371,14 +370,14 @@ abstract class ASN1Object
     {
         $objects = [];
 
-        if ($this instanceof ObjectIdentifier && (string) $this === $oidString) {
+        if ($this instanceof ObjectIdentifier && (string)$this === $oidString) {
             return [$this];
         }
 
-        if($this->isConstructed()) {
+        if ($this->isConstructed()) {
             foreach ($this->children as $child) {
                 $objectsFound = $child->findByOid($oidString);
-                if(count($objectsFound) > 0) {
+                if (count($objectsFound) > 0) {
                     array_push($objects, ...$objectsFound);
                 }
             }
@@ -391,12 +390,12 @@ abstract class ASN1Object
 
     public function remove()
     {
-        if($this->parent) {
+        if ($this->parent) {
             foreach ($this->parent->children as $key => $child) {
-                if($child === $this) {
-                        unset($this->parent->children[$key]);
-                        $this->parent->children = $this->parent->getChildren();
-                        $this->parent->rebuildTree();
+                if ($child === $this) {
+                    unset($this->parent->children[$key]);
+                    $this->parent->children = $this->parent->getChildren();
+                    $this->parent->rebuildTree();
                 }
             }
 
@@ -420,13 +419,13 @@ abstract class ASN1Object
     public function rebuildTree()
     {
         $this->restoreContentFromParts();
-        if($this->validateLengthContent()) {
+        if ($this->validateLengthContent()) {
             //nothing to rebuild
             return true;
         } else {
             //если форма неопределенная, то и у родителя она тоже неопределенная
             // и энкодировать длину ни у одного родителя не нужно - просто изменить контент у всех предков
-            if($this->contentLength->getLengthForm() === ContentLength::INDEFINITE_FORM) {
+            if ($this->contentLength->getLengthForm() === ContentLength::INDEFINITE_FORM) {
                 $this->contentLength->length = $this->content->getNrOfOctets();
             } else {
                 $this->contentLength = ElementBuilder::createContentLength(
@@ -435,12 +434,12 @@ abstract class ASN1Object
                 );
             }
 
-            if($this->parent) {
+            if ($this->parent) {
                 $this->parent->rebuildTree();
             }
         }
 
-        if($this->validateLengthContent()) {
+        if ($this->validateLengthContent()) {
             return true;
         } else {
             throw new \Exception('Дерево не восстановлено');
@@ -454,7 +453,7 @@ abstract class ASN1Object
 
     private function restoreContentFromParts()
     {
-        if($this->identifier->isConstructed()) {
+        if ($this->identifier->isConstructed()) {
             $contentOctets = '';
             foreach ($this->getChildren() as $child) {
                 $contentOctets .= $child->getBinary();
@@ -478,8 +477,8 @@ abstract class ASN1Object
      */
     public function getSiblings(): array
     {
-        if($this->parent && $this->parent->isConstructed()) {
-            $siblings = array_filter($this->parent->getChildren(), function($value) {
+        if ($this->parent && $this->parent->isConstructed()) {
+            $siblings = array_filter($this->parent->getChildren(), function ($value) {
                 return $value !== $this;
             });
 
@@ -507,10 +506,10 @@ abstract class ASN1Object
 
     public function insertAfter(ASN1Object $object)
     {
-        if($this->parent) {
+        if ($this->parent) {
             foreach ($this->parent->children as $key => $child) {
-                if($child === $this) {
-                    if($key + 1 === count($this->parent->children)) {
+                if ($child === $this) {
+                    if ($key + 1 === count($this->parent->children)) {
                         array_push($this->parent->children, $object);
                     } else {
                         array_splice($this->parent->children, $key + 1, 0, [$object]);
@@ -526,9 +525,9 @@ abstract class ASN1Object
 
     public function insertBefore(ASN1Object $object)
     {
-        if($this->parent) {
+        if ($this->parent) {
             foreach ($this->parent->children as $key => $child) {
-                if($child === $this) {
+                if ($child === $this) {
                     array_splice($this->parent->children, $key, 0, [$object]);
                     $object->parent = $this->parent;
                     $this->parent->rebuildTree();
@@ -541,16 +540,17 @@ abstract class ASN1Object
 
     /**
      * @param string $className
+     *
      * @return \FG\ASN1\ASN1Object[]
      * @throws \Exception
      */
     public function findChildrenByType($className)
     {
-        if(!class_exists($className)) {
+        if (!class_exists($className)) {
             throw new Exception('Unknown class type object');
         }
 
-        $children = array_filter($this->children, function($value) use ($className) {
+        $children = array_filter($this->children, function ($value) use ($className) {
             return is_a($value, $className);
         });
 
@@ -559,18 +559,18 @@ abstract class ASN1Object
 
     /**
      * @param $fileContent
-     * @return \FG\ASN1\ASN1Object
      *
+     * @return \FG\ASN1\ASN1Object
      * @throws \Exception
      */
     public final static function fromFile($fileContent)
     {
         $temp = trim($fileContent);
-        if(substr($fileContent, 0, 1) === '-') {
+        if (substr($fileContent, 0, 1) === '-') {
             $temp = preg_replace('#.*?^-+[^-]+-+#ms', '', $fileContent, 1);
-            if(is_null($temp)) throw new \Exception('Preg_error:' . preg_last_error());
+            if (is_null($temp)) throw new \Exception('Preg_error:' . preg_last_error());
             $temp = preg_replace('#--+[^-]+--+#', '', $temp);
-            if(is_null($temp)) throw new \Exception('Preg_error:' . preg_last_error());
+            if (is_null($temp)) throw new \Exception('Preg_error:' . preg_last_error());
         }
 
         $temp = str_replace(array("\r", "\n", ' '), '', $temp);
@@ -582,7 +582,7 @@ abstract class ASN1Object
 
     public function detach()
     {
-        $object = clone $this;
+        $object       = clone $this;
         $this->parent = null;
 
         return $object;
@@ -593,7 +593,7 @@ abstract class ASN1Object
      */
     public function getRoot()
     {
-        if(is_null($this->parent)) return $this;
+        if (is_null($this->parent)) return $this;
 
         return $this->parent->getRoot();
     }

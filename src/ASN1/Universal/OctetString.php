@@ -26,12 +26,13 @@ class OctetString extends ASN1Object
 
         parent::__construct($identifier, $contentLength, $content, $children);
 
-        if(!$this->identifier->isConstructed) {
+        if (!$this->identifier->isConstructed) {
             $this->setValue($content);
         }
     }
 
-    public function setValue(Content $content) {
+    public function setValue(Content $content)
+    {
         $value = $content->binaryData;
         if (is_string($value)) {
             // remove gaps between hex digits
@@ -44,7 +45,7 @@ class OctetString extends ASN1Object
 
         if (strlen($value) % 2 !== 0) {
             // transform values like 1F2 to 01F2
-            $value = '0'.$value;
+            $value = '0' . $value;
         }
 
         $this->value = $value;
@@ -52,14 +53,14 @@ class OctetString extends ASN1Object
 
     protected function getEncodedValue()
     {
-        $value = $this->value;
+        $value  = $this->value;
         $result = '';
 
         //Actual content
         while (strlen($value) >= 2) {
             // get the hex value byte by byte from the string and and add it to binary result
             $result .= chr(hexdec(substr($value, 0, 2)));
-            $value = substr($value, 2);
+            $value  = substr($value, 2);
         }
 
         return $result;
@@ -81,7 +82,7 @@ class OctetString extends ASN1Object
      */
     public function __toString(): string
     {
-        return (string) $this->value;
+        return (string)$this->value;
     }
 
     public static function createFromString(string $string, $options = [])

@@ -12,15 +12,15 @@ namespace FG\ASN1;
 
 class OID
 {
-    const RSA_ENCRYPTION                    = '1.2.840.113549.1.1.1';
-    const MD5_WITH_RSA_ENCRYPTION           = '1.2.840.113549.1.1.4';
-    const SHA1_WITH_RSA_SIGNATURE           = '1.2.840.113549.1.1.5';
-    const PKCS9_EMAIL                       = '1.2.840.113549.1.9.1';
-    const PKCS9_UNSTRUCTURED_NAME           = '1.2.840.113549.1.9.2';
-    const PKCS9_CONTENT_TYPE                = '1.2.840.113549.1.9.3';
-    const PKCS9_MESSAGE_DIGEST              = '1.2.840.113549.1.9.4';
-    const PKCS9_SIGNING_TIME                = '1.2.840.113549.1.9.5';
-    const PKCS9_EXTENSION_REQUEST           = '1.2.840.113549.1.9.14';
+    const RSA_ENCRYPTION          = '1.2.840.113549.1.1.1';
+    const MD5_WITH_RSA_ENCRYPTION = '1.2.840.113549.1.1.4';
+    const SHA1_WITH_RSA_SIGNATURE = '1.2.840.113549.1.1.5';
+    const PKCS9_EMAIL             = '1.2.840.113549.1.9.1';
+    const PKCS9_UNSTRUCTURED_NAME = '1.2.840.113549.1.9.2';
+    const PKCS9_CONTENT_TYPE      = '1.2.840.113549.1.9.3';
+    const PKCS9_MESSAGE_DIGEST    = '1.2.840.113549.1.9.4';
+    const PKCS9_SIGNING_TIME      = '1.2.840.113549.1.9.5';
+    const PKCS9_EXTENSION_REQUEST = '1.2.840.113549.1.9.14';
 
     // certificate extension identifier
     const CERT_EXT_SUBJECT_DIRECTORY_ATTR   = '2.5.29.9';
@@ -43,36 +43,34 @@ class OID
     const CERT_EXT_EXTENDED_KEY_USAGE       = '2.5.29.37';
 
     // standard certificate files
-    const COMMON_NAME                       = '2.5.4.3';
-    const SURNAME                           = '2.5.4.4';
-    const SERIAL_NUMBER                     = '2.5.4.5';
-    const COUNTRY_NAME                      = '2.5.4.6';
-    const LOCALITY_NAME                     = '2.5.4.7';
-    const STATE_OR_PROVINCE_NAME            = '2.5.4.8';
-    const STREET_ADDRESS                    = '2.5.4.9';
-    const ORGANIZATION_NAME                 = '2.5.4.10';
-    const OU_NAME                           = '2.5.4.11';
-    const TITLE                             = '2.5.4.12';
-    const DESCRIPTION                       = '2.5.4.13';
-    const POSTAL_ADDRESS                    = '2.5.4.16';
-    const POSTAL_CODE                       = '2.5.4.17';
-    const AUTHORITY_REVOCATION_LIST         = '2.5.4.38';
+    const COMMON_NAME               = '2.5.4.3';
+    const SURNAME                   = '2.5.4.4';
+    const SERIAL_NUMBER             = '2.5.4.5';
+    const COUNTRY_NAME              = '2.5.4.6';
+    const LOCALITY_NAME             = '2.5.4.7';
+    const STATE_OR_PROVINCE_NAME    = '2.5.4.8';
+    const STREET_ADDRESS            = '2.5.4.9';
+    const ORGANIZATION_NAME         = '2.5.4.10';
+    const OU_NAME                   = '2.5.4.11';
+    const TITLE                     = '2.5.4.12';
+    const DESCRIPTION               = '2.5.4.13';
+    const POSTAL_ADDRESS            = '2.5.4.16';
+    const POSTAL_CODE               = '2.5.4.17';
+    const AUTHORITY_REVOCATION_LIST = '2.5.4.38';
 
-    const AUTHORITY_INFORMATION_ACCESS      = '1.3.6.1.5.5.7.1.1';
+    const AUTHORITY_INFORMATION_ACCESS = '1.3.6.1.5.5.7.1.1';
 
     /**
      * Returns the name of the given object identifier.
-     *
      * Some OIDs are saved as class constants in this class.
      * If the wanted oidString is not among them, this method will
      * query http://oid-info.com for the right name.
      * This behavior can be suppressed by setting the second method parameter to false.
      *
      * @param string $oidString
-     * @param bool $loadFromWeb
+     * @param bool   $loadFromWeb
      *
      * @see self::loadFromWeb($oidString)
-     *
      * @return string
      */
     public static function getName($oidString, $loadFromWeb = false)

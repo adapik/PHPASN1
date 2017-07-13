@@ -39,9 +39,9 @@ class BitString extends OctetString implements Parsable
     {
         // the first octet determines the number of unused bits
         $nrOfUnusedBitsOctet = chr($this->nrOfUnusedBits);
-        $actualContent = parent::getEncodedValue();
+        $actualContent       = parent::getEncodedValue();
 
-        return $nrOfUnusedBitsOctet.$actualContent;
+        return $nrOfUnusedBitsOctet . $actualContent;
     }
 
     public function getNumberOfUnusedBits()
@@ -52,7 +52,7 @@ class BitString extends OctetString implements Parsable
     public function setValue(Content $content)
     {
         $binaryData = $content->binaryData;
-        $value = bin2hex(substr($binaryData, 1, $this->contentLength->length - 1));
+        $value      = bin2hex(substr($binaryData, 1, $this->contentLength->length - 1));
 
         if (is_string($value)) {
             // remove gaps between hex digits
@@ -65,7 +65,7 @@ class BitString extends OctetString implements Parsable
 
         if (strlen($value) % 2 !== 0) {
             // transform values like 1F2 to 01F2
-            $value = '0'.$value;
+            $value = '0' . $value;
         }
 
         $this->value = bin2hex($value);
@@ -79,7 +79,7 @@ class BitString extends OctetString implements Parsable
         return strtoupper(bin2hex(substr($this->content->binaryData, 1)));
     }
 
-    public static function createFromBitString(string $bitString, $options = []) : self
+    public static function createFromBitString(string $bitString, $options = []): self
     {
         $isConstructed = $options['isConstructed'] ?? false;
         $lengthForm    = $options['lengthForm'] ?? ContentLength::LONG_FORM;
@@ -87,7 +87,7 @@ class BitString extends OctetString implements Parsable
         $bitsCount = strlen($bitString);
 
         $nrOfUnusedBits = $bitsCount % 8;
-        $bitString     .= str_repeat('0', $nrOfUnusedBits);
+        $bitString      .= str_repeat('0', $nrOfUnusedBits);
 
         $value = chr($nrOfUnusedBits) . hex2bin(base_convert($bitString, 2, 16));
 
@@ -101,7 +101,7 @@ class BitString extends OctetString implements Parsable
             );
     }
 
-    public static function createFromHexString(string $hexString, $options = []) : self
+    public static function createFromHexString(string $hexString, $options = []): self
     {
         $isConstructed = $options['isConstructed'] ?? false;
         $value         = chr(0x00) . hex2bin($hexString);
@@ -122,7 +122,7 @@ class BitString extends OctetString implements Parsable
     {
         $bitString = parent::fromBinary($binaryData, $offsetIndex);
 
-        if($bitString->getContent()->getNrOfOctets() < 2) {
+        if ($bitString->getContent()->getNrOfOctets() < 2) {
             throw new ParserException('Malformed bit string', $offsetIndex);
         }
 

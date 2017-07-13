@@ -17,7 +17,6 @@ use FG\ASN1\Content;
 
 /**
  * The International Alphabet No.5 (IA5) references the encoding of the ASCII characters.
- *
  * Each character in the data is encoded as 1 byte.
  */
 class IA5String extends AbstractCharacterString

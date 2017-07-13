@@ -34,9 +34,15 @@ class Set extends ASN1Object
 
     public static function create(array $children = [], $options = [])
     {
-        $hasIndefiniteLength = (bool) array_filter($children, function(ASN1Object $child) {
+        $hasIndefiniteLength = (bool)array_filter($children, function (ASN1Object $child) {
             return $child->getContentLength()->getLengthForm() === ContentLength::INDEFINITE_FORM;
         });
+
+        if ($hasIndefiniteLength) {
+            $lengthForm = ContentLength::INDEFINITE_FORM;
+        } else {
+            $lengthForm = ContentLength::SHORT_FORM;
+        }
 
         return
             ElementBuilder::createObject(
@@ -44,7 +50,7 @@ class Set extends ASN1Object
                 Identifier::SET,
                 true,
                 null,
-                $hasIndefiniteLength ? ContentLength::INDEFINITE_FORM : ContentLength::SHORT_FORM,
+                $lengthForm,
                 $children
             );
     }

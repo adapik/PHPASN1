@@ -33,10 +33,10 @@ class ContentLength extends ObjectPart
 
     /**
      * Define length form based on binaryData
-     *
      * @return int
      */
-    public function defineForm() {
+    public function defineForm()
+    {
 
         $firstOctet = ord($this->binaryData[0]);
 
@@ -53,7 +53,6 @@ class ContentLength extends ObjectPart
 
     /**
      * Calculates content length based on binaryData
-     *
      * @return int lenght in octets
      */
     public function calculateContentLength()

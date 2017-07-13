@@ -14,13 +14,10 @@ use Exception;
 
 /**
  * The Identifier encodes the ASN.1 tag (class and number) of the type of a data value.
- *
  * Every identifier whose number is in the range 0 to 30 has the following structure:
- *
  * Bits:    8  7    6    5  4  3  2  1
  *       | Class | P/C |   Tag number  |
  *       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- *
  * Bits 8 and 7 define the class of this type ( Universal, Application, Context-specific or Private).
  * Bit 6 encoded whether this type is primitive or constructed
  * The remaining bits 5 - 1 encode the tag number
@@ -48,35 +45,34 @@ class IdentifierManager
     const RELATIVE_OID      = 0x0D;
     // value 0x0E and 0x0F are reserved for future use
 
-    const SEQUENCE          = 0x10;
-    const SET               = 0x11;
-    const NUMERIC_STRING    = 0x12;
-    const PRINTABLE_STRING  = 0x13;
-    const T61_STRING        = 0x14; // sometimes referred to as TeletextString
-    const VIDEOTEXT_STRING  = 0x15;
-    const IA5_STRING        = 0x16;
-    const UTC_TIME          = 0x17;
-    const GENERALIZED_TIME  = 0x18;
-    const GRAPHIC_STRING    = 0x19;
-    const VISIBLE_STRING    = 0x1A;
-    const GENERAL_STRING    = 0x1B;
-    const UNIVERSAL_STRING  = 0x1C;
-    const CHARACTER_STRING  = 0x1D; // Unrestricted character type
-    const BMP_STRING        = 0x1E;
+    const SEQUENCE         = 0x10;
+    const SET              = 0x11;
+    const NUMERIC_STRING   = 0x12;
+    const PRINTABLE_STRING = 0x13;
+    const T61_STRING       = 0x14; // sometimes referred to as TeletextString
+    const VIDEOTEXT_STRING = 0x15;
+    const IA5_STRING       = 0x16;
+    const UTC_TIME         = 0x17;
+    const GENERALIZED_TIME = 0x18;
+    const GRAPHIC_STRING   = 0x19;
+    const VISIBLE_STRING   = 0x1A;
+    const GENERAL_STRING   = 0x1B;
+    const UNIVERSAL_STRING = 0x1C;
+    const CHARACTER_STRING = 0x1D; // Unrestricted character type
+    const BMP_STRING       = 0x1E;
 
-    const LONG_FORM         = 0x1F;
-    const IS_CONSTRUCTED    = 0x20;
+    const LONG_FORM      = 0x1F;
+    const IS_CONSTRUCTED = 0x20;
 
     /**
      * Creates an identifier. Short form identifiers are returned as integers
      * for BC, long form identifiers will be returned as a string of octets.
      *
-     * @param int $class
+     * @param int  $class
      * @param bool $isConstructed
-     * @param int $tagNumber
+     * @param int  $tagNumber
      *
      * @throws Exception if the given arguments are invalid
-     *
      * @return int|string
      */
     public static function create($class, $isConstructed, $tagNumber)
@@ -101,7 +97,7 @@ class IdentifierManager
         $firstOctet = ($class << 6) | ($isConstructed << 5) | self::LONG_FORM;
 
         // Tag numbers formatted in long form are base-128 encoded. See X.609#8.1.2.4
-        return chr($firstOctet).Base128::encode($tagNumber);
+        return chr($firstOctet) . Base128::encode($tagNumber);
     }
 
     public static function isConstructed($firstOctet)
@@ -111,14 +107,12 @@ class IdentifierManager
 
     public static function isLongForm($identifierOctet)
     {
-        return ((int) $identifierOctet & self::LONG_FORM) === self::LONG_FORM;
+        return ((int)$identifierOctet & self::LONG_FORM) === self::LONG_FORM;
     }
 
     /**
      * Return the name of the mapped ASN.1 type with a preceding "ASN.1 ".
-     *
      * Example: ASN.1 Octet String
-     *
      * @see Identifier::getShortName()
      *
      * @param int|string $identifier
@@ -140,11 +134,9 @@ class IdentifierManager
 
     /**
      * Return the short version of the type name.
-     *
      * If the given identifier octet can be mapped to a known universal type this will
      * return its name. Else Identifier::getClassDescription() is used to retrieve
      * information about the identifier.
-     *
      * @see Identifier::getName()
      * @see Identifier::getClassDescription()
      *
@@ -229,17 +221,15 @@ class IdentifierManager
                     $identifier = chr($identifier);
                 }
 
-                return "$classDescription (0x".strtoupper(bin2hex($identifier)).')';
+                return "$classDescription (0x" . strtoupper(bin2hex($identifier)) . ')';
         }
     }
 
     /**
      * Returns a textual description of the information encoded in a given identifier octet.
-     *
      * The first three (most significant) bytes are evaluated to determine if this is a
      * constructed or primitive type and if it is either universal, application, context-specific or
      * private.
-     *
      * Example:
      *     Constructed context-specific
      *     Primitive universal
@@ -266,7 +256,7 @@ class IdentifierManager
                 $classDescription .= 'application';
                 break;
             case self::CLASS_CONTEXT_SPECIFIC:
-                $tagNumber = self::getTagNumber($identifier);
+                $tagNumber        = self::getTagNumber($identifier);
                 $classDescription = "[$tagNumber] Context-specific";
                 break;
             case self::CLASS_PRIVATE:
@@ -287,8 +277,8 @@ class IdentifierManager
      */
     public static function getTagNumber($identifier)
     {
-        $firstOctet = substr($identifier, 0 , 1);
-        if(!IdentifierManager::isLongForm($firstOctet)) {
+        $firstOctet = substr($identifier, 0, 1);
+        if (!IdentifierManager::isLongForm($firstOctet)) {
             return ord($firstOctet) & self::LONG_FORM;
         }
 

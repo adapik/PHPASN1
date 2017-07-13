@@ -37,37 +37,37 @@ class Identifier extends ObjectPart
     const RELATIVE_OID      = 0x0D;
     // value 0x0E and 0x0F are reserved for future use
 
-    const SEQUENCE          = 0x10;
-    const SET               = 0x11;
-    const NUMERIC_STRING    = 0x12;
-    const PRINTABLE_STRING  = 0x13;
-    const T61_STRING        = 0x14; // sometimes referred to as TeletextString
-    const VIDEOTEXT_STRING  = 0x15;
-    const IA5_STRING        = 0x16;
-    const UTC_TIME          = 0x17;
-    const GENERALIZED_TIME  = 0x18;
-    const GRAPHIC_STRING    = 0x19;
-    const VISIBLE_STRING    = 0x1A;
-    const GENERAL_STRING    = 0x1B;
-    const UNIVERSAL_STRING  = 0x1C;
-    const CHARACTER_STRING  = 0x1D; // Unrestricted character type
-    const BMP_STRING        = 0x1E;
+    const SEQUENCE         = 0x10;
+    const SET              = 0x11;
+    const NUMERIC_STRING   = 0x12;
+    const PRINTABLE_STRING = 0x13;
+    const T61_STRING       = 0x14; // sometimes referred to as TeletextString
+    const VIDEOTEXT_STRING = 0x15;
+    const IA5_STRING       = 0x16;
+    const UTC_TIME         = 0x17;
+    const GENERALIZED_TIME = 0x18;
+    const GRAPHIC_STRING   = 0x19;
+    const VISIBLE_STRING   = 0x1A;
+    const GENERAL_STRING   = 0x1B;
+    const UNIVERSAL_STRING = 0x1C;
+    const CHARACTER_STRING = 0x1D; // Unrestricted character type
+    const BMP_STRING       = 0x1E;
 
-    const LONG_FORM         = 0x1F;
-    const IS_CONSTRUCTED    = 0x20;
+    const LONG_FORM      = 0x1F;
+    const IS_CONSTRUCTED = 0x20;
 
     /**
      * @param $identifier
      */
     public function __construct($identifierOctets)
     {
-        $firstOctet = substr($identifierOctets, 0 , 1);
+        $firstOctet = substr($identifierOctets, 0, 1);
 
-        $this->binaryData = $identifierOctets;
+        $this->binaryData    = $identifierOctets;
         $this->isConstructed = IdentifierManager::isConstructed($firstOctet);
-        $this->tagClass = ord($firstOctet) >> 6;
-        $this->tagNumber = IdentifierManager::getTagNumber($identifierOctets);
-        $this->code = $this->getCode();
+        $this->tagClass      = ord($firstOctet) >> 6;
+        $this->tagNumber     = IdentifierManager::getTagNumber($identifierOctets);
+        $this->code          = $this->getCode();
     }
 
     public function getTagNumber()
@@ -145,15 +145,15 @@ class Identifier extends ObjectPart
             }
         }
 
-        if($this->tagClass === self::CLASS_CONTEXT_SPECIFIC) {
+        if ($this->tagClass === self::CLASS_CONTEXT_SPECIFIC) {
             return '[' . $this->tagNumber . ']';
         }
 
-        if($this->tagClass === self::CLASS_APPLICATION) {
+        if ($this->tagClass === self::CLASS_APPLICATION) {
             return 'APPLICATION_' . $this->tagNumber;
         }
 
-        if($this->tagClass === self::CLASS_PRIVATE) {
+        if ($this->tagClass === self::CLASS_PRIVATE) {
             return 'PRIVATE_' . $this->tagNumber;
         }
 

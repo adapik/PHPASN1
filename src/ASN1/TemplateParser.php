@@ -18,7 +18,7 @@ class TemplateParser
 {
     /**
      * @param string $data
-     * @param array $template
+     * @param array  $template
      *
      * @return \FG\ASN1\ASN1Object|Sequence
      * @throws ParserException if there was an issue parsing
@@ -31,7 +31,8 @@ class TemplateParser
 
     /**
      * @param string $binary
-     * @param array $template
+     * @param array  $template
+     *
      * @return \FG\ASN1\ASN1Object|Sequence
      * @throws ParserException if there was an issue parsing
      */

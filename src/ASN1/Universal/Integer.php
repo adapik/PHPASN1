@@ -43,7 +43,7 @@ class Integer extends ASN1Object
     protected static function calculateContentLength($value)
     {
         $nrOfOctets = 1; // we need at least one octet
-        $tmpValue = gmp_abs(gmp_init($value, 10));
+        $tmpValue   = gmp_abs(gmp_init($value, 10));
         while (gmp_cmp($tmpValue, 127) > 0) {
             $tmpValue = self::rightShift($tmpValue, 8);
             $nrOfOctets++;
@@ -53,19 +53,19 @@ class Integer extends ASN1Object
 
     /**
      * @param resource|\GMP $number
-     * @param int $positions
+     * @param int           $positions
      *
      * @return resource|\GMP
      */
     private static function rightShift($number, $positions)
     {
         // Shift 1 right = div / 2
-        return gmp_div($number, gmp_pow(2, (int) $positions));
+        return gmp_div($number, gmp_pow(2, (int)$positions));
     }
 
     public static function encodeValue($value): string
     {
-        $numericValue = gmp_init($value, 10);
+        $numericValue  = gmp_init($value, 10);
         $contentLength = self::calculateContentLength($value);
 
         if (gmp_sign($numericValue) < 0) {
@@ -75,7 +75,7 @@ class Integer extends ASN1Object
 
         $result = '';
         for ($shiftLength = ($contentLength - 1) * 8; $shiftLength >= 0; $shiftLength -= 8) {
-            $octet = gmp_strval(gmp_mod(self::rightShift($numericValue, $shiftLength), 256));
+            $octet  = gmp_strval(gmp_mod(self::rightShift($numericValue, $shiftLength), 256));
             $result .= chr($octet);
         }
 
@@ -84,7 +84,7 @@ class Integer extends ASN1Object
 
     public function __toString(): string
     {
-        return (string) $this->value;
+        return (string)$this->value;
     }
 
     public function getEncodedValue()
@@ -94,11 +94,11 @@ class Integer extends ASN1Object
 
     public function setValue(Content $content)
     {
-        $binaryData = $content->binaryData;
-        $offsetIndex = 0;
+        $binaryData    = $content->binaryData;
+        $offsetIndex   = 0;
         $contentLength = $this->contentLength->length;
-        $isNegative = (ord($binaryData[$offsetIndex]) & 0x80) != 0x00;
-        $number = gmp_init(ord($binaryData[$offsetIndex++]) & 0x7F, 10);
+        $isNegative    = (ord($binaryData[$offsetIndex]) & 0x80) != 0x00;
+        $number        = gmp_init(ord($binaryData[$offsetIndex++]) & 0x7F, 10);
 
         for ($i = 0; $i < $contentLength - 1; $i++) {
             $number = gmp_or(gmp_mul($number, 0x100), ord($binaryData[$offsetIndex++]));
@@ -121,7 +121,7 @@ class Integer extends ASN1Object
         $this->value = $value;
     }
 
-    public static function create($integer, $options = []) : self
+    public static function create($integer, $options = []): self
     {
         $isConstructed = false;
         $lengthForm    = ContentLength::SHORT_FORM;

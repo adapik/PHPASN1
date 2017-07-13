@@ -58,7 +58,6 @@ class NullObject extends ASN1Object
 
     /**
      * {@inheritdoc}
-     *
      * @return self
      */
     public static function fromBinary(&$binaryData, &$offsetIndex = 0)

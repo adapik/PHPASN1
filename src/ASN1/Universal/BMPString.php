@@ -19,13 +19,11 @@ class BMPString extends AbstractCharacterString
 {
     /**
      * Creates a new ASN.1 BMP String.
-     *
      * BMPString is a subtype of UniversalString that has its own
      * unique tag and contains only the characters in the
      * Basic Multilingual Plane (those corresponding to the first
      * 64K-2 cells, less cells whose encoding is used to address
      * characters outside the Basic Multilingual Plane) of ISO/IEC 10646-1.
-     *
      * TODO The encodable characters of this type are not yet checked.
      *
      * @param string $string
