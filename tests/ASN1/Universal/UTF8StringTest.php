@@ -30,8 +30,8 @@ class UTF8StringTest extends ASN1TestCase
 
     public function testContent()
     {
-        $object = UTF8String::createFromString('Hello World');
-        $this->assertEquals('Hello World', (string) $object);
+        $object = UTF8String::createFromString('Москва');
+        $this->assertEquals('Москва', (string) $object);
     }
 
     public function testGetObjectLength()

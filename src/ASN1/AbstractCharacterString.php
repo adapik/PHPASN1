@@ -175,8 +175,14 @@ abstract class AbstractCharacterString extends ASN1Object implements CharacterSt
        if (!array_key_exists($from, self::STRING_TYPE_SIZE) || !array_key_exists($to, self::STRING_TYPE_SIZE)) {
             return false;
         }
+
         $insize  = self::STRING_TYPE_SIZE[$from];
         $outsize = self::STRING_TYPE_SIZE[$to];
+
+        if ($insize === $outsize) {
+            return $in;
+        }
+
         $inlength = strlen($in);
         $out = '';
 
