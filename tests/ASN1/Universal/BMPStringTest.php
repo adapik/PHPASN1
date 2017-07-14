@@ -10,6 +10,7 @@
 
 namespace FG\Test\ASN1\Universal;
 
+use FG\ASN1\ASN1Object;
 use FG\ASN1\ContentLength;
 use FG\Test\ASN1TestCase;
 use FG\ASN1\Identifier;
@@ -33,7 +34,7 @@ class BMPStringTest extends ASN1TestCase
     {
         $string = 'Hello World';
         $object = BMPString::createFromString($string);
-        $expectedSize = 2 + strlen($string);
+        $expectedSize = 2 + strlen($string) * 2;
         $this->assertEquals($expectedSize, $object->getObjectLength());
     }
 
@@ -41,9 +42,10 @@ class BMPStringTest extends ASN1TestCase
     {
         $string = 'Hello World';
         $expectedType = chr(Identifier::BMP_STRING);
-        $expectedLength = chr(strlen($string));
+        $expectedLength = chr(strlen($string) * 2);
 
-        $object = BMPString::createFromString($string, ['lengthForm' => ContentLength::SHORT_FORM]);
+        $object = BMPString::createFromString($string);
+        $string = "\x00H\x00e\x00l\x00l\x00o\x00 \x00W\x00o\x00r\x00l\x00d";
         $this->assertEquals($expectedType.$expectedLength.$string, $object->getBinary());
     }
 
@@ -63,8 +65,8 @@ class BMPStringTest extends ASN1TestCase
      */
     public function testFromBinaryWithOffset()
     {
-        $originalObject1 = BMPString::createFromString('Hello ', ['lengthForm' => ContentLength::SHORT_FORM]);
-        $originalObject2 = BMPString::createFromString(' World', ['lengthForm' => ContentLength::SHORT_FORM]);
+        $originalObject1 = BMPString::createFromString('Hello ');
+        $originalObject2 = BMPString::createFromString(' World');
 
         $binaryData  = $originalObject1->getBinary();
         $binaryData .= $originalObject2->getBinary();
@@ -72,9 +74,17 @@ class BMPStringTest extends ASN1TestCase
         $offset = 0;
         $parsedObject = BMPString::fromBinary($binaryData, $offset);
         $this->assertEquals($originalObject1, $parsedObject);
-        $this->assertEquals(8, $offset);
+        $this->assertEquals(14, $offset);
         $parsedObject = BMPString::fromBinary($binaryData, $offset);
         $this->assertEquals($originalObject2, $parsedObject);
-        $this->assertEquals(16, $offset);
+        $this->assertEquals(28, $offset);
+    }
+
+    public function testGetValue()
+    {
+        $string = hex2bin('1E12003700370020041C043E0441043A04320430');
+        $bmpString = ASN1Object::fromBinary($string);
+        $this->assertInstanceOf(BMPString::class, $bmpString);
+        $this->assertSame('77 Москва', (string) $bmpString);
     }
 }
