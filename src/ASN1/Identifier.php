@@ -11,10 +11,9 @@ namespace FG\ASN1;
 
 class Identifier extends ObjectPart
 {
-    public $tagClass;
+    private $tagClass;
     private $tagNumber;
-    public $isConstructed;
-    public $code;
+    private $isConstructed;
 
     const CLASS_UNIVERSAL        = 0x00;
     const CLASS_APPLICATION      = 0x01;
@@ -67,7 +66,6 @@ class Identifier extends ObjectPart
         $this->isConstructed = IdentifierManager::isConstructed($firstOctet);
         $this->tagClass      = ord($firstOctet) >> 6;
         $this->tagNumber     = IdentifierManager::getTagNumber($identifierOctets);
-        $this->code          = $this->getCode();
     }
 
     public function getTagNumber()
@@ -163,5 +161,10 @@ class Identifier extends ObjectPart
     public function isConstructed()
     {
         return $this->isConstructed;
+    }
+
+    public function getTagClass()
+    {
+        return $this->tagClass;
     }
 }

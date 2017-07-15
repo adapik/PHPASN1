@@ -37,7 +37,7 @@ class GeneralizedTime extends AbstractTime
     {
         parent::__construct($identifier, $contentLength, $content, $children);
 
-        if (!$this->identifier->isConstructed) {
+        if (!$this->identifier->isConstructed()) {
             $this->setValue($content);
         }
 
@@ -90,7 +90,7 @@ class GeneralizedTime extends AbstractTime
 
     public function setValue(Content $content)
     {
-        $binaryData  = $content->binaryData;
+        $binaryData  = $content->getBinary();
         $offsetIndex = 0;
 
         $lengthOfMinimumTimeString = 14; // YYYYMMDDHHmmSS

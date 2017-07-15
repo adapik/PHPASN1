@@ -30,7 +30,7 @@ class Boolean extends ASN1Object
 
         parent::__construct($identifier, $contentLength, $content, $children);
 
-        if (!$this->identifier->isConstructed) {
+        if (!$this->identifier->isConstructed()) {
             $this->setValue($content);
         }
     }
@@ -66,7 +66,7 @@ class Boolean extends ASN1Object
 
     public function setValue(Content $content)
     {
-        $valueOctet = isset($content->binaryData[0]) ? ord($content->binaryData[0]) : null;
+        $valueOctet = isset($content->getBinary()[0]) ? ord($content->getBinary()[0]) : null;
 
         switch ($valueOctet) {
             case self::FALSE:

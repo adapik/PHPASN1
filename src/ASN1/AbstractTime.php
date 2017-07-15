@@ -23,7 +23,7 @@ abstract class AbstractTime extends ASN1Object
 
         parent::__construct($identifier, $contentLength, $content, $children);
 
-        if (!$this->identifier->isConstructed) {
+        if (!$this->identifier->isConstructed()) {
             $this->setValue($content);
         }
     }

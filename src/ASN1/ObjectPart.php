@@ -10,7 +10,7 @@ namespace FG\ASN1;
 
 abstract class ObjectPart
 {
-    public $binaryData;
+    protected $binaryData;
 
     public function getNrOfOctets()
     {

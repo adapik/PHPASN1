@@ -72,7 +72,7 @@ class UTCTime extends AbstractTime implements Parsable
 
     public function setValue(Content $content)
     {
-        $binaryData  = $content->binaryData;
+        $binaryData  = $content->getBinary();
         $offsetIndex = 0;
 
         $format         = 'ymdGi';

@@ -1,28 +1,15 @@
 <?php
-/*
- * This file is part of the PHPASN1 library.
- *
- * Copyright © Friedrich Große <friedrich.grosse@gmail.com>
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
 
 namespace FG\ASN1;
 
 use Exception;
 
 /**
- * The Identifier encodes the ASN.1 tag (class and number) of the type of a data value.
- * Every identifier whose number is in the range 0 to 30 has the following structure:
- * Bits:    8  7    6    5  4  3  2  1
- *       | Class | P/C |   Tag number  |
- *       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- * Bits 8 and 7 define the class of this type ( Universal, Application, Context-specific or Private).
- * Bit 6 encoded whether this type is primitive or constructed
- * The remaining bits 5 - 1 encode the tag number
+ * Class IdentifierManager
+ *
+ * Class contains only pure functions
  */
-class IdentifierManager
+final class IdentifierManager
 {
     const CLASS_UNIVERSAL        = 0x00;
     const CLASS_APPLICATION      = 0x01;

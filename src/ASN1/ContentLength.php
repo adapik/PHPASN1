@@ -14,8 +14,7 @@ class ContentLength extends ObjectPart
     const INDEFINITE_FORM = 2;
     const LONG_FORM       = 3;
 
-
-    public $form;
+    private $form;
     public $length;
 
     /**
@@ -25,9 +24,7 @@ class ContentLength extends ObjectPart
     public function __construct($lengthOctets, $length = null)
     {
         $this->binaryData = $lengthOctets;
-
         $this->form = $this->defineForm();
-
         $this->length = $length ?: $this->calculateContentLength();
     }
 

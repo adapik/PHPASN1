@@ -94,7 +94,7 @@ class Integer extends ASN1Object
 
     public function setValue(Content $content)
     {
-        $binaryData    = $content->binaryData;
+        $binaryData    = $content->getBinary();
         $offsetIndex   = 0;
         $contentLength = $this->contentLength->length;
         $isNegative    = (ord($binaryData[$offsetIndex]) & 0x80) != 0x00;

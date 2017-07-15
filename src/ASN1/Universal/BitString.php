@@ -28,7 +28,7 @@ class BitString extends OctetString implements Parsable
     {
         parent::__construct($identifier, $contentLength, $content, $children);
 
-        $this->nrOfUnusedBits = $nrOfUnusedBits = ord($content->binaryData[0]);
+        $this->nrOfUnusedBits = $nrOfUnusedBits = ord($content->getBinary()[0]);
 
         if (!is_numeric($nrOfUnusedBits) || $nrOfUnusedBits < 0) {
             throw new Exception('BitString: second parameter needs to be a positive number (or zero)!');
@@ -51,7 +51,7 @@ class BitString extends OctetString implements Parsable
 
     public function setValue(Content $content)
     {
-        $binaryData = $content->binaryData;
+        $binaryData = $content->getBinary();
         $value      = bin2hex(substr($binaryData, 1, $this->contentLength->length - 1));
 
         if (is_string($value)) {
@@ -76,7 +76,7 @@ class BitString extends OctetString implements Parsable
      */
     public function getStringValue()
     {
-        return strtoupper(bin2hex(substr($this->content->binaryData, 1)));
+        return strtoupper(bin2hex(substr($this->content->getBinary(), 1)));
     }
 
     public static function createFromBitString(string $bitString, $options = []): self

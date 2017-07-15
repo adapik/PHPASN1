@@ -17,7 +17,7 @@ class ElementBuilder
     {
         $identifier = self::createIdentifier($tagClass, $tagName, $isConstructed);
 
-        if ($identifier->tagClass === Identifier::CLASS_UNIVERSAL && $identifier->isConstructed === false) {
+        if ($identifier->getTagClass() === Identifier::CLASS_UNIVERSAL && $identifier->isConstructed() === false) {
             //для простых элементов вызываем конструктор
             switch ($identifier->getTagNumber()) {
                 case Identifier::BITSTRING:
@@ -88,7 +88,7 @@ class ElementBuilder
                     break;
                 default:
                     // At this point the identifier may be >1 byte.
-                    if ($identifier->isConstructed) {
+                    if ($identifier->isConstructed()) {
                         $value = UnknownConstructedObject::encodeValue($value);
                     } else {
                         $value = UnknownObject::encodeValue($value);
@@ -109,7 +109,7 @@ class ElementBuilder
 
         $content = new Content($contentOctets);
 
-        if ($identifier->tagClass === Identifier::CLASS_UNIVERSAL) {
+        if ($identifier->getTagClass() === Identifier::CLASS_UNIVERSAL) {
             //для простых элементов вызываем конструктор
             switch ($identifier->getTagNumber()) {
                 case Identifier::BITSTRING:
@@ -162,7 +162,7 @@ class ElementBuilder
                     return new Universal\ObjectDescriptor($identifier, $contentLength, $content, $children);
                 default:
                     // At this point the identifier may be >1 byte.
-                    if ($identifier->isConstructed) {
+                    if ($identifier->isConstructed()) {
                         return new UnknownConstructedObject($identifier, $contentLength, $content, $children);
                     } else {
 
@@ -171,8 +171,8 @@ class ElementBuilder
             }
         }
 
-        if ($identifier->tagClass === Identifier::CLASS_CONTEXT_SPECIFIC) {
-            if ($identifier->isConstructed) {
+        if ($identifier->getTagClass() === Identifier::CLASS_CONTEXT_SPECIFIC) {
+            if ($identifier->isConstructed()) {
                 return new ExplicitlyTaggedObject($identifier, $contentLength, $content, $children);
             } else {
                 return new ImplicitlyTaggedObject($identifier, $contentLength, $content, $children);

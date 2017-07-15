@@ -7,7 +7,7 @@ use InvalidArgumentException;
 /**
  * A base-128 decoder.
  */
-class Base128
+final class Base128
 {
     /**
      * @param int $intValue

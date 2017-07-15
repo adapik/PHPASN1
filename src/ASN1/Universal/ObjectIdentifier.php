@@ -102,7 +102,7 @@ class ObjectIdentifier extends ASN1Object
 
     public function setValue(Content $content)
     {
-        $binaryData  = $content->binaryData;
+        $binaryData  = $content->getBinary();
         $offsetIndex = 0;
         $firstOctet  = ord($binaryData[$offsetIndex++]);
         $oidString   = floor($firstOctet / 40) . '.' . ($firstOctet % 40);
