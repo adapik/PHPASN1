@@ -52,7 +52,7 @@ class BitString extends OctetString implements Parsable
     public function setValue(Content $content)
     {
         $binaryData = $content->getBinary();
-        $value      = bin2hex(substr($binaryData, 1, $this->contentLength->length - 1));
+        $value      = bin2hex(substr($binaryData, 1, $this->contentLength->getLength() - 1));
 
         if (is_string($value)) {
             // remove gaps between hex digits

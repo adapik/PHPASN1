@@ -62,18 +62,19 @@ class Decoder
         $children = [];
         //запоминаем начало элемента
         $startPos = $offsetIndex;
+        $nrOfContentOctets = $contentLength->getLength();
         //для составных элементов ищем детей
         if ($identifier->isConstructed()) {
             $children = $this->parseChildren($binaryData, $offsetIndex, $contentLength);
             //разница между текущем положением сдвига и стартовым - длина детей, блина контента составного элемента
-            $contentLength->length = abs($startPos - $offsetIndex);
+            $nrOfContentOctets = abs($startPos - $offsetIndex);
         } else {
             if ($contentLength->getLengthForm() === ContentLength::INDEFINITE_FORM) {
                 for (; ;) {
                     $firstOctet  = $binaryData[$offsetIndex];
                     $secondOctet = $binaryData[$offsetIndex++];
                     if ($firstOctet . $secondOctet === chr(0) . chr(0)) {
-                        $contentLength->length = abs($startPos - $offsetIndex) + 1;
+                        $nrOfContentOctets = abs($startPos - $offsetIndex) + 1;
                         break;
                     }
                 }
@@ -82,20 +83,16 @@ class Decoder
 
         //если неопределенная форма - вычитаем 2 октета на EOC
         if ($contentLength->getLengthForm() === ContentLength::INDEFINITE_FORM) {
-            $contentLength->length -= 2;
+            $nrOfContentOctets -= 2;
         }
 
-        //todo exception raises when object not constructed and length form is indefinite - its wrong
-        if (!is_int($contentLength->length)) {
-            throw new ParserException('Length of Object not determined', $offsetIndex);
-        }
-
-        $contentOctets = substr($binaryData, $startPos, $contentLength->length);
+        $contentOctets = substr($binaryData, $startPos, $nrOfContentOctets);
         //если сдвигов не происходило (дети не парсились) прибавим длину контента
         if ($offsetIndex === $startPos) {
-            $offsetIndex = $startPos + $contentLength->length;
+            $offsetIndex = $startPos + $nrOfContentOctets;
         }
-        $content = new Content($contentOctets);
+        $content       = new Content($contentOctets);
+        $contentLength = new ContentLength($lengthOctets, $nrOfContentOctets);
 
         if ($identifier->getTagClass() === Identifier::CLASS_UNIVERSAL) {
             //для простых элементов вызываем конструктор
@@ -150,13 +147,6 @@ class Decoder
                     return new T61String($identifier, $contentLength, $content, $children);
                 case Identifier::OBJECT_DESCRIPTOR:
                     return new ObjectDescriptor($identifier, $contentLength, $content, $children);
-                default:
-                    // At this point the identifier may be >1 byte.
-                    if ($identifier->isConstructed()) {
-                        return new UnknownConstructedObject($identifier, $contentLength, $content, $children);
-                    } else {
-                        return new UnknownObject($identifier, $contentLength, $content, $children);
-                    }
             }
         }
 

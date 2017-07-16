@@ -4,6 +4,7 @@ namespace FG\Test\ASN1\Universal;
 
 use FG\ASN1\Decoder\Decoder;
 use FG\ASN1\ExplicitlyTaggedObject;
+use FG\ASN1\ImplicitlyTaggedObject;
 use FG\ASN1\Universal\GeneralizedTime;
 use FG\Test\ASN1TestCase;
 use FG\ASN1\UnknownConstructedObject;
@@ -163,6 +164,28 @@ class DecoderTest extends ASN1TestCase
         $parsedObject = $this->decoder->fromBinary($binaryData);
         $this->assertTrue($parsedObject instanceof ExplicitlyTaggedObject);
 
+        $binaryString = hex2bin('860103');
+        $object = $this->decoder->fromBinary($binaryString);
+        $this->assertInstanceOf(ImplicitlyTaggedObject::class, $object);
+
+        //PRIVATE 16 Primitive
+        $binaryString = hex2bin('D00103');
+        $object = $this->decoder->fromBinary($binaryString);
+        $this->assertInstanceOf(UnknownObject::class, $object);
+
+        //PRIVATE 1 Constructed
+        $binaryData = hex2bin('E1');
+        $binaryData .= chr(0x06);
+        $binaryData .= chr(Identifier::BOOLEAN);
+        $binaryData .= chr(0x01);
+        $binaryData .= chr(0x00);
+        $binaryData .= chr(Identifier::INTEGER);
+        $binaryData .= chr(0x01);
+        $binaryData .= chr(0x03);
+
+        $object = $this->decoder->fromBinary($binaryData);
+        $this->assertInstanceOf(UnknownConstructedObject::class, $object);
+
         // An unknown constructed object containing 2 integer children,
         // first 3 bytes are the identifier.
         $binaryData   = "\x3F\x81\x7F\x06".chr(Identifier::INTEGER)."\x01\x42".chr(Identifier::INTEGER)."\x01\x69";
@@ -182,5 +205,25 @@ class DecoderTest extends ASN1TestCase
         $this->assertEquals(substr($binaryData, 0, 3), $parsedObject->getIdentifier()->getBinary());
         $this->assertEquals(strlen($binaryData), $offsetIndex);
         $this->assertEquals(5, $parsedObject->getObjectLength());
+    }
+
+    public function testFromBinaryConstructedWithIndefiniteLength()
+    {
+        //Octet string with 2 octet strings inside
+        $hex = '2480040d8dfff0980736af936e423acfcc04159277f7f0e479ffc7dc33b2d03d7b1a186d4472aa490000';
+        $bin = hex2bin($hex);
+        $object = $this->decoder->fromBinary($bin);
+
+        $this->assertInstanceOf(OctetString::class, $object);
+        $this->assertCount(2, $object->getChildren());
+    }
+
+    public function testFromBinaryPrimitiveWithIndefiniteLength()
+    {
+        $hex = '048004159277f7f0e479ffc7dc33b2d03d7b1a186d4472aa490000';
+        $bin = hex2bin($hex);
+        $object = $this->decoder->fromBinary($bin);
+
+        $this->assertInstanceOf(OctetString::class, $object);
     }
 }

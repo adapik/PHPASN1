@@ -94,7 +94,7 @@ class GeneralizedTime extends AbstractTime
         $offsetIndex = 0;
 
         $lengthOfMinimumTimeString = 14; // YYYYMMDDHHmmSS
-        $contentLength             = $this->contentLength->length;
+        $contentLength             = $this->contentLength->getLength();
         $maximumBytesToRead        = $contentLength;
 
         $format             = 'YmdGis';

@@ -96,7 +96,7 @@ class Integer extends ASN1Object
     {
         $binaryData    = $content->getBinary();
         $offsetIndex   = 0;
-        $contentLength = $this->contentLength->length;
+        $contentLength = $this->contentLength->getLength();
         $isNegative    = (ord($binaryData[$offsetIndex]) & 0x80) != 0x00;
         $number        = gmp_init(ord($binaryData[$offsetIndex++]) & 0x7F, 10);
 

@@ -11,31 +11,27 @@ namespace FG\ASN1;
 
 class ImplicitlyTaggedObject extends ASN1Object
 {
-    /** @var \FG\ASN1\ASN1Object[] */
-    private $decoratedObjects;
-
-    protected function calculateContentLength()
-    {
-        $length = 0;
-        foreach ($this->decoratedObjects as $object) {
-            $length += $object->getObjectLength();
-        }
-
-        return $length;
-    }
-
     protected function getEncodedValue()
     {
-        return $this->content->binaryData;
+        return $this->content->getBinary();
     }
 
     public function getStringValue()
     {
-        return $this->content->binaryData;
+        return $this->content->getBinary();
     }
 
     public function __toString(): string
     {
-        return '[' . $this->getIdentifier()->getTagNumber() . ']' . implode("\n", $this->decoratedObjects);
+        return '[' . $this->getIdentifier()->getTagNumber() . ']' . $this->getBinaryContent();
+    }
+
+    public function getDecoratedObject($tagNumber, $tagClass = Identifier::CLASS_UNIVERSAL,  $isConstructed = false)
+    {
+        $identifierOctets = IdentifierManager::create($tagClass, $isConstructed, $tagNumber);
+
+        $binary = $identifierOctets.$this->getContentLength()->getBinary().$this->getContent()->getBinary();
+
+        return ASN1Object::fromBinary($binary);
     }
 }

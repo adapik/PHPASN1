@@ -106,7 +106,7 @@ class ObjectIdentifier extends ASN1Object
         $offsetIndex = 0;
         $firstOctet  = ord($binaryData[$offsetIndex++]);
         $oidString   = floor($firstOctet / 40) . '.' . ($firstOctet % 40);
-        $oidString   .= '.' . self::parseOid($binaryData, $offsetIndex, $this->contentLength->length - 1);
+        $oidString   .= '.' . self::parseOid($binaryData, $offsetIndex, $this->contentLength->getLength() - 1);
         $this->value = $value = $oidString;
 
         $this->subIdentifiers = explode('.', $value);

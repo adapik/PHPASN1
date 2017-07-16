@@ -15,7 +15,7 @@ class ContentLength extends ObjectPart
     const LONG_FORM       = 3;
 
     private $form;
-    public $length;
+    private $length;
 
     /**
      * @param      $lengthOctets
@@ -81,6 +81,11 @@ class ContentLength extends ObjectPart
     public function getLength()
     {
         return $this->length;
+    }
+
+    public function setLength(int $nrOfContentOctets)
+    {
+        $this->length = $nrOfContentOctets;
     }
 
     public function getLengthForm()

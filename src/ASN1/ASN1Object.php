@@ -201,7 +201,10 @@ abstract class ASN1Object
             //если форма неопределенная, то и у родителя она тоже неопределенная
             // и энкодировать длину ни у одного родителя не нужно - просто изменить контент у всех предков
             if ($this->contentLength->getLengthForm() === ContentLength::INDEFINITE_FORM) {
-                $this->contentLength->length = $this->content->getNrOfOctets();
+                $this->contentLength = new ContentLength(
+                    $this->contentLength->getBinary(),
+                    $this->content->getNrOfOctets()
+                );
             } else {
                 $this->contentLength = ElementBuilder::createContentLength(
                     $this->content->getBinary(),
