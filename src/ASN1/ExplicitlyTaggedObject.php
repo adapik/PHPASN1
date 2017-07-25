@@ -24,21 +24,8 @@ namespace FG\ASN1;
  * [...]
  * @see http://luca.ntop.org/Teaching/Appunti/asn1.html
  */
-class ExplicitlyTaggedObject extends ASN1Object
+class ExplicitlyTaggedObject extends AbstractTaggedObject
 {
-    /** @var \FG\ASN1\ASN1Object[] */
-    private $decoratedObjects;
-
-    protected function calculateContentLength()
-    {
-        $length = 0;
-        foreach ($this->decoratedObjects as $object) {
-            $length += $object->getObjectLength();
-        }
-
-        return $length;
-    }
-
     protected function getEncodedValue()
     {
         return $this->getBinaryContent();

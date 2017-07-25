@@ -9,21 +9,8 @@
 namespace FG\ASN1;
 
 
-class ImplicitlyTaggedObject extends ASN1Object
+class ImplicitlyTaggedObject extends AbstractTaggedObject
 {
-    /** @var \FG\ASN1\ASN1Object[] */
-    private $decoratedObjects;
-
-    protected function calculateContentLength()
-    {
-        $length = 0;
-        foreach ($this->decoratedObjects as $object) {
-            $length += $object->getObjectLength();
-        }
-
-        return $length;
-    }
-
     protected function getEncodedValue()
     {
         return $this->content->binaryData;
@@ -36,6 +23,6 @@ class ImplicitlyTaggedObject extends ASN1Object
 
     public function __toString(): string
     {
-        return '[' . $this->getIdentifier()->getTagNumber() . ']' . implode("\n", $this->decoratedObjects);
+        return '[' . $this->getIdentifier()->getTagNumber() . ']'.$this->getBinaryContent();
     }
 }
