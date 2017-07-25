@@ -56,6 +56,9 @@ class Identifier extends ObjectPart
     const LONG_FORM      = 0x1F;
     const IS_CONSTRUCTED = 0x20;
 
+    const ANY    = -1;
+    const CHOICE = -2;
+
     /**
      * @param $identifier
      */
