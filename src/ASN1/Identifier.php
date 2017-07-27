@@ -9,7 +9,7 @@
 namespace FG\ASN1;
 
 
-class Identifier extends ObjectPart
+class Identifier extends ObjectPart implements IdentifierInterface
 {
     public $tagClass;
     private $tagNumber;
@@ -73,9 +73,14 @@ class Identifier extends ObjectPart
         $this->code          = $this->getCode();
     }
 
-    public function getTagNumber()
+    public function getTagNumber(): int
     {
         return $this->tagNumber;
+    }
+
+    public function getTagClass()
+    {
+        return $this->tagClass;
     }
 
     public function getCode()

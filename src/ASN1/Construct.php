@@ -107,14 +107,6 @@ abstract class Construct extends ASN1Object implements Countable, ArrayAccess, I
     }
 
     /**
-     * @return \FG\ASN1\ASN1Object[]
-     */
-    public function getChildren()
-    {
-        return $this->children;
-    }
-
-    /**
      * @return \FG\ASN1\ASN1Object
      */
     public function getFirstChild()

@@ -9,7 +9,7 @@
 namespace FG\ASN1;
 
 
-class Content extends ObjectPart
+class Content extends ObjectPart implements ContentInterface
 {
     public function __construct($binaryData)
     {

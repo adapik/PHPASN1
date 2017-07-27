@@ -8,12 +8,11 @@
 
 namespace FG\ASN1;
 
-class ContentLength extends ObjectPart
+class ContentLength extends ObjectPart implements ContentLengthInterface
 {
     const SHORT_FORM      = 1;
     const INDEFINITE_FORM = 2;
     const LONG_FORM       = 3;
-
 
     public $form;
     public $length;

@@ -12,12 +12,12 @@ abstract class ObjectPart
 {
     public $binaryData;
 
-    public function getNrOfOctets()
+    public function getNrOfOctets(): int
     {
         return strlen($this->binaryData);
     }
 
-    public function getBinary()
+    public function getBinary(): string
     {
         return $this->binaryData;
     }
