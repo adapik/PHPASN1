@@ -14,6 +14,11 @@ use Exception;
 use FG\ASN1\Exception\ParserException;
 use FG\ASN1\Universal\Sequence;
 
+/**
+ * @deprecated
+ *
+ * use \FG\ASN1\Mapper\Mapper instead
+ */
 class TemplateParser
 {
     /**

@@ -275,34 +275,6 @@ final class IdentifierManager
         return Base128::decode(substr($identifier, 1));
     }
 
-    public static function isUniversalClass($identifier)
-    {
-        $identifier = self::makeNumeric($identifier);
-
-        return $identifier >> 6 === self::CLASS_UNIVERSAL;
-    }
-
-    public static function isApplicationClass($identifier)
-    {
-        $identifier = self::makeNumeric($identifier);
-
-        return $identifier >> 6 === self::CLASS_APPLICATION;
-    }
-
-    public static function isContextSpecificClass($identifier)
-    {
-        $identifier = self::makeNumeric($identifier);
-
-        return $identifier >> 6 === self::CLASS_CONTEXT_SPECIFIC;
-    }
-
-    public static function isPrivateClass($identifier)
-    {
-        $identifier = self::makeNumeric($identifier);
-
-        return $identifier >> 6 === self::CLASS_PRIVATE;
-    }
-
     private static function makeNumeric($identifierOctet)
     {
         if (!is_numeric($identifierOctet)) {

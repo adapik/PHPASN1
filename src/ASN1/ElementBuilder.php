@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: 109
- * Date: 23.10.2015
- * Time: 15:17
- */
 
 namespace FG\ASN1;
 

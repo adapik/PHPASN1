@@ -23,7 +23,7 @@ use FG\ASN1\Universal\Sequence;
  * @property Identifier    $identifier
  * Class Object is the base class for all concrete ASN.1 objects.
  */
-abstract class ASN1Object
+abstract class ASN1Object implements ASN1ObjectInterface
 {
     /** @var \FG\ASN1\ASN1Object[] */
     protected $children = [];
@@ -76,7 +76,7 @@ abstract class ASN1Object
     /**
      * @return Content
      */
-    public function getContent(): Content
+    public function getContent(): ContentInterface
     {
         return $this->content;
     }
@@ -84,7 +84,7 @@ abstract class ASN1Object
     /**
      * @return Identifier
      */
-    public function getIdentifier(): Identifier
+    public function getIdentifier(): IdentifierInterface
     {
         return $this->identifier;
     }
@@ -92,7 +92,7 @@ abstract class ASN1Object
     /**
      * @return ContentLength
      */
-    public function getContentLength(): ContentLength
+    public function getContentLength(): ContentLengthInterface
     {
         return $this->contentLength;
     }
@@ -269,7 +269,7 @@ abstract class ASN1Object
     /**
      * @return \FG\ASN1\ASN1Object[]
      */
-    public function getChildren()
+    public function getChildren(): array
     {
         return $this->children;
     }

@@ -1,14 +1,8 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: 109
- * Date: 21.10.2015
- * Time: 11:33
- */
 
 namespace FG\ASN1;
 
-class ContentLength extends ObjectPart
+class ContentLength extends ObjectPart implements ContentLengthInterface
 {
     const SHORT_FORM      = 1;
     const INDEFINITE_FORM = 2;

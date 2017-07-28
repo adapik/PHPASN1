@@ -1,15 +1,9 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: 109
- * Date: 21.10.2015
- * Time: 11:20
- */
 
 namespace FG\ASN1;
 
 
-class Identifier extends ObjectPart
+class Identifier extends ObjectPart implements IdentifierInterface
 {
     private $tagClass;
     private $tagNumber;
@@ -55,6 +49,9 @@ class Identifier extends ObjectPart
     const LONG_FORM      = 0x1F;
     const IS_CONSTRUCTED = 0x20;
 
+    const ANY    = -1;
+    const CHOICE = -2;
+
     /**
      * @param $identifier
      */
@@ -68,9 +65,14 @@ class Identifier extends ObjectPart
         $this->tagNumber     = IdentifierManager::getTagNumber($identifierOctets);
     }
 
-    public function getTagNumber()
+    public function getTagNumber(): int
     {
         return $this->tagNumber;
+    }
+
+    public function getTagClass()
+    {
+        return $this->tagClass;
     }
 
     public function getCode()

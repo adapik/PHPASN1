@@ -81,32 +81,6 @@ $asnObject = Object::fromBinary($binaryData);
 // do stuff
 ```
 
-If you already know exactly how your expected data should look like you can use the `FG\ASN1\TemplateParser`:
-
-```php
-use FG\ASN1\TemplateParser;
-
-// first define your template
-$template = [
-    Identifier::SEQUENCE => [
-        Identifier::SET => [
-            Identifier::OBJECT_IDENTIFIER,
-            Identifier::SEQUENCE => [
-                Identifier::INTEGER,
-                Identifier::BITSTRING,
-            ]
-        ]
-    ]
-];
-
-// if your binary data is not matching the template you provided this will throw an `\Exception`:
-$parser = new TemplateParser();
-$object = $parser->parseBinary($data, $template);
-
-// there is also a convenience function if you parse binary data from base64:
-$object = $parser->parseBase64($data, $template);
-```
-
 You can use this function to make sure your data has exactly the format you are expecting.
 
 ### Thanks

@@ -10,8 +10,10 @@ use FG\ASN1\Universal\ObjectIdentifier;
 use FG\ASN1\Universal\Sequence;
 use FG\ASN1\Universal\Set;
 use PHPUnit\Framework\TestCase;
-use PHPUnit_Framework_TestCase;
 
+/**
+ * @deprecated
+ */
 class TemplateParserTest extends TestCase
 {
     public function testParseBase64()
