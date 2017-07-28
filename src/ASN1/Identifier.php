@@ -164,9 +164,4 @@ class Identifier extends ObjectPart implements IdentifierInterface
     {
         return $this->isConstructed;
     }
-
-    public function getTagClass()
-    {
-        return $this->tagClass;
-    }
 }
