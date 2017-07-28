@@ -1,6 +1,7 @@
 <?php
 
 namespace FG\ASN1\Mapper;
+
 use FG\ASN1\AbstractTaggedObject;
 use FG\ASN1\ASN1ObjectInterface;
 use FG\ASN1\Identifier;
