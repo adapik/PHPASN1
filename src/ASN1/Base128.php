@@ -17,7 +17,7 @@ final class Base128
     public static function encode(int $intValue)
     {
         $value  = gmp_init($intValue, 10);
-        $octets = chr(gmp_strval(gmp_and($value, 0x7f), 10));
+        $octets = chr(gmp_strval(gmp_and($value, 0x7f)));
 
         $rightShift = function ($number, $positions) {
             return gmp_div($number, gmp_pow(2, $positions));
@@ -25,7 +25,7 @@ final class Base128
 
         $value = $rightShift($value, 7);
         while (gmp_cmp($value, 0) > 0) {
-            $octets .= chr(gmp_strval(gmp_or(0x80, gmp_and($value, 0x7f)), 10));
+            $octets .= chr(gmp_strval(gmp_or(0x80, gmp_and($value, 0x7f))));
             $value  = $rightShift($value, 7);
         }
 

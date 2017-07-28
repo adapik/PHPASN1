@@ -111,7 +111,7 @@ class Integer extends ASN1Object
             $number = gmp_sub($number, gmp_pow(2, 8 * $contentLength - 1));
         }
 
-        $value = gmp_strval($number, 10);
+        $value = gmp_strval($number);
         if (is_string($value)) {
             // remove gaps between hex digits
             $value = preg_replace('/\s|0x/', '', $value);

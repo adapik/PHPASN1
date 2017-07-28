@@ -12,9 +12,6 @@ namespace FG\ASN1\Universal;
 
 use FG\ASN1\AbstractCharacterString;
 use FG\ASN1\Identifier;
-use FG\ASN1\ContentLength;
-use FG\ASN1\Content;
-
 class GeneralString extends AbstractCharacterString
 {
     public static function getType()
