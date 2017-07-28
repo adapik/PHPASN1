@@ -24,8 +24,12 @@ class T61String extends AbstractCharacterString
      *
      * @param string $string
      */
-    public function __construct(Identifier $identifier, ContentLength $contentLength, Content $content, array $children = [])
-    {
+    public function __construct(
+        Identifier $identifier,
+        ContentLength $contentLength,
+        Content $content,
+        array $children = []
+    ) {
         $this->allowAll();
 
         parent::__construct($identifier, $contentLength, $content, $children);

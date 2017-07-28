@@ -2,7 +2,6 @@
 
 namespace FG\ASN1;
 
-
 class Identifier extends ObjectPart implements IdentifierInterface
 {
     private $tagClass;
@@ -165,3 +164,4 @@ class Identifier extends ObjectPart implements IdentifierInterface
         return $this->isConstructed;
     }
 }
+

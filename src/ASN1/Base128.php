@@ -35,7 +35,9 @@ final class Base128
     /**
      * @param string $octets
      *
-     * @throws InvalidArgumentException if the given octets represent a malformed base-128 value or the decoded value would exceed the the maximum integer length
+     * @throws InvalidArgumentException if the given octets represent a malformed base-128 value
+     * or the decoded value would exceed the the maximum integer length
+     *
      * @return int
      */
     public static function decode($octets)
@@ -50,7 +52,9 @@ final class Base128
 
         while (true) {
             if (!isset($octets[$i])) {
-                throw new InvalidArgumentException(sprintf('Malformed base-128 encoded value (0x%s).', strtoupper(bin2hex($octets)) ?: '0'));
+                throw new InvalidArgumentException(
+                    sprintf('Malformed base-128 encoded value (0x%s).', strtoupper(bin2hex($octets)) ?: '0')
+                );
             }
 
             $octet = gmp_init(ord($octets[$i++]), 10);

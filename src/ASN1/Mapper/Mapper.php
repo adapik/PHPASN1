@@ -116,7 +116,10 @@ class Mapper
                 array_shift($mapping['children']);
             }
 
-            while (null === $matched && array_key_exists('optional', $currentMapping) && $currentMapping['optional'] === true) {
+            while (null === $matched &&
+                array_key_exists('optional', $currentMapping) &&
+                $currentMapping['optional'] === true
+            ) {
                 array_shift($mapping['children']);
                 $currentMapping = reset($mapping['children']);
                 $currentKey     = key($mapping['children']);

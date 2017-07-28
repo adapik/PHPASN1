@@ -24,7 +24,8 @@ use FG\ASN1\ContentLength;
  * This ASN.1 universal type contains date and time information according to ISO 8601.
  * The type consists of values representing:
  * a) a calendar date, as defined in ISO 8601; and
- * b) a time of day, to any of the precisions defined in ISO 8601, except for the hours value 24 which shall not be used; and
+ * b) a time of day, to any of the precisions defined in ISO 8601,
+ *    except for the hours value 24 which shall not be used; and
  * c) the local time differential factor as defined in ISO 8601.
  * Decoding of this type will accept the Basic Encoding Rules (BER)
  * The encoding will comply with the Distinguished Encoding Rules (DER).
@@ -33,8 +34,12 @@ class GeneralizedTime extends AbstractTime
 {
     private $microseconds;
 
-    public function __construct(Identifier $identifier, ContentLength $contentLength, Content $content, array $children = [])
-    {
+    public function __construct(
+        Identifier $identifier,
+        ContentLength $contentLength,
+        Content $content,
+        array $children = []
+    ) {
         parent::__construct($identifier, $contentLength, $content, $children);
 
         if (!$this->identifier->isConstructed()) {
@@ -145,7 +150,14 @@ class GeneralizedTime extends AbstractTime
                 if ($dateTimeObject === false) {
                     $errorMessage = $this->getLastDateTimeErrors();
                     $className    = IdentifierManager::getName(static::getType());
-                    throw new \Exception(sprintf("Could not create %s from date time string '%s': %s", $className, $dateTime, $errorMessage));
+                    throw new \Exception(
+                        sprintf(
+                            "Could not create %s from date time string '%s': %s",
+                            $className,
+                            $dateTime,
+                            $errorMessage
+                        )
+                    );
                 }
                 $dateTime = $dateTimeObject;
             } elseif (!$dateTime instanceof DateTime) {
@@ -159,7 +171,6 @@ class GeneralizedTime extends AbstractTime
                 // DER requires us to remove trailing zeros
                 $this->microseconds = preg_replace('/([1-9]+)0+$/', '$1', $this->microseconds);
             }
-
         }
     }
 

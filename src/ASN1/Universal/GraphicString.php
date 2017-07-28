@@ -17,18 +17,6 @@ use FG\ASN1\Content;
 
 class GraphicString extends AbstractCharacterString
 {
-    /**
-     * Creates a new ASN.1 Graphic String.
-     * TODO The encodable characters of this type are not yet checked.
-     *
-     * @param string $string
-     */
-    public function __construct(Identifier $identifier, ContentLength $contentLength, Content $content, array $children = [])
-    {
-
-        parent::__construct($identifier, $contentLength, $content, $children);
-    }
-
     public static function getType()
     {
         return Identifier::GRAPHIC_STRING;

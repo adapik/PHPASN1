@@ -27,12 +27,15 @@ class Integer extends ASN1Object
      *
      * @throws Exception if the value is not numeric
      */
-    public function __construct(Identifier $identifier, ContentLength $contentLength, Content $content, array $children = [])
-    {
+    public function __construct(
+        Identifier $identifier,
+        ContentLength $contentLength,
+        Content $content,
+        array $children = []
+    ) {
         parent::__construct($identifier, $contentLength, $content, $children);
 
         $this->setValue($content);
-
     }
 
     public static function getType()

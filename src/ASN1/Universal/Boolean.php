@@ -25,9 +25,12 @@ class Boolean extends ASN1Object
 
     const TRUE = 0xFF;
 
-    public function __construct(Identifier $identifier, ContentLength $contentLength, Content $content, array $children = [])
-    {
-
+    public function __construct(
+        Identifier $identifier,
+        ContentLength $contentLength,
+        Content $content,
+        array $children = []
+    ) {
         parent::__construct($identifier, $contentLength, $content, $children);
 
         if (!$this->identifier->isConstructed()) {

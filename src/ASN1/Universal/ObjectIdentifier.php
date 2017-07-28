@@ -24,8 +24,12 @@ class ObjectIdentifier extends ASN1Object
     protected $subIdentifiers;
     protected $value;
 
-    public function __construct(Identifier $identifier, ContentLength $contentLength, Content $content, array $children = [])
-    {
+    public function __construct(
+        Identifier $identifier,
+        ContentLength $contentLength,
+        Content $content,
+        array $children = []
+    ) {
         parent::__construct($identifier, $contentLength, $content, $children);
 
         $this->setValue($content);
@@ -117,7 +121,11 @@ class ObjectIdentifier extends ASN1Object
                 // enforce the integer type
                 $this->subIdentifiers[$i] = (int)$this->subIdentifiers[$i];
             } else {
-                throw new Exception("[{$value}] is no valid object identifier (sub identifier " . ($i + 1) . ' is not numeric)!');
+                throw new Exception(
+                    "[{$value}] is no valid object identifier (sub identifier " .
+                    ($i + 1) .
+                    ' is not numeric)!'
+                );
             }
         }
 
@@ -157,7 +165,11 @@ class ObjectIdentifier extends ASN1Object
 
         for ($i = 0; $i < $nrOfSubIdentifiers; $i++) {
             if (!is_numeric($subIdentifiers[$i])) {
-                throw new Exception("[{$oid}] is no valid object identifier (sub identifier " . ($i + 1) . ' is not numeric)!');
+                throw new Exception(
+                    "[{$oid}] is no valid object identifier (sub identifier " .
+                    ($i + 1) .
+                    ' is not numeric)!'
+                );
             }
         }
 
@@ -170,5 +182,4 @@ class ObjectIdentifier extends ASN1Object
                 ContentLength::SHORT_FORM
             );
     }
-
 }

@@ -4,7 +4,6 @@ namespace FG\ASN1;
 
 use FG\ASN1\Universal;
 
-
 class ElementBuilder
 {
     public static function createObject($tagClass, $tagName, $isConstructed, $value, $lengthForm, $children = [])
@@ -159,7 +158,6 @@ class ElementBuilder
                     if ($identifier->isConstructed()) {
                         return new UnknownConstructedObject($identifier, $contentLength, $content, $children);
                     } else {
-
                         return new UnknownObject($identifier, $contentLength, $content, $children);
                     }
             }
@@ -172,7 +170,6 @@ class ElementBuilder
                 return new ImplicitlyTaggedObject($identifier, $contentLength, $content, $children);
             }
         }
-
     }
 
     protected static function createIdentifier($tagClass, $isConstructed, $tagNumber)

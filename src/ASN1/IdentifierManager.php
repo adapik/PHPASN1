@@ -74,7 +74,9 @@ final class IdentifierManager
 
         $tagNumber = self::makeNumeric($tagNumber);
         if ($tagNumber < 0) {
-            throw new Exception(sprintf('Invalid $tagNumber %d given. You can only use positive integers.', $tagNumber));
+            throw new Exception(
+                sprintf('Invalid $tagNumber %d given. You can only use positive integers.', $tagNumber)
+            );
         }
 
         if ($tagNumber < self::LONG_FORM) {

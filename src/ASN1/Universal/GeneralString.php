@@ -17,18 +17,6 @@ use FG\ASN1\Content;
 
 class GeneralString extends AbstractCharacterString
 {
-    /**
-     * Creates a new ASN.1 GeneralString.
-     * TODO The encodable characters of this type are not yet checked.
-     *
-     * @param string $string
-     */
-    public function __construct(Identifier $identifier, ContentLength $contentLength, Content $content, array $children = [])
-    {
-
-        parent::__construct($identifier, $contentLength, $content, $children);
-    }
-
     public static function getType()
     {
         return Identifier::GENERAL_STRING;

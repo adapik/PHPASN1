@@ -2,7 +2,6 @@
 
 namespace FG\ASN1;
 
-
 class ImplicitlyTaggedObject extends AbstractTaggedObject
 {
     protected function getEncodedValue()
@@ -20,7 +19,7 @@ class ImplicitlyTaggedObject extends AbstractTaggedObject
         return '[' . $this->getIdentifier()->getTagNumber() . ']'.$this->getBinaryContent();
     }
 
-    public function getDecoratedObject($tagNumber, $tagClass = Identifier::CLASS_UNIVERSAL,  $isConstructed = false)
+    public function getDecoratedObject($tagNumber, $tagClass = Identifier::CLASS_UNIVERSAL, $isConstructed = false)
     {
         $identifierOctets = IdentifierManager::create($tagClass, $isConstructed, $tagNumber);
 

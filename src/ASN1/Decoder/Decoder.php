@@ -50,8 +50,10 @@ class Decoder
     public function fromBinary(&$binaryData, &$offsetIndex = 0)
     {
         if (strlen($binaryData) <= $offsetIndex) {
-            throw new ParserException('Can not parse binary from data: Offset index larger than input size',
-                $offsetIndex);
+            throw new ParserException(
+                'Can not parse binary from data: Offset index larger than input size',
+                $offsetIndex
+            );
         }
 
         $identifierOctets = $this->parseBinaryIdentifier($binaryData, $offsetIndex);
@@ -70,7 +72,7 @@ class Decoder
             $nrOfContentOctets = abs($startPos - $offsetIndex);
         } else {
             if ($contentLength->getLengthForm() === ContentLength::INDEFINITE_FORM) {
-                for (; ;) {
+                for (;;) {
                     $firstOctet  = $binaryData[$offsetIndex];
                     $secondOctet = $binaryData[$offsetIndex++];
                     if ($firstOctet . $secondOctet === chr(0) . chr(0)) {
@@ -168,7 +170,10 @@ class Decoder
     protected function parseBinaryIdentifier($binaryData, &$offsetIndex)
     {
         if (strlen($binaryData) <= $offsetIndex) {
-            throw new ParserException('Can not parse identifier from data: Offset index larger than input size', $offsetIndex);
+            throw new ParserException(
+                'Can not parse identifier from data: Offset index larger than input size',
+                $offsetIndex
+            );
         }
 
         $identifier = $binaryData[$offsetIndex++];
@@ -179,7 +184,10 @@ class Decoder
 
         while (true) {
             if (strlen($binaryData) <= $offsetIndex) {
-                throw new ParserException('Can not parse identifier (long form) from data: Offset index larger than input size', $offsetIndex);
+                throw new ParserException(
+                    'Can not parse identifier (long form) from data: Offset index larger than input size',
+                    $offsetIndex
+                );
             }
             $nextOctet  = $binaryData[$offsetIndex++];
             $identifier .= $nextOctet;
@@ -196,7 +204,10 @@ class Decoder
     protected function parseContentLength(&$binaryData, &$offsetIndex)
     {
         if (strlen($binaryData) <= $offsetIndex) {
-            throw new ParserException('Can not parse content length from data: Offset index larger than input size', $offsetIndex);
+            throw new ParserException(
+                'Can not parse content length from data: Offset index larger than input size',
+                $offsetIndex
+            );
         }
 
         $contentLengthOctets = $binaryData[$offsetIndex++];
@@ -207,7 +218,10 @@ class Decoder
             $nrOfLengthOctets = $firstOctet & 0x7F;
             for ($i = 0; $i < $nrOfLengthOctets; $i++) {
                 if (strlen($binaryData) <= $offsetIndex) {
-                    throw new ParserException('Can not parse content length (long form) from data: Offset index larger than input size', $offsetIndex);
+                    throw new ParserException(
+                        'Can not parse content length (long form) from data: Offset index larger than input size',
+                        $offsetIndex
+                    );
                 }
                 $contentLengthOctets .= $binaryData[$offsetIndex++];
             }
@@ -225,20 +239,26 @@ class Decoder
      * @return Object[]
      * @throws ParserException
      */
-    protected function parseChildren(&$binaryData, &$offsetIndex = 0, ContentLength $contentLength)
+    protected function parseChildren(&$binaryData, &$offsetIndex, ContentLength $contentLength)
     {
         $children = [];
         if (!is_nan($contentLength->getLength())) {
             $octetsToRead = $contentLength->getLength();
             while ($octetsToRead > 0) {
                 $newChild = $this->fromBinary($binaryData, $offsetIndex);
-                if (is_null($newChild)) throw new ParserException('Children not found', $offsetIndex);
-                $octetsToRead -= ($newChild->getContentLength()->getLength() + $newChild->getIdentifier()->getNrOfOctets() + $newChild->getContentLength()->getNrOfOctets());
-                $children[]   = $newChild;
+                if (is_null($newChild)) {
+                    throw new ParserException('Children not found', $offsetIndex);
+                }
+                $octetsToRead -= (
+                    $newChild->getContentLength()->getLength() +
+                    $newChild->getIdentifier()->getNrOfOctets() +
+                    $newChild->getContentLength()->getNrOfOctets()
+                );
+                $children[] = $newChild;
             }
         } else {
             /*try {*/
-            for (; ;) {
+            for (;;) {
                 $newChild = $this->fromBinary($binaryData, $offsetIndex);
                 if ($newChild instanceof EOC) {
                     break;

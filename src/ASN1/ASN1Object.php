@@ -39,8 +39,7 @@ abstract class ASN1Object implements ASN1ObjectInterface
         ContentLength $contentLength,
         Content $content,
         array $children = []
-    )
-    {
+    ) {
         $this->identifier    = $identifier;
         $this->contentLength = $contentLength;
         $this->content       = $content;
@@ -185,7 +184,10 @@ abstract class ASN1Object implements ASN1ObjectInterface
      */
     public function getNrOfOctets(): int
     {
-        return $this->identifier->getNrOfOctets() + $this->contentLength->getNrOfOctets() + $this->content->getNrOfOctets() + ($this->eoc ? $this->eoc->getNrOfOctets() : 0);
+        return $this->identifier->getNrOfOctets() +
+            $this->contentLength->getNrOfOctets() +
+            $this->content->getNrOfOctets() +
+            ($this->eoc ? $this->eoc->getNrOfOctets() : 0);
     }
 
     /**
@@ -341,7 +343,7 @@ abstract class ASN1Object implements ASN1ObjectInterface
      * @return \FG\ASN1\ASN1Object
      * @throws \Exception
      */
-    public final static function fromFile($fileContent)
+    final public static function fromFile($fileContent)
     {
         $temp = trim($fileContent);
         if (substr($fileContent, 0, 1) === '-') {

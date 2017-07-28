@@ -2,7 +2,6 @@
 
 namespace FG\ASN1;
 
-
 class EOC extends ObjectPart
 {
     public function __construct()

@@ -38,8 +38,12 @@ class PrintableString extends AbstractCharacterString
      *
      * @param string $string
      */
-    public function __construct(Identifier $identifier, ContentLength $contentLength, Content $content, array $children = [])
-    {
+    public function __construct(
+        Identifier $identifier,
+        ContentLength $contentLength,
+        Content $content,
+        array $children = []
+    ) {
         $this->allowNumbers();
         $this->allowAllLetters();
         $this->allowSpaces();
@@ -52,5 +56,4 @@ class PrintableString extends AbstractCharacterString
     {
         return Identifier::PRINTABLE_STRING;
     }
-
 }

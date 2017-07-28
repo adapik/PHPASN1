@@ -108,7 +108,14 @@ class UTCTime extends AbstractTime implements Parsable
             if ($dateTimeObject === false) {
                 $errorMessage = $this->getLastDateTimeErrors();
                 $className    = IdentifierManager::getName(static::getType());
-                throw new Exception(sprintf("Could not create %s from date time string '%s': %s", $className, $dateTime, $errorMessage));
+                throw new Exception(
+                    sprintf(
+                        "Could not create %s from date time string '%s': %s",
+                        $className,
+                        $dateTime,
+                        $errorMessage
+                    )
+                );
             }
             $dateTime = $dateTimeObject;
         } elseif (!$dateTime instanceof DateTime) {

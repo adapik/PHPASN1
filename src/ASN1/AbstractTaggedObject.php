@@ -7,7 +7,7 @@ namespace FG\ASN1;
  */
 abstract class AbstractTaggedObject extends ASN1Object
 {
-    public function getDecoratedObject($tagNumber, $tagClass = Identifier::CLASS_UNIVERSAL,  $isConstructed = false)
+    public function getDecoratedObject($tagNumber, $tagClass = Identifier::CLASS_UNIVERSAL, $isConstructed = false)
     {
         $identifierOctets = IdentifierManager::create($tagClass, $isConstructed, $tagNumber);
 

@@ -23,9 +23,12 @@ class UTF8String extends AbstractCharacterString
      *
      * @param string $string
      */
-    public function __construct(Identifier $identifier, ContentLength $contentLength, Content $content, array $children = [])
-    {
-
+    public function __construct(
+        Identifier $identifier,
+        ContentLength $contentLength,
+        Content $content,
+        array $children = []
+    ) {
         parent::__construct($identifier, $contentLength, $content, $children);
 
         $this->allowAll();

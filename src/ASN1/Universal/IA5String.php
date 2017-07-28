@@ -21,8 +21,12 @@ use FG\ASN1\Content;
  */
 class IA5String extends AbstractCharacterString
 {
-    public function __construct(Identifier $identifier, ContentLength $contentLength, Content $content, array $children = [])
-    {
+    public function __construct(
+        Identifier $identifier,
+        ContentLength $contentLength,
+        Content $content,
+        array $children = []
+    ) {
         parent::__construct($identifier, $contentLength, $content, $children);
 
         for ($i = 1; $i < 128; $i++) {

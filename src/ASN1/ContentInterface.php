@@ -1,6 +1,7 @@
 <?php
 
 namespace FG\ASN1;
+
 /**
  *
  */

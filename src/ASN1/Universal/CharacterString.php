@@ -17,12 +17,6 @@ use FG\ASN1\Content;
 
 class CharacterString extends AbstractCharacterString
 {
-    public function __construct(Identifier $identifier, ContentLength $contentLength, Content $content, array $children = [])
-    {
-
-        parent::__construct($identifier, $contentLength, $content, $children);
-    }
-
     public static function getType()
     {
         return Identifier::CHARACTER_STRING;

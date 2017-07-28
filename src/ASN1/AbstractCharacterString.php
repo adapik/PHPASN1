@@ -128,7 +128,10 @@ abstract class AbstractCharacterString extends ASN1Object implements CharacterSt
         for ($i = 0; $i < $stringLength; $i++) {
             if (in_array($this->value[$i], $this->allowedCharacters, true) === false) {
                 $typeName = IdentifierManager::getName($this->identifier->getTagNumber());
-                throw new Exception("Could not create a {$typeName} from the character sequence '{$this->value}'. Symbol {$this->value[$i]}");
+                throw new Exception(
+                    "Could not create a {$typeName} from the character sequence '{$this->value}'. ".
+                    "Symbol {$this->value[$i]}"
+                );
             }
         }
     }
@@ -172,7 +175,7 @@ abstract class AbstractCharacterString extends ASN1Object implements CharacterSt
      */
     protected static function convert($in, $from = Identifier::UTF8_STRING, $to = Identifier::UTF8_STRING)
     {
-       if (!array_key_exists($from, self::STRING_TYPE_SIZE) || !array_key_exists($to, self::STRING_TYPE_SIZE)) {
+        if (!array_key_exists($from, self::STRING_TYPE_SIZE) || !array_key_exists($to, self::STRING_TYPE_SIZE)) {
             return false;
         }
 
