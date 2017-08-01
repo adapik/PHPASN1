@@ -35,9 +35,12 @@ abstract class AbstractCharacterString extends ASN1Object implements CharacterSt
         Identifier::T61_STRING        => 0
     ];
 
-    public function __construct(Identifier $identifier, ContentLength $contentLength, Content $content, array $children)
-    {
-
+    public function __construct(
+        Identifier $identifier,
+        ContentLength $contentLength,
+        Content $content,
+        array $children
+    ) {
         parent::__construct($identifier, $contentLength, $content, $children);
 
         $this->value = $this->getBinaryContent();
@@ -61,7 +64,7 @@ abstract class AbstractCharacterString extends ASN1Object implements CharacterSt
     protected function allowNumbers()
     {
         foreach (range('0', '9') as $char) {
-            $this->allowedCharacters[] = (string)$char;
+            $this->allowedCharacters[] = (string) $char;
         }
     }
 
@@ -73,16 +76,12 @@ abstract class AbstractCharacterString extends ASN1Object implements CharacterSt
 
     protected function allowSmallLetters()
     {
-        foreach (range('a', 'z') as $char) {
-            $this->allowedCharacters[] = $char;
-        }
+        array_push($this->allowedCharacters, ...range('a', 'z'));
     }
 
     protected function allowCapitalLetters()
     {
-        foreach (range('A', 'Z') as $char) {
-            $this->allowedCharacters[] = $char;
-        }
+        array_push($this->allowedCharacters, ...range('A', 'Z'));
     }
 
     protected function allowSpaces()
@@ -95,17 +94,8 @@ abstract class AbstractCharacterString extends ASN1Object implements CharacterSt
         $this->checkStringForIllegalChars = false;
     }
 
-    protected function calculateContentLength()
-    {
-        return strlen($this->value);
-    }
-
     protected function getEncodedValue()
     {
-        if ($this->checkStringForIllegalChars) {
-            $this->checkString();
-        }
-
         return $this->value;
     }
 
