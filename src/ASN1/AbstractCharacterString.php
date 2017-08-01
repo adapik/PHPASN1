@@ -49,12 +49,12 @@ abstract class AbstractCharacterString extends ASN1Object implements CharacterSt
         }
     }
 
-    protected function allowCharacter($character)
+    protected function allowCharacter(string $character)
     {
         $this->allowedCharacters[] = $character;
     }
 
-    protected function allowCharacters(...$characters)
+    protected function allowCharacters(string ...$characters)
     {
         foreach ($characters as $character) {
             $this->allowedCharacters[] = $character;
@@ -140,7 +140,7 @@ abstract class AbstractCharacterString extends ASN1Object implements CharacterSt
             );
     }
 
-    public static function isValid($string)
+    public static function isValid(string $string)
     {
         try {
             static::createFromString($string);

@@ -62,21 +62,10 @@ final class IdentifierManager
      * @throws Exception if the given arguments are invalid
      * @return int|string
      */
-    public static function create($class, $isConstructed, $tagNumber)
+    public static function create(int $class, bool $isConstructed, int $tagNumber)
     {
-        if (!is_numeric($class) || $class < self::CLASS_UNIVERSAL || $class > self::CLASS_PRIVATE) {
+        if ($class < self::CLASS_UNIVERSAL || $class > self::CLASS_PRIVATE) {
             throw new Exception(sprintf('Invalid class %d given', $class));
-        }
-
-        if (!is_bool($isConstructed)) {
-            throw new Exception("\$isConstructed must be a boolean value ($isConstructed given)");
-        }
-
-        $tagNumber = self::makeNumeric($tagNumber);
-        if ($tagNumber < 0) {
-            throw new Exception(
-                sprintf('Invalid $tagNumber %d given. You can only use positive integers.', $tagNumber)
-            );
         }
 
         if ($tagNumber < self::LONG_FORM) {
@@ -108,13 +97,11 @@ final class IdentifierManager
      *
      * @return string
      */
-    public static function getName($identifier)
+    public static function getName(int $identifier)
     {
-        $identifierOctet = self::makeNumeric($identifier);
-
         $typeName = static::getShortName($identifier);
 
-        if (($identifierOctet & self::LONG_FORM) < self::LONG_FORM) {
+        if (($identifier & self::LONG_FORM) < self::LONG_FORM) {
             $typeName = "ASN.1 {$typeName}";
         }
 
@@ -133,11 +120,9 @@ final class IdentifierManager
      *
      * @return string
      */
-    public static function getShortName($identifier)
+    public static function getShortName(int $identifier)
     {
-        $identifierOctet = self::makeNumeric($identifier);
-
-        switch ($identifierOctet) {
+        switch ($identifier) {
             case self::EOC:
                 return 'End-of-contents octet';
             case self::BOOLEAN:
@@ -227,16 +212,14 @@ final class IdentifierManager
      *
      * @return string
      */
-    public static function getClassDescription($identifier)
+    public static function getClassDescription(int $identifier)
     {
-        $identifierOctet = self::makeNumeric($identifier);
-
-        if (self::isConstructed($identifierOctet)) {
+        if (self::isConstructed($identifier)) {
             $classDescription = 'Constructed ';
         } else {
             $classDescription = 'Primitive ';
         }
-        $classBits = $identifierOctet >> 6;
+        $classBits = $identifier >> 6;
         switch ($classBits) {
             case self::CLASS_UNIVERSAL:
                 $classDescription .= 'universal';
@@ -253,36 +236,27 @@ final class IdentifierManager
                 break;
 
             default:
-                return "INVALID IDENTIFIER OCTET: {$identifierOctet}";
+                return "INVALID IDENTIFIER OCTET: {$identifier}";
         }
 
         return $classDescription;
     }
 
     /**
-     * @param int|string $identifier
+     * @param int|string $identifierOctets
      *
      * @return int
      */
-    public static function getTagNumber($identifier)
+    public static function getTagNumber(string $identifierOctets)
     {
-        $firstOctet = substr($identifier, 0, 1);
+        $firstOctet = substr($identifierOctets, 0, 1);
         if (!IdentifierManager::isLongForm($firstOctet)) {
             return ord($firstOctet) & self::LONG_FORM;
         }
 
-        if (is_numeric($identifier)) {
-            $identifier = chr($identifier);
+        if (is_numeric($identifierOctets)) {
+            $identifierOctets = chr($identifierOctets);
         }
-        return Base128::decode(substr($identifier, 1));
-    }
-
-    private static function makeNumeric($identifierOctet)
-    {
-        if (!is_numeric($identifierOctet)) {
-            return ord($identifierOctet);
-        } else {
-            return $identifierOctet;
-        }
+        return Base128::decode(substr($identifierOctets, 1));
     }
 }
