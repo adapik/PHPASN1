@@ -42,22 +42,6 @@ abstract class AbstractTime extends ASN1Object
      */
     abstract public static function encodeValue(string $dateTime);
 
-    public function getStringValue()
-    {
-        return $this->value->format("Y-m-d\tH:i:s");
-    }
-
-    protected function getLastDateTimeErrors()
-    {
-        $messages   = '';
-        $lastErrors = DateTime::getLastErrors();
-        foreach ($lastErrors['errors'] as $errorMessage) {
-            $messages .= "{$errorMessage}, ";
-        }
-
-        return substr($messages, 0, -2);
-    }
-
     public function __toString(): string
     {
         return $this->value->format("Y-m-d\TH:i:sP");

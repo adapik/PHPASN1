@@ -198,12 +198,12 @@ class IntegerTest extends ASN1TestCase
     {
         for ($i = 1; $i <= 256; $i *= 2) {
             // 2 ^ n [0, 256]  large positive numbers
-            yield [gmp_strval(gmp_pow(2, $i), 10)];
+            yield [gmp_strval(gmp_pow(2, $i))];
         }
 
         for ($i = 1; $i <= 256; $i *= 2) {
             // 0 - 2 ^ n [0, 256]  large negative numbers
-            yield [gmp_strval(gmp_sub(0, gmp_pow(2, $i)), 10)];
+            yield [gmp_strval(gmp_sub(0, gmp_pow(2, $i)))];
         }
     }
 
