@@ -25,7 +25,7 @@ class NullObjectTest extends ASN1TestCase
     public function testGetStringValue()
     {
         $object = NullObject::create();
-        $this->assertEquals('null', $object->getStringValue());
+        $this->assertEquals('null', (string) $object);
     }
 
     public function testGetObjectLength()

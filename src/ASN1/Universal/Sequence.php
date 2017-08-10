@@ -17,16 +17,6 @@ use FG\ASN1\ContentLength;
 
 class Sequence extends ASN1Object
 {
-    protected function getEncodedValue()
-    {
-        $result = '';
-        foreach ($this->children as $component) {
-            $result .= $component->getBinary();
-        }
-
-        return $result;
-    }
-
     public function __toString(): string
     {
         return implode("\n", $this->getChildren());

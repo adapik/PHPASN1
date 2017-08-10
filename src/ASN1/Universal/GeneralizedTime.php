@@ -13,7 +13,6 @@ namespace FG\ASN1\Universal;
 use FG\ASN1\AbstractTime;
 use FG\ASN1\Content;
 use FG\ASN1\ElementBuilder;
-use FG\ASN1\IdentifierManager;
 use FG\ASN1\Identifier;
 use FG\ASN1\Exception\ParserException;
 use DateTime;
@@ -58,30 +57,9 @@ class GeneralizedTime extends AbstractTime
         return Identifier::GENERALIZED_TIME;
     }
 
-    protected function calculateContentLength()
-    {
-        $contentSize = 15; // YYYYMMDDHHmmSSZ
-
-        if ($this->containsFractionalSecondsElement()) {
-            $contentSize += 1 + strlen($this->microseconds);
-        }
-
-        return $contentSize;
-    }
-
     public function containsFractionalSecondsElement()
     {
         return (int)$this->microseconds > 0;
-    }
-
-    protected function getEncodedValue()
-    {
-        $encodedContent = $this->value->format('YmdHis');
-        if ($this->containsFractionalSecondsElement()) {
-            $encodedContent .= ".{$this->microseconds}";
-        }
-
-        return $encodedContent . 'Z';
     }
 
     public function __toString(): string
@@ -142,28 +120,6 @@ class GeneralizedTime extends AbstractTime
                 }
             }
 
-            $dateTimeZone = 'UTC';
-
-            if ($dateTime === null || is_string($dateTime)) {
-                $timeZone       = new DateTimeZone($dateTimeZone);
-                $dateTimeObject = new DateTime($dateTime, $timeZone);
-                if ($dateTimeObject === false) {
-                    $errorMessage = $this->getLastDateTimeErrors();
-                    $className    = IdentifierManager::getName(static::getType());
-                    throw new \Exception(
-                        sprintf(
-                            "Could not create %s from date time string '%s': %s",
-                            $className,
-                            $dateTime,
-                            $errorMessage
-                        )
-                    );
-                }
-                $dateTime = $dateTimeObject;
-            } elseif (!$dateTime instanceof DateTime) {
-                throw new \Exception('Invalid first argument for some instance of ASN_AbstractTime constructor');
-            }
-
             $this->value = $dateTime;
 
             $this->microseconds = $this->value->format('u');
@@ -191,11 +147,6 @@ class GeneralizedTime extends AbstractTime
         $dateTime   = $trimString . ($hasTimeZone ? 'Z' : '');
 
         return $dateTime;
-    }
-
-    public function getStringValue()
-    {
-        return (string)$this;
     }
 
     public static function createFormDateTime(\DateTimeInterface $dateTime = null, array $options = [])

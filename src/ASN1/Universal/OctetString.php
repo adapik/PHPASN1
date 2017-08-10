@@ -10,7 +10,6 @@
 
 namespace FG\ASN1\Universal;
 
-use Exception;
 use FG\ASN1\Content;
 use FG\ASN1\ElementBuilder;
 use FG\ASN1\ASN1Object;
@@ -36,42 +35,7 @@ class OctetString extends ASN1Object
 
     public function setValue(Content $content)
     {
-        $value = $content->getBinary();
-        if (is_string($value)) {
-            // remove gaps between hex digits
-            $value = preg_replace('/\s|0x/', '', $value);
-        } elseif (is_numeric($value)) {
-            $value = dechex($value);
-        } else {
-            throw new Exception('OctetString: unrecognized input type!');
-        }
-
-        if (strlen($value) % 2 !== 0) {
-            // transform values like 1F2 to 01F2
-            $value = '0' . $value;
-        }
-
-        $this->value = $value;
-    }
-
-    protected function getEncodedValue()
-    {
-        $value  = $this->value;
-        $result = '';
-
-        //Actual content
-        while (strlen($value) >= 2) {
-            // get the hex value byte by byte from the string and and add it to binary result
-            $result .= chr(hexdec(substr($value, 0, 2)));
-            $value  = substr($value, 2);
-        }
-
-        return $result;
-    }
-
-    public function getStringValue()
-    {
-        return (string) $this;
+        $this->value = $content->getBinary();
     }
 
     public static function encodeValue($value)

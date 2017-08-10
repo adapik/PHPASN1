@@ -57,7 +57,6 @@ class TemplateParser
         if (is_array($value)) {
             $this->assertTypeId($key, $object);
 
-            /* @var Construct $object */
             $childrenCount = count($value);
             reset($value);
             for ($i = 0; $i < $childrenCount; $i++) {

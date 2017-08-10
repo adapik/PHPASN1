@@ -250,7 +250,7 @@ final class IdentifierManager
     public static function getTagNumber(string $identifierOctets)
     {
         $firstOctet = substr($identifierOctets, 0, 1);
-        if (!IdentifierManager::isLongForm($firstOctet)) {
+        if (!self::isLongForm($firstOctet)) {
             return ord($firstOctet) & self::LONG_FORM;
         }
 

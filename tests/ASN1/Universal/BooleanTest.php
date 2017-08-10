@@ -22,13 +22,19 @@ class BooleanTest extends ASN1TestCase
         $this->assertEquals(Identifier::BOOLEAN, $object->getIdentifier()->getTagNumber());
     }
 
+    public function testGetIdentifierCode()
+    {
+        $object = Boolean::create(true);
+        $this->assertEquals('Boolean', $object->getIdentifier()->getCode());
+    }
+
     public function testGetStringValue()
     {
         $object = Boolean::create(true);
-        $this->assertEquals('true', $object->getStringValue());
+        $this->assertEquals('true', (string) $object);
 
         $object = Boolean::create(false);
-        $this->assertEquals('false', $object->getStringValue());
+        $this->assertEquals('false', (string) $object);
     }
 
     public function testGetObjectLength()

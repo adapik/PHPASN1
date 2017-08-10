@@ -10,10 +10,13 @@
 
 namespace FG\ASN1;
 
-class UnknownConstructedObject extends Construct
+class UnknownConstructedObject extends ASN1Object
 {
-    protected function getEncodedValue()
+    /**
+     * @return string
+     */
+    public function __toString(): string
     {
-        return '';
+        return 'Unknown Constructed Object';
     }
 }

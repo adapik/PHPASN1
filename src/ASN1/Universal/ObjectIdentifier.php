@@ -40,29 +40,6 @@ class ObjectIdentifier extends ASN1Object
         return Identifier::OBJECT_IDENTIFIER;
     }
 
-    protected function calculateContentLength()
-    {
-        $length = 0;
-        foreach ($this->subIdentifiers as $subIdentifier) {
-            do {
-                $subIdentifier >>= 7;
-                $length++;
-            } while ($subIdentifier > 0);
-        }
-
-        return $length;
-    }
-
-    protected function getEncodedValue()
-    {
-        $encodedValue = '';
-        foreach ($this->subIdentifiers as $subIdentifier) {
-            $encodedValue .= Base128::encode($subIdentifier);
-        }
-
-        return $encodedValue;
-    }
-
     public function __toString(): string
     {
         return (string)$this->value;
@@ -110,23 +87,14 @@ class ObjectIdentifier extends ASN1Object
         $offsetIndex = 0;
         $firstOctet  = ord($binaryData[$offsetIndex++]);
         $oidString   = floor($firstOctet / 40) . '.' . ($firstOctet % 40);
-        $oidString   .= '.' . self::parseOid($binaryData, $offsetIndex, $this->contentLength->getLength() - 1);
+        $oidString   .= '.' . self::parseOid($binaryData, $offsetIndex, $this->getContentLength()->getLength() - 1);
         $this->value = $value = $oidString;
 
         $this->subIdentifiers = explode('.', $value);
         $nrOfSubIdentifiers   = count($this->subIdentifiers);
 
         for ($i = 0; $i < $nrOfSubIdentifiers; $i++) {
-            if (is_numeric($this->subIdentifiers[$i])) {
-                // enforce the integer type
-                $this->subIdentifiers[$i] = (int)$this->subIdentifiers[$i];
-            } else {
-                throw new Exception(
-                    "[{$value}] is no valid object identifier (sub identifier " .
-                    ($i + 1) .
-                    ' is not numeric)!'
-                );
-            }
+            $this->subIdentifiers[$i] = (int)$this->subIdentifiers[$i];
         }
 
         // Merge the first to arcs of the OID registration tree (per ASN definition!)

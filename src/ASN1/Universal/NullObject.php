@@ -18,17 +18,8 @@ use FG\ASN1\ContentLength;
 
 class NullObject extends ASN1Object
 {
-    protected function getEncodedValue()
-    {
-        return null;
-    }
 
     public function __toString(): string
-    {
-        return 'null';
-    }
-
-    public function getStringValue()
     {
         return 'null';
     }

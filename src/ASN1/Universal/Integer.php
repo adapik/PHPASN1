@@ -90,11 +90,6 @@ class Integer extends ASN1Object
         return (string)$this->value;
     }
 
-    public function getEncodedValue()
-    {
-        self::encodeValue($this->value);
-    }
-
     public function setValue(Content $content)
     {
         $binaryData    = $content->getBinary();
@@ -112,14 +107,6 @@ class Integer extends ASN1Object
         }
 
         $value = gmp_strval($number);
-        if (is_string($value)) {
-            // remove gaps between hex digits
-            $value = preg_replace('/\s|0x/', '', $value);
-        } elseif (is_numeric($value)) {
-            $value = dechex($value);
-        } else {
-            throw new Exception('Integer: unrecognized input type!');
-        }
 
         $this->value = $value;
     }

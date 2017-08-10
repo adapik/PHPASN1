@@ -48,7 +48,7 @@ abstract class ASN1Object implements ASN1ObjectInterface
         }
 
         if ($this->contentLength->getLengthForm() === ContentLength::INDEFINITE_FORM) {
-            $this->eoc = new \FG\ASN1\EOC();
+            $this->eoc = new EOC();
         }
     }
 
@@ -64,13 +64,6 @@ abstract class ASN1Object implements ASN1ObjectInterface
             $this->addChild($child);
         }
     }
-
-    /**
-     * Encode the object using DER encoding.
-     * @see http://en.wikipedia.org/wiki/X.690#DER_encoding
-     * @return string the binary representation of an objects value
-     */
-    abstract protected function getEncodedValue();
 
     /**
      * @return Content

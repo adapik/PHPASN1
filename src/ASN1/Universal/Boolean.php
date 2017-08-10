@@ -19,6 +19,9 @@ use FG\ASN1\ContentLength;
 
 class Boolean extends ASN1Object
 {
+    /**
+     * @var bool
+     */
     private $value;
 
     const FALSE = 0x00;
@@ -39,30 +42,6 @@ class Boolean extends ASN1Object
     }
 
     public function __toString(): string
-    {
-        return $this->value ? 'true' : 'false';
-    }
-
-    public function getType()
-    {
-        return Identifier::BOOLEAN;
-    }
-
-    protected function calculateContentLength()
-    {
-        return 1;
-    }
-
-    protected function getEncodedValue()
-    {
-        if ($this->value === false) {
-            return chr(self::FALSE);
-        } else {
-            return chr(self::TRUE);
-        }
-    }
-
-    public function getStringValue()
     {
         return $this->value ? 'true' : 'false';
     }

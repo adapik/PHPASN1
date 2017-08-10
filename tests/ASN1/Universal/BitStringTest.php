@@ -23,6 +23,12 @@ class BitStringTest extends ASN1TestCase
         $this->assertEquals(Identifier::BITSTRING, $object->getIdentifier()->getTagNumber());
     }
 
+    public function testGetIdentifierCode()
+    {
+        $object = BitString::createFromHexString('A0120043');
+        $this->assertEquals('Bit String', $object->getIdentifier()->getCode());
+    }
+
     public function testGetStringValue()
     {
         $object = BitString::createFromHexString('A0120043');

@@ -10,7 +10,6 @@
 
 namespace FG\ASN1\Universal;
 
-use Exception;
 use FG\ASN1\ElementBuilder;
 use FG\ASN1\Exception\ParserException;
 use FG\ASN1\Parsable;
@@ -22,6 +21,9 @@ class BitString extends OctetString implements Parsable
 {
     const IDENTIFIER = 0x1E;
 
+    /**
+     * @var int
+     */
     private $nrOfUnusedBits;
 
     public function __construct(
@@ -32,47 +34,17 @@ class BitString extends OctetString implements Parsable
     ) {
         parent::__construct($identifier, $contentLength, $content, $children);
 
-        $this->nrOfUnusedBits = $nrOfUnusedBits = ord($content->getBinary()[0]);
-
-        if (!is_numeric($nrOfUnusedBits) || $nrOfUnusedBits < 0) {
-            throw new Exception('BitString: second parameter needs to be a positive number (or zero)!');
-        }
+        $this->nrOfUnusedBits = ord($content->getBinary()[0]);
     }
 
-    protected function getEncodedValue()
-    {
-        // the first octet determines the number of unused bits
-        $nrOfUnusedBitsOctet = chr($this->nrOfUnusedBits);
-        $actualContent       = parent::getEncodedValue();
-
-        return $nrOfUnusedBitsOctet . $actualContent;
-    }
-
-    public function getNumberOfUnusedBits()
+    public function getNumberOfUnusedBits(): int
     {
         return $this->nrOfUnusedBits;
     }
 
     public function setValue(Content $content)
     {
-        $binaryData = $content->getBinary();
-        $value      = bin2hex(substr($binaryData, 1, $this->contentLength->getLength() - 1));
-
-        if (is_string($value)) {
-            // remove gaps between hex digits
-            $value = preg_replace('/\s|0x/', '', $value);
-        } elseif (is_numeric($value)) {
-            $value = dechex($value);
-        } else {
-            throw new Exception('OctetString: unrecognized input type!');
-        }
-
-        if (strlen($value) % 2 !== 0) {
-            // transform values like 1F2 to 01F2
-            $value = '0' . $value;
-        }
-
-        $this->value = bin2hex($value);
+        $this->value = bin2hex(substr($content->getBinary(), 1));
     }
 
     /**
@@ -80,7 +52,7 @@ class BitString extends OctetString implements Parsable
      */
     public function getStringValue()
     {
-        return strtoupper(bin2hex(substr($this->content->getBinary(), 1)));
+        return strtoupper(bin2hex(substr($this->getBinaryContent(), 1)));
     }
 
     public static function createFromBitString(string $bitString, $options = []): self
@@ -93,7 +65,7 @@ class BitString extends OctetString implements Parsable
         $nrOfUnusedBits = $bitsCount % 8;
         $bitString      .= str_repeat('0', $nrOfUnusedBits);
 
-        $value = chr($nrOfUnusedBits) . hex2bin(base_convert($bitString, 2, 16));
+        $value = chr($nrOfUnusedBits) . hex2bin(gmp_strval(gmp_init($bitString, 2), 16));
 
         return
             ElementBuilder::createObject(

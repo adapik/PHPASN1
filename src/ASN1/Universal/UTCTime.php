@@ -14,13 +14,11 @@ use FG\ASN1\AbstractTime;
 use FG\ASN1\Content;
 use FG\ASN1\ContentLength;
 use FG\ASN1\ElementBuilder;
-use FG\ASN1\IdentifierManager;
 use FG\ASN1\Parsable;
 use FG\ASN1\Identifier;
 use FG\ASN1\Exception\ParserException;
 use DateTime;
 use DateTimeZone;
-use Exception;
 
 /**
  * This ASN.1 universal type contains the calendar date and time.
@@ -34,21 +32,6 @@ class UTCTime extends AbstractTime implements Parsable
     public static function getType()
     {
         return Identifier::UTC_TIME;
-    }
-
-    protected function calculateContentLength()
-    {
-        return 13; // Content is a string o the following format: YYMMDDhhmmssZ (13 octets)
-    }
-
-    public function getStringValue()
-    {
-        return $this->value->format('ymdHis') . 'Z';
-    }
-
-    protected function getEncodedValue()
-    {
-        return $this->value->format('ymdHis') . 'Z';
     }
 
     /**
@@ -98,28 +81,6 @@ class UTCTime extends AbstractTime implements Parsable
             $dateTime = static::extractTimeZoneData($binaryData, $offsetIndex, $dateTime);
         } elseif ($binaryData[$offsetIndex] !== 'Z') {
             throw new ParserException('Invalid UTC String', $offsetIndex);
-        }
-
-        $dateTimeZone = 'UTC';
-
-        if ($dateTime === null || is_string($dateTime)) {
-            $timeZone       = new DateTimeZone($dateTimeZone);
-            $dateTimeObject = new DateTime($dateTime, $timeZone);
-            if ($dateTimeObject === false) {
-                $errorMessage = $this->getLastDateTimeErrors();
-                $className    = IdentifierManager::getName(static::getType());
-                throw new Exception(
-                    sprintf(
-                        "Could not create %s from date time string '%s': %s",
-                        $className,
-                        $dateTime,
-                        $errorMessage
-                    )
-                );
-            }
-            $dateTime = $dateTimeObject;
-        } elseif (!$dateTime instanceof DateTime) {
-            throw new Exception('Invalid first argument for some instance of ASN_AbstractTime constructor');
         }
 
         $this->value = $dateTime;

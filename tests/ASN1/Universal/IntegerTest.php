@@ -23,6 +23,12 @@ class IntegerTest extends ASN1TestCase
         $this->assertEquals(Identifier::INTEGER, $object->getIdentifier()->getTagNumber());
     }
 
+    public function testGetIdentifierCode()
+    {
+        $object = Integer::create(123);
+        $this->assertEquals('Integer', $object->getIdentifier()->getCode());
+    }
+
     /**
      * @expectedException \Exception
      */

@@ -12,16 +12,6 @@ namespace FG\ASN1;
 
 class UnknownObject extends ASN1Object
 {
-    protected function calculateContentLength()
-    {
-        return $this->getContentLength()->getLength();
-    }
-
-    protected function getEncodedValue()
-    {
-        return '';
-    }
-
     public function __toString(): string
     {
         return 'Unknown Object';
