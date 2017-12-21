@@ -49,7 +49,7 @@ class Decoder
      */
     public function fromBinary(&$binaryData, &$offsetIndex = 0)
     {
-        if (strlen($binaryData) <= $offsetIndex) {
+        if (\strlen($binaryData) <= $offsetIndex) {
             throw new ParserException(
                 'Can not parse binary from data: Offset index larger than input size',
                 $offsetIndex
@@ -75,7 +75,7 @@ class Decoder
                 for (;;) {
                     $firstOctet  = $binaryData[$offsetIndex];
                     $secondOctet = $binaryData[$offsetIndex++];
-                    if ($firstOctet . $secondOctet === chr(0) . chr(0)) {
+                    if ($firstOctet . $secondOctet === \chr(0) . \chr(0)) {
                         $nrOfContentOctets = abs($startPos - $offsetIndex) + 1;
                         break;
                     }
@@ -169,7 +169,7 @@ class Decoder
 
     protected function parseBinaryIdentifier($binaryData, &$offsetIndex)
     {
-        if (strlen($binaryData) <= $offsetIndex) {
+        if (\strlen($binaryData) <= $offsetIndex) {
             throw new ParserException(
                 'Can not parse identifier from data: Offset index larger than input size',
                 $offsetIndex
@@ -178,12 +178,12 @@ class Decoder
 
         $identifier = $binaryData[$offsetIndex++];
 
-        if (IdentifierManager::isLongForm(ord($identifier)) === false) {
+        if (IdentifierManager::isLongForm(\ord($identifier)) === false) {
             return $identifier;
         }
 
         while (true) {
-            if (strlen($binaryData) <= $offsetIndex) {
+            if (\strlen($binaryData) <= $offsetIndex) {
                 throw new ParserException(
                     'Can not parse identifier (long form) from data: Offset index larger than input size',
                     $offsetIndex
@@ -192,7 +192,7 @@ class Decoder
             $nextOctet  = $binaryData[$offsetIndex++];
             $identifier .= $nextOctet;
 
-            if ((ord($nextOctet) & 0x80) === 0) {
+            if ((\ord($nextOctet) & 0x80) === 0) {
                 // the most significant bit is 0 to we have reached the end of the identifier
                 break;
             }
@@ -203,7 +203,7 @@ class Decoder
 
     protected function parseContentLength(&$binaryData, &$offsetIndex)
     {
-        if (strlen($binaryData) <= $offsetIndex) {
+        if (\strlen($binaryData) <= $offsetIndex) {
             throw new ParserException(
                 'Can not parse content length from data: Offset index larger than input size',
                 $offsetIndex
@@ -211,13 +211,13 @@ class Decoder
         }
 
         $contentLengthOctets = $binaryData[$offsetIndex++];
-        $firstOctet          = ord($contentLengthOctets);
+        $firstOctet          = \ord($contentLengthOctets);
 
         if (($firstOctet & 0x80) != 0) {
             // bit 8 is set -> this is the long form
             $nrOfLengthOctets = $firstOctet & 0x7F;
             for ($i = 0; $i < $nrOfLengthOctets; $i++) {
-                if (strlen($binaryData) <= $offsetIndex) {
+                if (\strlen($binaryData) <= $offsetIndex) {
                     throw new ParserException(
                         'Can not parse content length (long form) from data: Offset index larger than input size',
                         $offsetIndex
@@ -246,7 +246,7 @@ class Decoder
             $octetsToRead = $contentLength->getLength();
             while ($octetsToRead > 0) {
                 $newChild = $this->fromBinary($binaryData, $offsetIndex);
-                if (is_null($newChild)) {
+                if (\is_null($newChild)) {
                     throw new ParserException('Children not found', $offsetIndex);
                 }
                 $octetsToRead -= (

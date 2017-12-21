@@ -30,7 +30,7 @@ class IA5String extends AbstractCharacterString
         parent::__construct($identifier, $contentLength, $content, $children);
 
         for ($i = 1; $i < 128; $i++) {
-            $this->allowCharacter(chr($i));
+            $this->allowCharacter(\chr($i));
         }
     }
 

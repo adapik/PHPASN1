@@ -64,7 +64,7 @@ class Mapper
             return null;
         }
 
-        if (array_key_exists('explicit', $mapping) && count($object->getChildren()) === 1) {
+        if (array_key_exists('explicit', $mapping) && \count($object->getChildren()) === 1) {
             $object = $object->getChildren()[0];
         }
 
@@ -73,7 +73,7 @@ class Mapper
             $object instanceof AbstractTaggedObject
         ) {
             $class         = $mapping['class'] ?? Identifier::CLASS_UNIVERSAL;
-            $isConstructed = array_key_exists('children', $mapping) && count($mapping['children']) > 0;
+            $isConstructed = array_key_exists('children', $mapping) && \count($mapping['children']) > 0;
             $object        = $object->getDecoratedObject($mapping['type'], $class, $isConstructed);
         }
 
@@ -137,7 +137,7 @@ class Mapper
         });
 
 
-        if (count($unprocessedMappings) > 0) {
+        if (\count($unprocessedMappings) > 0) {
             return null;
         }
 
@@ -171,7 +171,7 @@ class Mapper
         });
 
 
-        if (count($unprocessedMappings) > 0) {
+        if (\count($unprocessedMappings) > 0) {
             return null;
         }
 

@@ -94,11 +94,6 @@ abstract class AbstractCharacterString extends ASN1Object implements CharacterSt
         $this->checkStringForIllegalChars = false;
     }
 
-    protected function getEncodedValue()
-    {
-        return $this->value;
-    }
-
     public static function encodeValue($value)
     {
         return self::convert($value, Identifier::UTF8_STRING, static::getType());

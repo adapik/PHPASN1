@@ -79,7 +79,7 @@ class Integer extends ASN1Object
         $result = '';
         for ($shiftLength = ($contentLength - 1) * 8; $shiftLength >= 0; $shiftLength -= 8) {
             $octet  = gmp_strval(gmp_mod(self::rightShift($numericValue, $shiftLength), 256));
-            $result .= chr($octet);
+            $result .= \chr($octet);
         }
 
         return $result;
@@ -95,11 +95,11 @@ class Integer extends ASN1Object
         $binaryData    = $content->getBinary();
         $offsetIndex   = 0;
         $contentLength = $this->contentLength->getLength();
-        $isNegative    = (ord($binaryData[$offsetIndex]) & 0x80) != 0x00;
-        $number        = gmp_init(ord($binaryData[$offsetIndex++]) & 0x7F, 10);
+        $isNegative    = (\ord($binaryData[$offsetIndex]) & 0x80) != 0x00;
+        $number        = gmp_init(\ord($binaryData[$offsetIndex++]) & 0x7F, 10);
 
         for ($i = 0; $i < $contentLength - 1; $i++) {
-            $number = gmp_or(gmp_mul($number, 0x100), ord($binaryData[$offsetIndex++]));
+            $number = gmp_or(gmp_mul($number, 0x100), \ord($binaryData[$offsetIndex++]));
         }
 
         if ($isNegative) {
@@ -116,7 +116,7 @@ class Integer extends ASN1Object
         $isConstructed = false;
         $lengthForm    = ContentLength::SHORT_FORM;
 
-        if (is_int($integer) === false && preg_match('/^([+-]?[1-9]\d*|0)$/', $integer) == false) {
+        if (\is_int($integer) === false && preg_match('/^([+-]?[1-9]\d*|0)$/', $integer) == false) {
             throw new Exception("Invalid value [{$integer}] for ASN.1 Integer");
         }
 

@@ -34,7 +34,7 @@ class BitString extends OctetString implements Parsable
     ) {
         parent::__construct($identifier, $contentLength, $content, $children);
 
-        $this->nrOfUnusedBits = ord($content->getBinary()[0]);
+        $this->nrOfUnusedBits = \ord($content->getBinary()[0]);
     }
 
     public function getNumberOfUnusedBits(): int
@@ -60,12 +60,12 @@ class BitString extends OctetString implements Parsable
         $isConstructed = $options['isConstructed'] ?? false;
         $lengthForm    = $options['lengthForm'] ?? ContentLength::LONG_FORM;
 
-        $bitsCount = strlen($bitString);
+        $bitsCount = \strlen($bitString);
 
         $nrOfUnusedBits = $bitsCount % 8;
         $bitString      .= str_repeat('0', $nrOfUnusedBits);
 
-        $value = chr($nrOfUnusedBits) . hex2bin(gmp_strval(gmp_init($bitString, 2), 16));
+        $value = \chr($nrOfUnusedBits) . hex2bin(gmp_strval(gmp_init($bitString, 2), 16));
 
         return
             ElementBuilder::createObject(
@@ -80,8 +80,8 @@ class BitString extends OctetString implements Parsable
     public static function createFromHexString(string $hexString, $options = []): self
     {
         $isConstructed = $options['isConstructed'] ?? false;
-        $value         = chr(0x00) . hex2bin($hexString);
-        $lengthForm    = strlen($value) > 127 ? ContentLength::LONG_FORM : ContentLength::SHORT_FORM;
+        $value         = \chr(0x00) . hex2bin($hexString);
+        $lengthForm    = \strlen($value) > 127 ? ContentLength::LONG_FORM : ContentLength::SHORT_FORM;
         $lengthForm    = $options['lengthForm'] ?? $lengthForm;
 
         return

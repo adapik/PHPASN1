@@ -55,7 +55,7 @@ class OctetString extends ASN1Object
     public static function createFromString(string $string, $options = [])
     {
         $isConstructed = $options['isConstructed'] ?? false;
-        $lengthForm    = strlen($string) > 127 ? ContentLength::LONG_FORM : ContentLength::SHORT_FORM;
+        $lengthForm    = \strlen($string) > 127 ? ContentLength::LONG_FORM : ContentLength::SHORT_FORM;
         $lengthForm    = $options['lengthForm'] ?? $lengthForm;
 
         return

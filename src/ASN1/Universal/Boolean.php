@@ -48,7 +48,7 @@ class Boolean extends ASN1Object
 
     public function setValue(Content $content)
     {
-        $valueOctet = isset($content->getBinary()[0]) ? ord($content->getBinary()[0]) : null;
+        $valueOctet = isset($content->getBinary()[0]) ? \ord($content->getBinary()[0]) : null;
 
         switch ($valueOctet) {
             case self::FALSE:
@@ -62,7 +62,7 @@ class Boolean extends ASN1Object
 
     public static function encodeValue($value)
     {
-        return $value ? chr(self::TRUE) : chr(self::FALSE);
+        return $value ? \chr(self::TRUE) : \chr(self::FALSE);
     }
 
     /**
