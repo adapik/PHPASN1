@@ -73,6 +73,13 @@ class Decoder
         } else {
             if ($contentLength->getLengthForm() === ContentLength::INDEFINITE_FORM) {
                 for (;;) {
+                    if (\strlen($binaryData) <= $offsetIndex) {
+                        throw new ParserException(
+                            'Can not parse binary from data: Offset index larger than input size',
+                            $offsetIndex
+                        );
+                    }
+
                     $firstOctet  = $binaryData[$offsetIndex];
                     $secondOctet = $binaryData[$offsetIndex++];
                     if ($firstOctet . $secondOctet === \chr(0) . \chr(0)) {
