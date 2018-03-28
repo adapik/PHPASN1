@@ -249,13 +249,13 @@ final class IdentifierManager
      */
     public static function getTagNumber(string $identifierOctets)
     {
-        $firstOctet = substr($identifierOctets, 0, 1);
+        $firstOctet = $identifierOctets[0];
         if (!self::isLongForm($firstOctet)) {
-            return ord($firstOctet) & self::LONG_FORM;
+            return \ord($firstOctet) & self::LONG_FORM;
         }
 
         if (is_numeric($identifierOctets)) {
-            $identifierOctets = chr($identifierOctets);
+            $identifierOctets = \chr($identifierOctets);
         }
         return Base128::decode(substr($identifierOctets, 1));
     }

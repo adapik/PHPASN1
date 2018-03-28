@@ -220,17 +220,17 @@ class Decoder
         $contentLengthOctets = $binaryData[$offsetIndex++];
         $firstOctet          = \ord($contentLengthOctets);
 
-        if (($firstOctet & 0x80) != 0) {
+        if (($firstOctet & 0x80) !== 0) {
             // bit 8 is set -> this is the long form
             $nrOfLengthOctets = $firstOctet & 0x7F;
-            for ($i = 0; $i < $nrOfLengthOctets; $i++) {
-                if (\strlen($binaryData) <= $offsetIndex) {
-                    throw new ParserException(
-                        'Can not parse content length (long form) from data: Offset index larger than input size',
-                        $offsetIndex
-                    );
-                }
-                $contentLengthOctets .= $binaryData[$offsetIndex++];
+            $contentLengthOctets = substr($binaryData, $offsetIndex - 1, $offsetIndex + $nrOfLengthOctets);
+
+            $offsetIndex += $nrOfLengthOctets;
+            if (\strlen($binaryData) <= $offsetIndex) {
+                throw new ParserException(
+                    'Can not parse content length (long form) from data: Offset index larger than input size',
+                    $offsetIndex
+                );
             }
         }
 
@@ -252,15 +252,12 @@ class Decoder
         if (!is_nan($contentLength->getLength())) {
             $octetsToRead = $contentLength->getLength();
             while ($octetsToRead > 0) {
+                $startOffset = $offsetIndex;
                 $newChild = $this->fromBinary($binaryData, $offsetIndex);
-                if (\is_null($newChild)) {
+                if (null === $newChild) {
                     throw new ParserException('Children not found', $offsetIndex);
                 }
-                $octetsToRead -= (
-                    $newChild->getContentLength()->getLength() +
-                    $newChild->getIdentifier()->getNrOfOctets() +
-                    $newChild->getContentLength()->getNrOfOctets()
-                );
+                $octetsToRead -= $offsetIndex - $startOffset;
                 $children[] = $newChild;
             }
         } else {

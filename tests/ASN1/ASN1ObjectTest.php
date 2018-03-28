@@ -269,7 +269,7 @@ class ASN1ObjectTest extends ASN1TestCase
 
     /**
      * @expectedException \FG\ASN1\Exception\ParserException
-     * @expectedExceptionMessage ASN.1 Parser Exception at offset 4: Can not parse content length (long form) from data: Offset index larger than input size
+     * @expectedExceptionMessage ASN.1 Parser Exception at offset 17: Can not parse content length (long form) from data: Offset index larger than input size
      * @depends testFromBinary
      */
     public function testFromBinaryInalidLongFormContentLength()

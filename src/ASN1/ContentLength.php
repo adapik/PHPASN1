@@ -28,12 +28,11 @@ class ContentLength extends ObjectPart implements ContentLengthInterface
      */
     public function defineForm()
     {
-
-        $firstOctet = ord($this->binaryData[0]);
+        $firstOctet = \ord($this->binaryData[0]);
 
         if ($firstOctet === 0x80) {
             $form = self::INDEFINITE_FORM;
-        } elseif (($firstOctet & 0x80) != 0) {
+        } elseif (($firstOctet & 0x80) !== 0) {
             $form = self::LONG_FORM;
         } else {
             $form = self::SHORT_FORM;
@@ -48,18 +47,16 @@ class ContentLength extends ObjectPart implements ContentLengthInterface
      */
     public function calculateContentLength()
     {
-        $firstOctet = $this->binaryData[0];
+        $contentLength = \ord($this->binaryData[0]);
 
         switch ($this->form) {
             case self::SHORT_FORM:
-                $contentLength = ord($firstOctet);
                 break;
             case self::LONG_FORM:
-                $offsetIndex      = 0;
-                $nrOfLengthOctets = ord($firstOctet) & 0x7F;
-                $contentLength    = 0x00;
-                for ($i = 0; $i < $nrOfLengthOctets; ++$i) {
-                    $contentLength = ($contentLength * 256) + ord($this->binaryData[++$offsetIndex]);
+                $nrOfLengthOctets = $contentLength & 0x7F;
+                $contentLength    = 0;
+                for ($i = 0; $i < $nrOfLengthOctets;) {
+                    $contentLength = ($contentLength << 8) + \ord($this->binaryData[++$i]);
                 }
                 break;
             case self::INDEFINITE_FORM:
