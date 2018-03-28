@@ -65,9 +65,9 @@ class GeneralizedTime extends AbstractTime
     public function __toString(): string
     {
         if ($this->containsFractionalSecondsElement()) {
-            return $this->value->format("Y-m-d\TH:i:s.uP");
+            return $this->getValue()->format("Y-m-d\TH:i:s.uP");
         } else {
-            return $this->value->format("Y-m-d\TH:i:sP");
+            return $this->getValue()->format("Y-m-d\TH:i:sP");
         }
     }
 

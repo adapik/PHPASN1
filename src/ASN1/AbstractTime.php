@@ -25,10 +25,6 @@ abstract class AbstractTime extends ASN1Object
         array $children = []
     ) {
         parent::__construct($identifier, $contentLength, $content, $children);
-
-        if (!$this->identifier->isConstructed()) {
-            $this->setValue($content);
-        }
     }
 
     abstract public function setValue(Content $content);
@@ -44,7 +40,16 @@ abstract class AbstractTime extends ASN1Object
 
     public function __toString(): string
     {
-        return $this->value->format("Y-m-d\TH:i:sP");
+        return $this->getValue()->format("Y-m-d\TH:i:sP");
+    }
+
+    protected function getValue()
+    {
+        if ($this->value === null) {
+            $this->setValue($this->content);
+        }
+
+        return $this->value;
     }
 
     protected static function extractTimeZoneData(&$binaryData, &$offsetIndex, DateTime $dateTime)

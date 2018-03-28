@@ -100,7 +100,8 @@ class ObjectIdentifierTest extends ASN1TestCase
         $binaryData .= chr(42);
         $binaryData .= chr(128 | 1);
         $binaryData .= chr(128 | 1);
-        ObjectIdentifier::fromBinary($binaryData);
+        $object = ObjectIdentifier::fromBinary($binaryData);
+        $object->__toString();
     }
 
     /**

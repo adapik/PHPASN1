@@ -20,7 +20,16 @@ use FG\ASN1\Content;
 class Integer extends ASN1Object
 {
     /** @var int */
-    public $value;
+    protected $value;
+
+    protected function getValue()
+    {
+        if ($this->value === null) {
+            $this->setValue($this->content);
+        }
+
+        return $this->value;
+    }
 
     /**
      * @param int $value
@@ -34,8 +43,6 @@ class Integer extends ASN1Object
         array $children = []
     ) {
         parent::__construct($identifier, $contentLength, $content, $children);
-
-        $this->setValue($content);
     }
 
     public static function getType()
@@ -87,7 +94,7 @@ class Integer extends ASN1Object
 
     public function __toString(): string
     {
-        return (string)$this->value;
+        return (string) $this->getValue();
     }
 
     public function setValue(Content $content)

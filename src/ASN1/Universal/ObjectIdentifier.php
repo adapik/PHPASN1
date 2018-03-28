@@ -31,8 +31,6 @@ class ObjectIdentifier extends ASN1Object
         array $children = []
     ) {
         parent::__construct($identifier, $contentLength, $content, $children);
-
-        $this->setValue($content);
     }
 
     public static function getType()
@@ -42,7 +40,16 @@ class ObjectIdentifier extends ASN1Object
 
     public function __toString(): string
     {
-        return (string)$this->value;
+        return (string) $this->getValue();
+    }
+
+    private function getValue()
+    {
+        if ($this->value === null) {
+            $this->setValue($this->content);
+        }
+
+        return $this->value;
     }
 
     /**
@@ -81,7 +88,7 @@ class ObjectIdentifier extends ASN1Object
         return substr($oid, 0, -1) ?: '';
     }
 
-    public function setValue(Content $content)
+    private function setValue(Content $content)
     {
         $binaryData  = $content->getBinary();
         $offsetIndex = 0;
