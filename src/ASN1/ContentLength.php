@@ -30,15 +30,15 @@ class ContentLength extends ObjectPart implements ContentLengthInterface
     {
         $firstOctet = \ord($this->binaryData[0]);
 
-        if ($firstOctet === 0x80) {
-            $form = self::INDEFINITE_FORM;
-        } elseif (($firstOctet & 0x80) !== 0) {
-            $form = self::LONG_FORM;
-        } else {
-            $form = self::SHORT_FORM;
+        if ($firstOctet < 0x80) {
+            return self::SHORT_FORM;
         }
 
-        return $form;
+        if ($firstOctet === 0x80) {
+            return self::INDEFINITE_FORM;
+        }
+
+        return self::LONG_FORM;
     }
 
     /**
@@ -51,22 +51,19 @@ class ContentLength extends ObjectPart implements ContentLengthInterface
 
         switch ($this->form) {
             case self::SHORT_FORM:
-                break;
+                return $contentLength;
             case self::LONG_FORM:
                 $nrOfLengthOctets = $contentLength & 0x7F;
                 $contentLength    = 0;
                 for ($i = 0; $i < $nrOfLengthOctets;) {
                     $contentLength = ($contentLength << 8) + \ord($this->binaryData[++$i]);
                 }
-                break;
+                return $contentLength;
             case self::INDEFINITE_FORM:
-                $contentLength = NAN;
-                break;
+                return NAN;
             default:
                 throw new \Exception('Unknown Form');
         }
-
-        return $contentLength;
     }
 
     public function getLength()

@@ -249,15 +249,14 @@ class Decoder
     protected function parseChildren(&$binaryData, &$offsetIndex, ContentLength $contentLength)
     {
         $children = [];
-        if (!is_nan($contentLength->getLength())) {
-            $octetsToRead = $contentLength->getLength();
-            while ($octetsToRead > 0) {
-                $startOffset = $offsetIndex;
+        $octetsToRead = $contentLength->getLength();
+        if (!is_nan($octetsToRead)) {
+            $startOffset = $offsetIndex;
+            while ($offsetIndex - $startOffset < $octetsToRead) {
                 $newChild = $this->fromBinary($binaryData, $offsetIndex);
                 if (null === $newChild) {
                     throw new ParserException('Children not found', $offsetIndex);
                 }
-                $octetsToRead -= $offsetIndex - $startOffset;
                 $children[] = $newChild;
             }
         } else {
