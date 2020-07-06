@@ -167,4 +167,12 @@ class GeneralizedTime extends AbstractTime
                 $lengthForm
             );
     }
+
+    /**
+     * @return DateTime
+     */
+    public function getValue()
+    {
+        return $this->value;
+    }
 }
