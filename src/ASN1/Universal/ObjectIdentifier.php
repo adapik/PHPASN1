@@ -150,14 +150,4 @@ class ObjectIdentifier extends ASN1Object
                 ContentLength::SHORT_FORM
             );
     }
-
-    /**
-     * OID string value
-     *
-     * @return string
-     */
-    public function getValue()
-    {
-        return $this->value;
-    }
 }

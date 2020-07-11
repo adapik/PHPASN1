@@ -25,7 +25,7 @@ use FG\ASN1\Universal\Sequence;
  */
 abstract class ASN1Object implements ASN1ObjectInterface
 {
-    /** @var \FG\ASN1\ASN1Object[] */
+    /** @var ASN1Object[] */
     protected $children = [];
     private $parent;
 
@@ -131,7 +131,7 @@ abstract class ASN1Object implements ASN1ObjectInterface
     /**
      * @param $oidString
      *
-     * @return \FG\ASN1\Universal\ObjectIdentifier[]
+     * @return ObjectIdentifier[]
      */
     public function findByOid(string $oidString): array
     {
@@ -262,7 +262,7 @@ abstract class ASN1Object implements ASN1ObjectInterface
     }
 
     /**
-     * @return \FG\ASN1\ASN1Object[]
+     * @return ASN1Object[]
      */
     public function getChildren(): array
     {
@@ -270,7 +270,7 @@ abstract class ASN1Object implements ASN1ObjectInterface
     }
 
     /**
-     * @return null|\FG\ASN1\ASN1Object
+     * @return null|ASN1Object
      */
     public function getParent()
     {
@@ -314,7 +314,7 @@ abstract class ASN1Object implements ASN1ObjectInterface
     /**
      * @param string $className
      *
-     * @return \FG\ASN1\ASN1Object[]
+     * @return ASN1Object[]
      * @throws \Exception
      */
     public function findChildrenByType($className)
@@ -333,7 +333,7 @@ abstract class ASN1Object implements ASN1ObjectInterface
     /**
      * @param $fileContent
      *
-     * @return \FG\ASN1\ASN1Object
+     * @return ASN1Object
      * @throws \Exception
      */
     final public static function fromFile($fileContent)
@@ -374,5 +374,61 @@ abstract class ASN1Object implements ASN1ObjectInterface
     public function getBinaryContent()
     {
         return $this->content->getBinary();
+    }
+
+    /**
+     * @param ASN1Object|ASN1Object[] $object
+     * @return $this
+     * @throws \Exception
+     */
+    public function appendChild($object)
+    {
+        if ($object instanceof ASN1Object) {
+            $this->addChild($object);
+        } elseif (is_array($object)) {
+            $this->addChildren($object);
+        }
+
+        $this->rebuildTree();
+
+        if (!is_null($this->parent)) {
+            $this->parent->rebuildTree();
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param ASN1Object $object
+     * @param int $index
+     * @return $this
+     * @throws \Exception
+     */
+    public function replaceChild(int $index, ASN1Object $object)
+    {
+        $this->children[$index] = $object;
+        $this->rebuildTree();
+        if (!is_null($this->parent)) {
+            $this->parent->rebuildTree();
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param int $index
+     * @return $this
+     * @throws \Exception
+     */
+    public function removeChild(int $index)
+    {
+        array_splice($this->children, $index, 1);
+        $this->rebuildTree();
+
+        if (!is_null($this->parent)) {
+            $this->parent->rebuildTree();
+        }
+
+        return $this;
     }
 }
