@@ -2,7 +2,7 @@
 
 namespace FG\ASN1\Decoder;
 
-use FG\ASN1\ASN1Object;
+use FG\ASN1\ASN1ObjectInterface;
 use FG\ASN1\Content;
 use FG\ASN1\ContentLength;
 use FG\ASN1\Exception\ParserException;
@@ -45,7 +45,7 @@ class Decoder
      * @param int    $offsetIndex
      *
      * @throws ParserException
-     * @return ASN1Object
+     * @return ASN1ObjectInterface
      */
     public function fromBinary(&$binaryData, &$offsetIndex = 0)
     {

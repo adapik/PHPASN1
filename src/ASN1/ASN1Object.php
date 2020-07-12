@@ -110,7 +110,7 @@ abstract class ASN1Object implements ASN1ObjectInterface
      * @param int    $offsetIndex
      *
      * @throws ParserException
-     * @return ASN1Object
+     * @return ASN1ObjectInterface
      */
     public static function fromBinary(&$binaryData, &$offsetIndex = 0)
     {

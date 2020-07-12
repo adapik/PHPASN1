@@ -13,7 +13,6 @@ namespace FG\ASN1\Universal;
 use Exception;
 use FG\ASN1\ElementBuilder;
 use FG\ASN1\ASN1Object;
-use FG\ASN1\Exception\ParserException;
 use FG\ASN1\Identifier;
 use FG\ASN1\ContentLength;
 use FG\ASN1\Content;
@@ -24,9 +23,10 @@ class Integer extends ASN1Object
     public $value;
 
     /**
-     * @param int $value
-     *
-     * @throws Exception if the value is not numeric
+     * @param Identifier $identifier
+     * @param ContentLength $contentLength
+     * @param Content $content
+     * @param array $children
      */
     public function __construct(
         Identifier $identifier,
@@ -129,16 +129,5 @@ class Integer extends ASN1Object
                 $integer,
                 $lengthForm
             );
-    }
-
-    /**
-     * @param string $binaryData
-     * @param int $offsetIndex
-     * @return Integer|ASN1Object
-     * @throws ParserException
-     */
-    public static function fromBinary(&$binaryData, &$offsetIndex = 0)
-    {
-        return parent::fromBinary($binaryData, &$offsetIndex);
     }
 }
