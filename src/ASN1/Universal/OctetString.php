@@ -10,11 +10,12 @@
 
 namespace FG\ASN1\Universal;
 
-use FG\ASN1\Content;
-use FG\ASN1\ElementBuilder;
 use FG\ASN1\ASN1Object;
-use FG\ASN1\Identifier;
+use FG\ASN1\Content;
 use FG\ASN1\ContentLength;
+use FG\ASN1\ElementBuilder;
+use FG\ASN1\Exception\ParserException;
+use FG\ASN1\Identifier;
 
 class OctetString extends ASN1Object
 {
@@ -66,5 +67,16 @@ class OctetString extends ASN1Object
                 $string,
                 $lengthForm
             );
+    }
+
+    /**
+     * @param string $binaryData
+     * @param int $offsetIndex
+     * @return OctetString|ASN1Object
+     * @throws ParserException
+     */
+    public static function fromBinary(&$binaryData, &$offsetIndex = 0)
+    {
+        return parent::fromBinary($binaryData, $offsetIndex);
     }
 }
