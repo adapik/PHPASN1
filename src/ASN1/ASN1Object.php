@@ -333,7 +333,7 @@ abstract class ASN1Object implements ASN1ObjectInterface
     /**
      * @param $fileContent
      *
-     * @return ASN1Object
+     * @return ASN1ObjectInterface
      * @throws \Exception
      */
     final public static function fromFile($fileContent)
@@ -377,7 +377,7 @@ abstract class ASN1Object implements ASN1ObjectInterface
     }
 
     /**
-     * @param ASN1Object|ASN1Object[] $object
+     * @param ASN1ObjectInterface|ASN1ObjectInterface[] $object
      * @return $this
      * @throws \Exception
      */
@@ -399,12 +399,12 @@ abstract class ASN1Object implements ASN1ObjectInterface
     }
 
     /**
-     * @param ASN1Object $object
+     * @param ASN1ObjectInterface $object
      * @param int $index
      * @return $this
      * @throws \Exception
      */
-    public function replaceChild(int $index, ASN1Object $object)
+    public function replaceChild(int $index, ASN1ObjectInterface $object)
     {
         $this->children[$index] = $object;
         $this->rebuildTree();
