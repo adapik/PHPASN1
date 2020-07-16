@@ -37,16 +37,16 @@ class ChildrenTest extends TestCase
         $object->removeChild($object->getChildren()[4]);
 
         // Test that removed not first identical Sequence
-        $this->assertInstanceOf(Sequence::class, $object->getChildren()[0]);
+        self::assertInstanceOf(Sequence::class, $object->getChildren()[0]);
 
         // Check we really removed
-        $this->assertCount(7, $object->getChildren());
+        self::assertCount(7, $object->getChildren());
 
         // check we have properly defined index
         $i = 0;
         foreach ($object->getChildren() as $index => $child) {
 
-            $this->assertEquals($i, $index);
+            self::assertEquals($i, $index);
             $i++;
         }
 
@@ -72,16 +72,16 @@ class ChildrenTest extends TestCase
         $object->replaceChild($childToReplace, $replacement);
 
         // New child now NullObject instead of Sequence
-        $this->assertInstanceOf(NullObject::class, $object->getChildren()[0]);
+        self::assertInstanceOf(NullObject::class, $object->getChildren()[0]);
 
         // We still have 1 child
-        $this->assertCount(3, $object->getChildren());
+        self::assertCount(3, $object->getChildren());
 
         // check we have properly defined index
         $i = 0;
         foreach ($object->getChildren() as $index => $child) {
 
-            $this->assertEquals($i, $index);
+            self::assertEquals($i, $index);
             $i++;
         }
 
@@ -101,33 +101,31 @@ class ChildrenTest extends TestCase
 
         $object->appendChild($childToAppend);
         // We have +1 now
-        $this->assertCount(2, $object->getChildren());
+        self::assertCount(2, $object->getChildren());
         // First child still NullObject
-        $this->assertInstanceOf(NullObject::class, $object->getChildren()[0]);
+        self::assertInstanceOf(NullObject::class, $object->getChildren()[0]);
         // Second child is Integer
-        $this->assertInstanceOf(Integer::class, $object->getChildren()[1]);
+        self::assertInstanceOf(Integer::class, $object->getChildren()[1]);
 
         $object->appendChild($childrenToAppend);
         // We have +1 + 3 now
-        $this->assertCount(5, $object->getChildren());
+        self::assertCount(5, $object->getChildren());
         /** @var Integer[] $integers */
         $integers = $object->findChildrenByType(Integer::class);
 
         // We have 4 children
-        $this->assertCount(4, $integers);
-
+        self::assertCount(4, $integers);
         $i = 0;
         foreach ($integers as $integer) {
             // Check integers have been properly positioned
-            $this->assertEquals($i, intval($integer->__toString()));
+            self::assertEquals($i, (int) $integer->__toString());
             $i++;
         }
 
         // check we have properly defined index
         $i = 0;
         foreach ($object->getChildren() as $index => $child) {
-
-            $this->assertEquals($i, $index);
+            self::assertEquals($i, $index);
             $i++;
         }
     }
