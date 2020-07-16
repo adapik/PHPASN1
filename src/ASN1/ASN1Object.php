@@ -391,44 +391,44 @@ abstract class ASN1Object implements ASN1ObjectInterface
 
         $this->rebuildTree();
 
-        if (!is_null($this->parent)) {
-            $this->parent->rebuildTree();
-        }
-
         return $this;
     }
 
     /**
-     * @param ASN1ObjectInterface $object
-     * @param int $index
+     * @param ASN1ObjectInterface $childToReplace
+     * @param ASN1ObjectInterface $replacement
      * @return $this
-     * @throws \Exception
+     * @throws Exception
      */
-    public function replaceChild(int $index, ASN1ObjectInterface $object)
+    public function replaceChild(ASN1ObjectInterface $childToReplace, ASN1ObjectInterface $replacement)
     {
-        $this->children[$index] = $object;
-        $this->rebuildTree();
-        if (!is_null($this->parent)) {
-            $this->parent->rebuildTree();
-        }
+        foreach ($this->getChildren() as $index => $child) {
+            if ($child === $childToReplace) {
+                $this->children[$index] = $replacement;
+                $this->rebuildTree();
 
-        return $this;
+                return $this;
+            }
+        }
+        throw new Exception("Unknown child to be replaced");
     }
 
     /**
-     * @param int $index
+     * @param ASN1ObjectInterface $childToDelete
      * @return $this
-     * @throws \Exception
+     * @throws Exception
      */
-    public function removeChild(int $index)
+    public function removeChild(ASN1ObjectInterface $childToDelete)
     {
-        array_splice($this->children, $index, 1);
-        $this->rebuildTree();
+        foreach ($this->getChildren() as $index => $child) {
+            if ($child === $childToDelete) {
+                // We can't just call remove(), cause children array indexes will not be re-indexed
+                array_splice($this->children, $index, 1);
+                $this->rebuildTree();
 
-        if (!is_null($this->parent)) {
-            $this->parent->rebuildTree();
+                return $this;
+            }
         }
-
-        return $this;
+        throw new Exception("Unknown child to be removed");
     }
 }
