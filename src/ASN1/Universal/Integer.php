@@ -23,9 +23,10 @@ class Integer extends ASN1Object
     public $value;
 
     /**
-     * @param int $value
-     *
-     * @throws Exception if the value is not numeric
+     * @param Identifier $identifier
+     * @param ContentLength $contentLength
+     * @param Content $content
+     * @param array $children
      */
     public function __construct(
         Identifier $identifier,
