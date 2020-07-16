@@ -77,10 +77,6 @@ class ChildrenTest extends TestCase
         // We still have 1 child
         $this->assertCount(3, $object->getChildren());
 
-        // Exception if we trying replace unknown child
-        $this->expectException(Exception::class);
-        $object->replaceChild($unknownChild, $replacement);
-
         // check we have properly defined index
         $i = 0;
         foreach ($object->getChildren() as $index => $child) {
@@ -88,6 +84,10 @@ class ChildrenTest extends TestCase
             $this->assertEquals($i, $index);
             $i++;
         }
+
+        // Exception if we trying replace unknown child
+        $this->expectException(Exception::class);
+        $object->replaceChild($unknownChild, $replacement);
     }
 
     public function testAppendChild()
@@ -112,6 +112,9 @@ class ChildrenTest extends TestCase
         $this->assertCount(5, $object->getChildren());
         /** @var Integer[] $integers */
         $integers = $object->findChildrenByType(Integer::class);
+
+        // We have 4 children
+        $this->assertCount(4, $integers);
 
         $i = 0;
         foreach ($integers as $integer) {
