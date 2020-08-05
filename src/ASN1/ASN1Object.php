@@ -277,22 +277,6 @@ abstract class ASN1Object implements ASN1ObjectInterface
         return $this->parent;
     }
 
-    /**
-     * @return null|ASN1Object
-     */
-    public function getTopParent()
-    {
-        $topParent = $this->parent;
-
-        while ($parent = $topParent->getParent()) {
-        	if ($parent != null) {
-				$topParent = $parent;
-			}
-        }
-
-        return $topParent;
-    }
-
     public function insertAfter(ASN1Object $object)
     {
         if ($this->parent) {
