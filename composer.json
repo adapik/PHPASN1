@@ -44,10 +44,5 @@
         "psr-4": {
             "FG\\Test\\": "tests/"
         }
-    },
-    "extra": {
-        "branch-alias": {
-            "dev-master": "1.5.x-dev"
-        }
     }
 }
