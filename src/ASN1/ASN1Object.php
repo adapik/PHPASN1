@@ -192,31 +192,31 @@ abstract class ASN1Object implements ASN1ObjectInterface
         if ($this->validateLengthContent()) {
             //nothing to rebuild
             return true;
-        } else {
-            //если форма неопределенная, то и у родителя она тоже неопределенная
-            // и энкодировать длину ни у одного родителя не нужно - просто изменить контент у всех предков
-            if ($this->contentLength->getLengthForm() === ContentLength::INDEFINITE_FORM) {
-                $this->contentLength = new ContentLength(
-                    $this->contentLength->getBinary(),
-                    $this->content->getNrOfOctets()
-                );
-            } else {
-                $this->contentLength = ElementBuilder::createContentLength(
-                    $this->content->getBinary(),
-                    $this->contentLength->getLengthForm()
-                );
-            }
+        }
 
-            if ($this->parent) {
-                $this->parent->rebuildTree();
-            }
+        //если форма неопределенная, то и у родителя она тоже неопределенная
+        // и энкодировать длину ни у одного родителя не нужно - просто изменить контент у всех предков
+        if ($this->contentLength->getLengthForm() === ContentLength::INDEFINITE_FORM) {
+            $this->contentLength = new ContentLength(
+                $this->contentLength->getBinary(),
+                $this->content->getNrOfOctets()
+            );
+        } else {
+            $this->contentLength = ElementBuilder::createContentLength(
+                $this->content->getBinary(),
+                $this->contentLength->getLengthForm()
+            );
+        }
+
+        if ($this->parent) {
+            $this->parent->rebuildTree();
         }
 
         if ($this->validateLengthContent()) {
             return true;
-        } else {
-            throw new \Exception('Дерево не восстановлено');
         }
+
+        throw new Exception('Tree was not rebuilt');
     }
 
     private function validateLengthContent()
@@ -431,6 +431,7 @@ abstract class ASN1Object implements ASN1ObjectInterface
                 return $this;
             }
         }
+
         throw new Exception("Unknown child to be replaced");
     }
 
@@ -450,6 +451,7 @@ abstract class ASN1Object implements ASN1ObjectInterface
                 return $this;
             }
         }
+
         throw new Exception("Unknown child to be removed");
     }
 }
