@@ -11,7 +11,6 @@
 namespace FG\Test\ASN1\Universal;
 
 use FG\ASN1\Exception\Exception;
-use FG\ASN1\Universal\Boolean;
 use FG\ASN1\Universal\Integer;
 use FG\ASN1\Universal\NullObject;
 use FG\ASN1\Universal\Sequence;
