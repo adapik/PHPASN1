@@ -11,6 +11,7 @@
 namespace FG\Test\ASN1\Universal;
 
 use FG\ASN1\Exception\Exception;
+use FG\ASN1\Universal\Boolean;
 use FG\ASN1\Universal\Integer;
 use FG\ASN1\Universal\NullObject;
 use FG\ASN1\Universal\Sequence;
@@ -18,6 +19,29 @@ use PHPUnit\Framework\TestCase;
 
 class ChildrenTest extends TestCase
 {
+	public function testGetTopParent()
+	{
+		$booleanObject   = Boolean::create(true);
+		$top = Sequence::create([
+			Sequence::create([
+				Sequence::create([
+						Sequence::create([$booleanObject])
+					]
+				),
+			]),
+		]);
+		$lastChild = $top->getChildren()[0]->getChildren()[0]->getChildren()[0]->getChildren()[0];
+
+		// check we have last boolean child
+		self::assertInstanceOf(Boolean::class, $lastChild);
+
+		// it is our boolean
+		self::assertEquals($booleanObject, $lastChild);
+
+		// Check we got correct top parent
+		self::assertEquals($top, $lastChild->getTopParent());
+	}
+
     public function testRemoveChild()
     {
         $unknownChild = Integer::create(0);
