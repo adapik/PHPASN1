@@ -353,10 +353,17 @@ abstract class ASN1Object implements ASN1ObjectInterface
         return self::fromBinary($file);
     }
 
+    /**
+     * In case we have to provide object as as, but won't provide access to parent node.
+     * That's very important in CMS package, cause we do not wont to give an
+     * ability to change any part of ASN.1 structure.
+     *
+     * @return ASN1ObjectInterface
+     */
     public function detach()
     {
-        $object       = clone $this;
-        $this->parent = null;
+        $object = clone $this;
+        $object->parent = null;
 
         return $object;
     }
