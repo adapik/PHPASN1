@@ -14,8 +14,4 @@ interface ASN1ObjectInterface
     public function getContentLength(): ContentLengthInterface;
 
     public function getChildren(): array;
-
-    public function getParent() : ASN1ObjectInterface;
-
-    public function setParent(ASN1ObjectInterface $parent) : self;
 }
