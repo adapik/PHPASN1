@@ -27,7 +27,7 @@ abstract class ASN1Object implements ASN1ObjectInterface
 {
     /** @var ASN1Object[] */
     protected $children = [];
-    protected $parent;
+    private $parent;
 
     protected $identifier;
     protected $contentLength;
