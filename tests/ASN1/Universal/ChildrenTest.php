@@ -50,8 +50,12 @@ class ChildrenTest extends TestCase
             $i++;
         }
 
-        $this->expectException(Exception::class);
+        // Check all children have correct parent
+        foreach ($object->getChildren() as $child) {
+            self::assertEquals($child->getParent(), $object);
+        }
 
+        $this->expectException(Exception::class);
         $object->removeChild($unknownChild);
     }
 
@@ -117,6 +121,11 @@ class ChildrenTest extends TestCase
             $i++;
         }
 
+        // Check all children have correct parent
+        foreach ($object->getChildren() as $child) {
+            self::assertEquals($child->getParent(), $object);
+        }
+
         // Exception if we trying replace unknown child
         $this->expectException(Exception::class);
         $object->replaceChild($unknownChild, $replacement);
@@ -159,6 +168,11 @@ class ChildrenTest extends TestCase
         foreach ($object->getChildren() as $index => $child) {
             self::assertEquals($i, $index);
             $i++;
+        }
+
+        // Check all children have correct parent
+        foreach ($object->getChildren() as $child) {
+            self::assertEquals($child->getParent(), $object);
         }
     }
 }
