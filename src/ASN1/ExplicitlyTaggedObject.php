@@ -31,7 +31,7 @@ class ExplicitlyTaggedObject extends AbstractTaggedObject
         return $this->getBinaryContent();
     }
 
-    public static function create(int $tagNumber, ASN1Object $object, $class = Identifier::CLASS_CONTEXT_SPECIFIC)
+    public static function create(int $tagNumber, ASN1ObjectInterface $object, $class = Identifier::CLASS_CONTEXT_SPECIFIC)
     {
         $hasIndefiniteLength = $object->getContentLength()->getLengthForm() === ContentLength::INDEFINITE_FORM;
 

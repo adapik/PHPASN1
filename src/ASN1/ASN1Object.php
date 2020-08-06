@@ -272,7 +272,7 @@ abstract class ASN1Object implements ASN1ObjectInterface
     /**
      * @return null|ASN1Object
      */
-    public function getParent()
+    public function getParent(): ASN1ObjectInterface
     {
         return $this->parent;
     }
@@ -412,6 +412,8 @@ abstract class ASN1Object implements ASN1ObjectInterface
         foreach ($this->getChildren() as $index => $child) {
             if ($child === $childToReplace) {
                 $this->children[$index] = $replacement;
+                // New replacement must have old child's parent.
+                $replacement->parent = $this;
                 $this->rebuildTree();
 
                 return $this;
