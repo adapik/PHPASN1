@@ -27,7 +27,7 @@ abstract class ASN1Object implements ASN1ObjectInterface
 {
     /** @var ASN1Object[] */
     protected $children = [];
-    private $parent;
+    protected $parent;
 
     protected $identifier;
     protected $contentLength;
@@ -272,9 +272,20 @@ abstract class ASN1Object implements ASN1ObjectInterface
     /**
      * @return null|ASN1Object
      */
-    public function getParent()
+    public function getParent(): ASN1ObjectInterface
     {
         return $this->parent;
+    }
+
+    /**
+     * @param ASN1ObjectInterface $parent
+     * @return ASN1ObjectInterface
+     */
+    public function setParent(ASN1ObjectInterface $parent): ASN1ObjectInterface
+    {
+        $this->parent = $parent;
+
+        return $this;
     }
 
     public function insertAfter(ASN1Object $object)
@@ -411,7 +422,9 @@ abstract class ASN1Object implements ASN1ObjectInterface
     {
         foreach ($this->getChildren() as $index => $child) {
             if ($child === $childToReplace) {
-                $this->children[$index] = $replacement;
+                // New replacement must have old child's parent.
+                $this->children[$index] = $replacement->setParent($childToReplace->getParent());
+                // rebuild from new child parent
                 $this->rebuildTree();
 
                 return $this;
