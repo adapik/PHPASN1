@@ -55,6 +55,36 @@ class ChildrenTest extends TestCase
         $object->removeChild($unknownChild);
     }
 
+    public function testReplacedChildParent() {
+
+        $childToReplace = Integer::create(1);
+        $replacement = Integer::create(0);
+
+        $object = Sequence::create([
+            NullObject::create(),
+            $childToReplace,
+            NullObject::create(),
+        ]);
+
+        $expectedObject = Sequence::create([
+            NullObject::create(),
+            $replacement,
+            NullObject::create(),
+        ]);
+
+        $expectedBinary = $expectedObject->getBinary();
+
+        $object->replaceChild($childToReplace, $replacement);
+
+        // Check binary data as expected after tree rebuild
+        self::assertEquals($expectedObject->getBinary(), $expectedBinary);
+
+        // Check all children have correct parent
+        foreach ($object->getChildren() as $child) {
+            self::assertEquals($child->getParent(), $object);
+        }
+    }
+
     public function testReplaceChild()
     {
         $unknownChild = Integer::create(0);
@@ -72,7 +102,9 @@ class ChildrenTest extends TestCase
         $object->replaceChild($childToReplace, $replacement);
 
         // New child now NullObject instead of Sequence
-        self::assertInstanceOf(NullObject::class, $object->getChildren()[0]);
+        foreach ($object->getChildren() as $child) {
+            self::assertInstanceOf(NullObject::class, $child);
+        }
 
         // We still have 1 child
         self::assertCount(3, $object->getChildren());
