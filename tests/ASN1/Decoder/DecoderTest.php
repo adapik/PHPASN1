@@ -28,7 +28,7 @@ class DecoderTest extends ASN1TestCase
      */
     private $decoder;
     
-    public function setUp()
+    public function setUp(): void
     {
         $this->decoder = new Decoder();
     }

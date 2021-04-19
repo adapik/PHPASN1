@@ -37,7 +37,7 @@ class ASN1ObjectTest extends ASN1TestCase
      */
     private $object;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->object = $this
             ->getMockBuilder(ASN1Object::class)
