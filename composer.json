@@ -25,7 +25,7 @@
     "keywords": [ "x690", "x.690", "x.509", "x509", "asn1", "asn.1", "ber", "der", "binary", "encoding", "decoding" ],
 
     "require": {
-        "php": ">=7.1",
+        "php": ">=7.2",
         "ext-gmp": "*"
     },
     "require-dev": {
