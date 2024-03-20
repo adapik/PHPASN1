@@ -107,4 +107,24 @@ class ExplicitlyTaggedObjectTest extends ASN1TestCase
         $this->assertEquals(2+$length, $object->getObjectLength());
         $this->assertEquals($data, $object->getBinary());
     }
+
+    public function testDecorated()
+    {
+        $object1 = Boolean::create(true);
+        $object2 = Integer::create(42);
+        $identifier = 0xA0;
+
+        // SHORT_FORM
+        $length = $object1->getObjectLength() + $object2->getObjectLength();
+        $data = chr($identifier) . chr($length) . $object1->getBinary() . $object2->getBinary();
+        $object = ExplicitlyTaggedObject::fromBinary($data);
+        $decoratedData = $object->getDecoratedObject(0, Identifier::CLASS_CONTEXT_SPECIFIC, true)->getBinary();
+        $this->assertEquals($data, $decoratedData);
+
+        // INDEFINITE_FORM
+        $dataEoc = chr($identifier) . chr(128) . $object1->getBinary() . $object2->getBinary() . chr(0) . chr(0);
+        $object = ExplicitlyTaggedObject::fromBinary($dataEoc);
+        $decoratedData = $object->getDecoratedObject(0, Identifier::CLASS_CONTEXT_SPECIFIC, true)->getBinary();
+        $this->assertEquals($dataEoc, $decoratedData);
+    }
 }
