@@ -12,6 +12,9 @@ abstract class AbstractTaggedObject extends ASN1Object
         $identifierOctets = IdentifierManager::create($tagClass, $isConstructed, $tagNumber);
 
         $binary = $identifierOctets.$this->getContentLength()->getBinary().$this->getContent()->getBinary();
+        if ($this->eoc) {
+            $binary .= $this->eoc->getBinary();
+        }
 
         return ASN1Object::fromBinary($binary);
     }
