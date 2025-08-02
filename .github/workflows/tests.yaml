@@ -50,6 +50,7 @@ jobs:
         run: vendor/bin/phpunit
 
       - name: Run PHPUnit with coverage
+        if: matrix.php-versions == '8.4' && matrix.dependency-version == 'prefer-stable'
         run: vendor/bin/phpunit --coverage-clover build/logs/clover.xml
 
       - name: Upload coverage to Codecov
