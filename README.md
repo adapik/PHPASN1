@@ -1,7 +1,7 @@
 PHPASN1
 =======
 
-![build status](https://github.com/github/docs/actions/workflows/tests.yml/badge.svg)
+![build status](https://github.com/adapik/PHPASN1/actions/workflows/tests.yaml/badge.svg?branch=master)
 [![codecov](https://codecov.io/github/adapik/phpasn1/graph/badge.svg?token=KCBH7EV2J0)](https://codecov.io/github/adapik/phpasn1)
 
 [![Latest Stable Version](https://poser.pugx.org/Adapik/phpasn1/v/stable.png)](https://packagist.org/packages/Adapik/phpasn1)
