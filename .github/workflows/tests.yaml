@@ -52,10 +52,12 @@ jobs:
       - name: Run PHPUnit with coverage
         run: vendor/bin/phpunit --coverage-clover build/logs/clover.xml
 
-      - name: Upload coverage to Coveralls
+      - name: Upload coverage to Codecov
         if: matrix.php-versions == '8.4' && matrix.dependency-version == 'prefer-stable'
-        uses: coverallsapp/github-action@v2
+        uses: codecov/codecov-action@v3
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          path-to-lcov: build/logs/clover.xml
-          format: clover
+          token: ${{ secrets.CODECOV_TOKEN }}
+          file: ./coverage.xml
+          flags: unittests
+          name: codecov-umbrella
+          fail_ci_if_error: false
