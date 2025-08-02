@@ -86,11 +86,10 @@ class UTCTime extends AbstractTime implements Parsable
         $this->value = $dateTime;
     }
 
-    public static function createFormDateTime(\DateTimeInterface $dateTime = null, array $options = [])
+    public static function createFormDateTime(?\DateTimeInterface $dateTime = null, array $options = [])
     {
         $dateTime = $dateTime ?? new DateTime('now', new DateTimeZone('UTC'));
 
-        $isConstructed = false;
         $lengthForm    = $options['lengthForm'] ?? ContentLength::SHORT_FORM;
 
         $string = $dateTime->format('ymdHis') . 'Z';
@@ -99,7 +98,7 @@ class UTCTime extends AbstractTime implements Parsable
             ElementBuilder::createObject(
                 Identifier::CLASS_UNIVERSAL,
                 static::getType(),
-                $isConstructed,
+                false,
                 $string,
                 $lengthForm
             );

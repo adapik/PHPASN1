@@ -180,7 +180,7 @@ class ElementBuilder
 
     public static function createContentLength($content, $lengthForm)
     {
-        $length = strlen($content);
+        $length = strlen((string) $content);
         if ($lengthForm === ContentLength::INDEFINITE_FORM) {
             $lengthOctets = chr(128);
         } else {

@@ -64,5 +64,5 @@ abstract class AbstractTime extends ASN1Object
         return $dateTime;
     }
 
-    abstract public static function createFormDateTime(\DateTimeInterface $dateTime = null, array $options = []);
+    abstract public static function createFormDateTime(?\DateTimeInterface $dateTime = null, array $options = []);
 }

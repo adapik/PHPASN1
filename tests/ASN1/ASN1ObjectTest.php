@@ -201,79 +201,86 @@ class ASN1ObjectTest extends ASN1TestCase
     }
 
     /**
-     * @expectedException \FG\ASN1\Exception\ParserException
-     * @expectedExceptionMessage ASN.1 Parser Exception at offset 10: Can not parse binary from data: Offset index larger than input size
      * @depends testFromBinary
      */
     public function testFromBinaryThrowsException()
     {
+        $this->expectException(\FG\ASN1\Exception\ParserException::class);
+        $this->expectExceptionMessage('ASN.1 Parser Exception at offset 10: Can not parse binary from data: Offset index larger than input size');
+        
         $binaryData = 0x0;
         $offset     = 10;
         ASN1Object::fromBinary($binaryData, $offset);
     }
 
     /**
-     * @expectedException \FG\ASN1\Exception\ParserException
-     * @expectedExceptionMessage ASN.1 Parser Exception at offset 0: Can not parse binary from data: Offset index larger than input size
      * @depends testFromBinary
      */
     public function testFromBinaryWithEmptyStringThrowsException()
     {
+        $this->expectException(\FG\ASN1\Exception\ParserException::class);
+        $this->expectExceptionMessage('ASN.1 Parser Exception at offset 0: Can not parse binary from data: Offset index larger than input size');
+        
         $data = '';
         ASN1Object::fromBinary($data);
     }
 
     /**
-     * @expectedException \FG\ASN1\Exception\ParserException
-     * @expectedExceptionMessage ASN.1 Parser Exception at offset 2: Can not parse binary from data: Offset index larger than input size
      * @depends testFromBinary
      */
     public function testFromBinaryWithSpacyStringThrowsException()
     {
+        $this->expectException(\FG\ASN1\Exception\ParserException::class);
+        $this->expectExceptionMessage('ASN.1 Parser Exception at offset 2: Can not parse binary from data: Offset index larger than input size');
+        
         $data = '  ';
         ASN1Object::fromBinary($data);
     }
 
     /**
-     * @expectedException \FG\ASN1\Exception\ParserException
-     * @expectedExceptionMessage ASN.1 Parser Exception at offset 1: Can not parse content length from data: Offset index larger than input size
      * @depends testFromBinary
      */
     public function testFromBinaryWithNumberStringThrowsException()
     {
+        $this->expectException(\FG\ASN1\Exception\ParserException::class);
+        $this->expectExceptionMessage('ASN.1 Parser Exception at offset 1: Can not parse content length from data: Offset index larger than input size');
+        
         $data = '1';
         ASN1Object::fromBinary($data);
     }
 
     /**
-     * @expectedException \FG\ASN1\Exception\ParserException
-     * @expectedExceptionMessage ASN.1 Parser Exception at offset 25: Can not parse content length from data: Offset index larger than input size
      * @depends testFromBinary
      */
     public function testFromBinaryWithGarbageStringThrowsException()
     {
+        $this->expectException(\FG\ASN1\Exception\ParserException::class);
+        $this->expectExceptionMessage('ASN.1 Parser Exception at offset 25: Can not parse content length from data: Offset index larger than input size');
+        
         $data = 'certainly no asn.1 object';
         ASN1Object::fromBinary($data);
     }
 
     /**
-     * @expectedException \FG\ASN1\Exception\ParserException
-     * @expectedExceptionMessage ASN.1 Parser Exception at offset 1: Can not parse identifier (long form) from data: Offset index larger than input size
      * @depends testFromBinary
      */
     public function testFromBinaryUnknownObjectMissingLength()
     {
+        $this->expectException(\FG\ASN1\Exception\ParserException::class);
+        $this->expectExceptionMessage('ASN.1 Parser Exception at offset 1: Can not parse identifier (long form) from data: Offset index larger than input size');
+        
         $data = hex2bin('1f');
         ASN1Object::fromBinary($data);
     }
 
     /**
-     * @expectedException \FG\ASN1\Exception\ParserException
-     * @expectedExceptionMessage ASN.1 Parser Exception at offset 4: Can not parse content length (long form) from data: Offset index larger than input size
      * @depends testFromBinary
      */
     public function testFromBinaryInalidLongFormContentLength()
     {
+        $this->expectException(\FG\ASN1\Exception\ParserException::class);
+        $this->expectExceptionMessage('ASN.1 Parser Exception at offset 4: Can not parse content length (long form) from data: Offset index larger than input size');
+        
         $binaryData  = chr(Identifier::INTEGER);
         $binaryData .= chr(0x8f); //denotes a long-form content length with 15 length-octets
         $binaryData .= chr(0x1);  //only give one content-length-octet

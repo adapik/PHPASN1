@@ -97,12 +97,13 @@ class BooleanTest extends ASN1TestCase
     }
 
     /**
-     * @expectedException \FG\ASN1\Exception\ParserException
-     * @expectedExceptionMessage ASN.1 Parser Exception at offset 4: An ASN.1 Boolean should not have a length other than one. Extracted length was 2
      * @depends testFromBinary
      */
     public function testFromBinaryWithInvalidLength01()
     {
+        $this->expectException(\FG\ASN1\Exception\ParserException::class);
+        $this->expectExceptionMessage('ASN.1 Parser Exception at offset 4: An ASN.1 Boolean should not have a length other than one. Extracted length was 2');
+        
         $binaryData  = chr(Identifier::BOOLEAN);
         $binaryData .= chr(0x02);
         $binaryData .= chr(0xFF);
@@ -110,12 +111,13 @@ class BooleanTest extends ASN1TestCase
     }
 
     /**
-     * @expectedException \FG\ASN1\Exception\ParserException
-     * @expectedExceptionMessage ASN.1 Parser Exception at offset 2: An ASN.1 Boolean should not have a length other than one. Extracted length was 0
      * @depends testFromBinary
      */
     public function testFromBinaryWithInvalidLength02()
     {
+        $this->expectException(\FG\ASN1\Exception\ParserException::class);
+        $this->expectExceptionMessage('ASN.1 Parser Exception at offset 2: An ASN.1 Boolean should not have a length other than one. Extracted length was 0');
+        
         $binaryData  = chr(Identifier::BOOLEAN);
         $binaryData .= chr(0x00);
         $binaryData .= chr(0xFF);

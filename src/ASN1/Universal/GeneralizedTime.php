@@ -152,7 +152,7 @@ class GeneralizedTime extends AbstractTime
         return $dateTime;
     }
 
-    public static function createFormDateTime(\DateTimeInterface $dateTime = null, array $options = [])
+    public static function createFormDateTime(?\DateTimeInterface $dateTime = null, array $options = [])
     {
         $dateTime = $dateTime ?? new DateTime('now', new DateTimeZone('UTC'));
 
