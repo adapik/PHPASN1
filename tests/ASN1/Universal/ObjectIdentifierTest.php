@@ -89,12 +89,13 @@ class ObjectIdentifierTest extends ASN1TestCase
     }
 
     /**
-     * @expectedException \FG\ASN1\Exception\ParserException
-     * @expectedExceptionMessage ASN.1 Parser Exception at offset 2: Malformed ASN.1 Object Identifier
-     * @depends                  testFromBinary
+     * @depends testFromBinary
      */
     public function testFromBinaryWithMalformedOID()
     {
+        $this->expectException(\FG\ASN1\Exception\ParserException::class);
+        $this->expectExceptionMessage('ASN.1 Parser Exception at offset 2: Malformed ASN.1 Object Identifier');
+        
         $binaryData = chr(Identifier::OBJECT_IDENTIFIER);
         $binaryData .= chr(0x03);
         $binaryData .= chr(42);
@@ -103,12 +104,11 @@ class ObjectIdentifierTest extends ASN1TestCase
         ObjectIdentifier::fromBinary($binaryData);
     }
 
-    /**
-     * @expectedException \Exception
-     * @expectedExceptionMessage [1.Foo.3] is no valid object identifier (sub identifier 2 is not numeric)!
-     */
     public function testCreateWithInvalidObjectIdentifier()
     {
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('[1.Foo.3] is no valid object identifier (sub identifier 2 is not numeric)!');
+        
         ObjectIdentifier::create('1.Foo.3');
     }
 }

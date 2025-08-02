@@ -74,12 +74,13 @@ class NullObjectTest extends ASN1TestCase
     }
 
     /**
-     * @expectedException \FG\ASN1\Exception\ParserException
-     * @expectedExceptionMessage ASN.1 Parser Exception at offset 3: An ASN.1 Null should not have a length other than zero. Extracted length was 1
      * @depends testFromBinary
      */
     public function testFromBinaryWithInvalidLength01()
     {
+        $this->expectException(\FG\ASN1\Exception\ParserException::class);
+        $this->expectExceptionMessage('ASN.1 Parser Exception at offset 3: An ASN.1 Null should not have a length other than zero. Extracted length was 1');
+        
         $binaryData  = chr(Identifier::NULL);
         $binaryData .= chr(0x01);
         NullObject::fromBinary($binaryData);

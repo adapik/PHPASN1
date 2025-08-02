@@ -138,12 +138,13 @@ class BitStringTest extends ASN1TestCase
     }
 
     /**
-     * @expectedException \FG\ASN1\Exception\ParserException
-     * @expectedExceptionMessage ASN.1 Parser Exception at offset 3: Malformed bit string
-     * @depends                  testFromBinary
+     * @depends testFromBinary
      */
     public function testFromBinaryWithInvalidLength01()
     {
+        $this->expectException(\FG\ASN1\Exception\ParserException::class);
+        $this->expectExceptionMessage('ASN.1 Parser Exception at offset 3: Malformed bit string');
+        
         $binaryData  = chr(Identifier::BITSTRING);
         $binaryData .= chr(0x01);
         $binaryData .= chr(0x00);

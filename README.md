@@ -1,13 +1,11 @@
 PHPASN1
 =======
 
-[![Build Status](https://secure.travis-ci.org/Adapik/PHPASN1.png?branch=master)](http://travis-ci.org/Adapik/PHPASN1)
-[![PHP 7 ready](http://php7ready.timesplinter.ch/Adapik/PHPASN1/badge.svg)](https://travis-ci.org/Adapik/PHPASN1)
-[![Coverage Status](https://coveralls.io/repos/Adapik/PHPASN1/badge.svg?branch=master&service=github)](https://coveralls.io/github/Adapik/PHPASN1?branch=master)
+![build status](https://github.com/github/docs/actions/workflows/tests.yml/badge.svg)
+[![codecov](https://codecov.io/github/adapik/phpasn1/graph/badge.svg?token=KCBH7EV2J0)](https://codecov.io/github/adapik/phpasn1)
 
 [![Latest Stable Version](https://poser.pugx.org/Adapik/phpasn1/v/stable.png)](https://packagist.org/packages/Adapik/phpasn1)
 [![Total Downloads](https://poser.pugx.org/Adapik/phpasn1/downloads.png)](https://packagist.org/packages/Adapik/phpasn1)
-[![Latest Unstable Version](https://poser.pugx.org/Adapik/phpasn1/v/unstable.png)](https://packagist.org/packages/Adapik/phpasn1)
 [![License](https://poser.pugx.org/Adapik/phpasn1/license.png)](https://packagist.org/packages/Adapik/phpasn1)
 
 A PHP Framework that allows you to encode and decode arbitrary [ASN.1][3] structures

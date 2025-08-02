@@ -29,11 +29,10 @@ class IntegerTest extends ASN1TestCase
         $this->assertEquals('Integer', $object->getIdentifier()->getCode());
     }
 
-    /**
-     * @expectedException \Exception
-     */
     public function testCreateInstanceCanFail()
     {
+        $this->expectException(\Exception::class);
+        
         Integer::create('a');
     }
 
