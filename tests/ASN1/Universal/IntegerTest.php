@@ -246,4 +246,46 @@ class IntegerTest extends ASN1TestCase
         $this->assertEquals($originalObject2, $parsedObject);
         $this->assertEquals(9, $offset);
     }
+
+    public function testToGMP()
+    {
+        $object = Integer::create(123);
+        $gmp = $object->toGMP();
+        $this->assertInstanceOf(\GMP::class, $gmp);
+        $this->assertEquals('123', gmp_strval($gmp));
+
+        $object = Integer::create(-456);
+        $gmp = $object->toGMP();
+        $this->assertInstanceOf(\GMP::class, $gmp);
+        $this->assertEquals('-456', gmp_strval($gmp));
+
+        $object = Integer::create(0);
+        $gmp = $object->toGMP();
+        $this->assertInstanceOf(\GMP::class, $gmp);
+        $this->assertEquals('0', gmp_strval($gmp));
+
+        // Test with big integer
+        $bigint = gmp_strval(gmp_pow(2, 128));
+        $object = Integer::create($bigint);
+        $gmp = $object->toGMP();
+        $this->assertInstanceOf(\GMP::class, $gmp);
+        $this->assertEquals($bigint, gmp_strval($gmp));
+    }
+
+    public function testBackwardCompatibilityValueProperty()
+    {
+        $object = Integer::create(123);
+        $this->assertEquals('123', $object->value);
+
+        $object = Integer::create(-456);
+        $this->assertEquals('-456', $object->value);
+
+        $object = Integer::create(0);
+        $this->assertEquals('0', $object->value);
+
+        // Test with big integer
+        $bigint = gmp_strval(gmp_pow(2, 128));
+        $object = Integer::create($bigint);
+        $this->assertEquals($bigint, $object->value);
+    }
 }
