@@ -96,6 +96,23 @@ class Integer extends ASN1Object
         return $this->gmpValue;
     }
 
+    /**
+     * Magic getter for backward compatibility.
+     * TODO remove in the next major release
+     * Allows access to the old public $value property.
+     *
+     * @param string $name
+     * @return string|null
+     */
+    public function __get(string $name)
+    {
+        if ($name === 'value') {
+            return gmp_strval($this->gmpValue);
+        }
+
+        return null;
+    }
+
     public function setValue(Content $content)
     {
         $binaryData    = $content->getBinary();
