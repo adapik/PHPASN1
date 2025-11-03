@@ -19,8 +19,8 @@ use FG\ASN1\Content;
 
 class Integer extends ASN1Object
 {
-    /** @var int */
-    public $value;
+    /** @var \GMP */
+    private $gmpValue;
 
     /**
      * @param Identifier $identifier
@@ -88,7 +88,12 @@ class Integer extends ASN1Object
 
     public function __toString(): string
     {
-        return (string)$this->value;
+        return gmp_strval($this->gmpValue);
+    }
+
+    public function toGMP(): \GMP
+    {
+        return $this->gmpValue;
     }
 
     public function setValue(Content $content)
@@ -107,9 +112,7 @@ class Integer extends ASN1Object
             $number = gmp_sub($number, gmp_pow(2, 8 * $contentLength - 1));
         }
 
-        $value = gmp_strval($number);
-
-        $this->value = $value;
+        $this->gmpValue = $number;
     }
 
     public static function create($integer, $options = []): self
