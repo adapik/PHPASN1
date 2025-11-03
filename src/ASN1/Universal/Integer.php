@@ -116,17 +116,14 @@ class Integer extends ASN1Object
     public function setValue(Content $content)
     {
         $binaryData    = $content->getBinary();
-        $offsetIndex   = 0;
         $contentLength = $this->contentLength->getLength();
-        $isNegative    = (\ord($binaryData[$offsetIndex]) & 0x80) != 0x00;
-        $number        = gmp_init(\ord($binaryData[$offsetIndex++]) & 0x7F, 10);
+        $isNegative    = (\ord($binaryData[0]) & 0x80) != 0x00;
 
-        for ($i = 0; $i < $contentLength - 1; $i++) {
-            $number = gmp_or(gmp_mul($number, 0x100), \ord($binaryData[$offsetIndex++]));
-        }
+        $number = gmp_import($binaryData, 1, GMP_MSW_FIRST | GMP_BIG_ENDIAN);
 
         if ($isNegative) {
-            $number = gmp_sub($number, gmp_pow(2, 8 * $contentLength - 1));
+            // For negative numbers in two's complement, we need to subtract 2^(bits)
+            $number = gmp_sub($number, gmp_pow(2, 8 * $contentLength));
         }
 
         $this->gmpValue = $number;
