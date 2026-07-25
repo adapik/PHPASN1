@@ -189,6 +189,7 @@ class Decoder
             return $identifier;
         }
 
+        $identifierParts = [$identifier];
         while (true) {
             if (\strlen($binaryData) <= $offsetIndex) {
                 throw new ParserException(
@@ -196,8 +197,8 @@ class Decoder
                     $offsetIndex
                 );
             }
-            $nextOctet  = $binaryData[$offsetIndex++];
-            $identifier .= $nextOctet;
+            $nextOctet = $binaryData[$offsetIndex++];
+            $identifierParts[] = $nextOctet;
 
             if ((\ord($nextOctet) & 0x80) === 0) {
                 // the most significant bit is 0 to we have reached the end of the identifier
@@ -205,7 +206,7 @@ class Decoder
             }
         }
 
-        return $identifier;
+        return \implode('', $identifierParts);
     }
 
     protected function parseContentLength(&$binaryData, &$offsetIndex)
@@ -223,6 +224,7 @@ class Decoder
         if (($firstOctet & 0x80) != 0) {
             // bit 8 is set -> this is the long form
             $nrOfLengthOctets = $firstOctet & 0x7F;
+            $octets = [$contentLengthOctets];
             for ($i = 0; $i < $nrOfLengthOctets; $i++) {
                 if (\strlen($binaryData) <= $offsetIndex) {
                     throw new ParserException(
@@ -230,8 +232,9 @@ class Decoder
                         $offsetIndex
                     );
                 }
-                $contentLengthOctets .= $binaryData[$offsetIndex++];
+                $octets[] = $binaryData[$offsetIndex++];
             }
+            $contentLengthOctets = \implode('', $octets);
         }
 
         return $contentLengthOctets;
