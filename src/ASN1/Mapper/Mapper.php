@@ -28,7 +28,10 @@ class Mapper
             return $this->mapChoiceObject($object, $mapping);
         }
 
-        if ($mapping['type'] !== $object->getIdentifier()->getTagNumber()) {
+        $expectedClass = $mapping['class'] ?? Identifier::CLASS_UNIVERSAL;
+        if ($mapping['type'] !== $object->getIdentifier()->getTagNumber() ||
+            $expectedClass !== $object->getIdentifier()->getTagClass()
+        ) {
             return null;
         }
 
@@ -107,38 +110,38 @@ class Mapper
             return $this->mapSetOf($object, $mapping);
         }
 
-        foreach ($object->getChildren() as $currentChild) {
-            $currentMapping = reset($mapping['children']);
-            $currentKey     = key($mapping['children']);
-            $matched        = $this->map($currentChild, $currentMapping);
-            if (null !== $matched) {
-                $map[$currentKey] = $matched;
-                array_shift($mapping['children']);
-            }
+        $childrenMapping = $mapping['children'];
 
-            while (null === $matched &&
-                array_key_exists('optional', $currentMapping) &&
-                $currentMapping['optional'] === true
-            ) {
-                array_shift($mapping['children']);
-                $currentMapping = reset($mapping['children']);
-                $currentKey     = key($mapping['children']);
-                $matched        = $this->map($currentChild, $currentMapping);
+        foreach ($object->getChildren() as $currentChild) {
+            $matched = null;
+
+            while (\count($childrenMapping) > 0) {
+                $currentMapping = reset($childrenMapping);
+                $currentKey     = key($childrenMapping);
+                array_shift($childrenMapping);
+
+                $matched = $this->map($currentChild, $currentMapping);
                 if (null !== $matched) {
-                    $map[$currentKey] = $matched = $this->map($currentChild, $currentMapping);
-                    array_shift($mapping['children']);
+                    $map[$currentKey] = $matched;
                     break;
                 }
+
+                // only optional elements may be skipped
+                if (($currentMapping['optional'] ?? false) !== true) {
+                    return null;
+                }
+            }
+
+            // schema is exhausted but there are still children left
+            if (null === $matched) {
+                return null;
             }
         }
 
-        $unprocessedMappings = array_filter($mapping['children'], function ($map) {
-            return !array_key_exists('optional', $map);
-        });
-
-
-        if (\count($unprocessedMappings) > 0) {
-            return null;
+        foreach ($childrenMapping as $remaining) {
+            if (!array_key_exists('optional', $remaining)) {
+                return null;
+            }
         }
 
         return $map;

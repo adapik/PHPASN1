@@ -324,4 +324,66 @@ class MapperTest extends TestCase
         $mappedObject = (new Mapper())->map($taggedObject, $map);
         $this->assertCount(2, $mappedObject);
     }
+
+    /**
+     * @dataProvider wrongClassProvider
+     */
+    public function testMapRejectsWrongTagClass(string $hex)
+    {
+        $binary = hex2bin($hex);
+        $object = \FG\ASN1\ASN1Object::fromBinary($binary);
+        $this->assertNull((new Mapper())->map($object, ['type' => Identifier::OCTETSTRING]));
+    }
+
+    public function wrongClassProvider(): array
+    {
+        return [
+            'application' => ['4402aabb'],
+            'context'     => ['8402aabb'],
+            'private'     => ['C402aabb'],
+        ];
+    }
+
+    public function testMapSequenceBareOidInsteadOfSequence()
+    {
+        $object = Sequence::create([ObjectIdentifier::create('1.2.3'), OctetString::createFromString('a')]);
+        $map    = [
+            'type'     => Identifier::SEQUENCE,
+            'children' => [
+                'algorithm' => ['type' => Identifier::SEQUENCE, 'children' => [
+                    'oid' => ['type' => Identifier::OBJECT_IDENTIFIER],
+                ]],
+                'data' => ['type' => Identifier::OCTETSTRING],
+            ],
+        ];
+        $this->assertNull((new Mapper())->map($object, $map));
+    }
+
+    public function testMapSequenceWithExtraChildren()
+    {
+        $object = Sequence::create([Integer::create(1), Integer::create(2)]);
+        $map    = ['type' => Identifier::SEQUENCE, 'children' => ['a' => ['type' => Identifier::INTEGER]]];
+        $this->assertNull((new Mapper())->map($object, $map));
+
+        $empty = ['type' => Identifier::SEQUENCE, 'children' => []];
+        $this->assertNull((new Mapper())->map($object, $empty));
+    }
+
+    public function testMapSequenceOptionalSkipped()
+    {
+        $object = Sequence::create([Integer::create(2)]);
+        $map    = ['type' => Identifier::SEQUENCE, 'children' => [
+            'a' => ['type' => Identifier::BOOLEAN, 'optional' => true],
+            'b' => ['type' => Identifier::INTEGER],
+        ]];
+        $this->assertSame(['b'], array_keys((new Mapper())->map($object, $map)));
+    }
+
+    public function testMapImplicitTaggedStillMatches()
+    {
+        $binary = hex2bin('800203aa');
+        $object = \FG\ASN1\ASN1Object::fromBinary($binary);
+        $map    = ['type' => Identifier::OCTETSTRING, 'implicit' => true, 'constant' => 0];
+        $this->assertNotNull((new Mapper())->map($object, $map));
+    }
 }
