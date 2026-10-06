@@ -16,18 +16,41 @@ The API allows you to encode ASN.1 structures to create binary data such as cert
 signing requests (CSR), X.509 certificates or certificate revocation lists (CRL).
 PHPASN1 can also read [BER encoded][6] binary data into separate PHP objects that can be manipulated by the user and reencoded afterwards.
 
+Unlike the original [fgrosse/PHPASN1](https://github.com/fgrosse/PHPASN1) library, this library can:
+
+* decode BER data that uses **indefinite length** encoding
+* **modify the structure** of decoded ASN.1 objects (add, replace or remove nested elements) and encode them again
+
 The **changelog** can now be found at [CHANGELOG.md](CHANGELOG.md).
 
 ## Dependencies
 
-PHPASN1 requires at least `PHP 7` and the `gmp` extension.
+PHPASN1 requires at least `PHP 8.1`.
+
+It is **strongly recommended to install the [`gmp` extension](https://www.php.net/manual/en/book.gmp.php)**,
+which is significantly faster for big integer arithmetic.
+If the extension is not available, the pure PHP [`adapik/gmp-polyfill`](https://github.com/adapik/gmp-polyfill)
+(installed automatically via Composer) is used instead.
+The polyfill should only be relied on in environments where installing the extension is not possible,
+or for demonstration purposes.
+
+If you have the extension installed, you can avoid downloading the polyfill by excluding it
+in the `composer.json` of your project using the `replace` section:
+
+```json
+{
+    "replace": {
+        "adapik/gmp-polyfill": "*"
+    }
+}
+```
 
 ## Installation
 
 The preferred way to install this library is to rely on [Composer][2]:
 
 ```bash
-$ composer require Adapik/phpasn1
+$ composer require adapik/phpasn1
 ```
 
 ## Usage

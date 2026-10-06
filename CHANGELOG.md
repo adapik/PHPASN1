@@ -1,22 +1,25 @@
-#### v.1.5.1 (2015-10-02)
-* add keywords to composer.json (this is a version on its own so the keywords are found on a stable version at packagist.org)
+## v2.5.0
+* add [`adapik/gmp-polyfill`](https://github.com/adapik/gmp-polyfill) as a pure PHP substitute for the `gmp` extension
+  - `ext-gmp` is no longer a hard requirement; it is now only suggested for better performance
+  - the polyfill is used automatically when the extension is not loaded
+* **require PHP 8.1**
+* remove the `php-curl` suggestion from `composer.json`
 
-#### v.1.5.0 (2015-10-30)
-* fix a bug that would prevent you from decoding context specific tags on multiple objects [#57](https://github.com/fgrosse/PHPASN1/issues/57)
-  - `ExplicitlyTaggedObject::__construct` does now accept multiple objects to be tagged with a single tag
-  - `ExplicitlyTaggedObject::getContent` will now always return an array (even if only one object is tagged)
+## v2.4.2 (2025-11-03)
+* performance improvement for `Integer` [#12](https://github.com/Adapik/PHPASN1/pull/12)
 
-#### v.1.4.2 (2015-09-29)
-* fix a bug that would prevent you from decoding empty tagged objects [#57](https://github.com/fgrosse/PHPASN1/issues/57)
+## v2.4.1 (2025-11-03)
+* expose the underlying GMP value of `Integer` and add tests [#11](https://github.com/Adapik/PHPASN1/pull/11)
 
-#### v.1.4.1
-* improve exception messages and general error handling [#55](https://github.com/fgrosse/PHPASN1/pull/55)
+## v2.4.0 (2025-08-02)
+* require PHP 7.4
+* adopt to modern PHPUnit (`^9.0`) and drop `php-coveralls` [#10](https://github.com/Adapik/PHPASN1/pull/10)
+* add GitHub Actions workflow and build status badge
 
-#### v.1.4.0
-* **require PHP 5.6**
-* support big integers (closes #1 and #37)
-* enforce one code style via [styleci.io][9]
-* track code coverage via [coveralls.io][10]
-* replace obsolete `FG\ASN1\Exception\GeneralException` with `\Exception`
-* `Construct` (`Sequence`, `Set`) does now implement `ArrayAccess`, `Countable` and `Iterator` so its easier to use
-* add [`TemplateParser`][11]
+## v2.3.1 (2024-03-22)
+* `getDecoratedObject` does not enforce proper use of end-of-content (EOC) markers [#8](https://github.com/Adapik/PHPASN1/pull/8)
+* allow PHP 8.1 in CI
+
+## v2.3 (2021-04-19)
+* require PHP 7.2
+* update PHPUnit to `^8.0` and `php-coveralls` to `^2.4`
