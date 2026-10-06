@@ -2,6 +2,8 @@
 
 namespace FG\ASN1;
 
+use FG\ASN1\Exception\ParserException;
+
 class ContentLength extends ObjectPart implements ContentLengthInterface
 {
     const SHORT_FORM      = 1;
@@ -59,6 +61,9 @@ class ContentLength extends ObjectPart implements ContentLengthInterface
                 $nrOfLengthOctets = ord($firstOctet) & 0x7F;
                 $contentLength    = 0x00;
                 for ($i = 0; $i < $nrOfLengthOctets; ++$i) {
+                    if ($contentLength > (\PHP_INT_MAX >> 8)) {
+                        throw new ParserException('Content length is too large', 0);
+                    }
                     $contentLength = ($contentLength * 256) + ord($this->binaryData[++$offsetIndex]);
                 }
                 break;

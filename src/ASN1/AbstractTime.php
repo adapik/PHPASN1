@@ -12,6 +12,7 @@ namespace FG\ASN1;
 
 use DateInterval;
 use DateTime;
+use FG\ASN1\Exception\ParserException;
 
 abstract class AbstractTime extends ASN1Object
 {
@@ -26,9 +27,18 @@ abstract class AbstractTime extends ASN1Object
     ) {
         parent::__construct($identifier, $contentLength, $content, $children);
 
-        if (!$this->identifier->isConstructed()) {
-            $this->setValue($content);
+        if ($this->identifier->isConstructed()) {
+            // BER: the value is split into string segments; join them
+            $joined = '';
+            foreach ($children as $child) {
+                if ($child->getIdentifier()->isConstructed()) {
+                    throw new ParserException('Nested constructed segments are not supported in time types', 0);
+                }
+                $joined .= $child->getBinaryContent();
+            }
+            $content = new Content($joined);
         }
+        $this->setValue($content);
     }
 
     abstract public function setValue(Content $content);

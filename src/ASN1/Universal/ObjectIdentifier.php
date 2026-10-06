@@ -69,6 +69,10 @@ class ObjectIdentifier extends ASN1Object
                     throw new ParserException('Malformed ASN.1 Object Identifier', $offsetIndex - 1);
                 }
 
+                if ($offsetIndex >= \strlen($binaryData)) {
+                    throw new ParserException('Malformed ASN.1 Object Identifier', $offsetIndex);
+                }
+
                 $octetsToRead--;
                 $octet  = $binaryData[$offsetIndex++];
                 $octets .= $octet;
@@ -85,9 +89,12 @@ class ObjectIdentifier extends ASN1Object
     {
         $binaryData  = $content->getBinary();
         $offsetIndex = 0;
+        if ($binaryData === '') {
+            throw new ParserException('Malformed ASN.1 Object Identifier: empty content', 0);
+        }
         $firstOctet  = ord($binaryData[$offsetIndex++]);
         $oidString   = floor($firstOctet / 40) . '.' . ($firstOctet % 40);
-        $oidString   .= '.' . self::parseOid($binaryData, $offsetIndex, $this->getContentLength()->getLength() - 1);
+        $oidString   .= '.' . self::parseOid($binaryData, $offsetIndex, \strlen($binaryData) - 1);
         $this->value = $value = $oidString;
 
         $this->subIdentifiers = explode('.', $value);
