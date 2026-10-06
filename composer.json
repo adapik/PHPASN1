@@ -25,14 +25,14 @@
     "keywords": [ "x690", "x.690", "x.509", "x509", "asn1", "asn.1", "ber", "der", "binary", "encoding", "decoding" ],
 
     "require": {
-        "php": ">=7.4",
-        "ext-gmp": "*"
+        "php": ">=8.1",
+        "adapik/gmp-polyfill": "^1.0"
     },
     "require-dev": {
         "phpunit/phpunit": "^9.0"
     },
     "suggest": {
-        "php-curl": "For loading OID information from the web if they have not bee defined statically"
+        "ext-gmp": "For faster arbitrary-precision arithmetic; falls back to adapik/gmp-polyfill when unavailable"
     },
     "autoload": {
         "psr-4": {

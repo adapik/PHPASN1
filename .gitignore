@@ -9,3 +9,6 @@ vendor
 
 # Test coverage reports
 clover.xml
+
+composer.lock
+.phpunit.result.cache
