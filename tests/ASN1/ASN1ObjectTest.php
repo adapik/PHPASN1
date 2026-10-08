@@ -231,7 +231,7 @@ class ASN1ObjectTest extends ASN1TestCase
     public function testFromBinaryWithSpacyStringThrowsException()
     {
         $this->expectException(\FG\ASN1\Exception\ParserException::class);
-        $this->expectExceptionMessage('ASN.1 Parser Exception at offset 2: Can not parse binary from data: Offset index larger than input size');
+        $this->expectExceptionMessage('ASN.1 Parser Exception at offset 2: Content length exceeds the input');
         
         $data = '  ';
         ASN1Object::fromBinary($data);
@@ -255,7 +255,7 @@ class ASN1ObjectTest extends ASN1TestCase
     public function testFromBinaryWithGarbageStringThrowsException()
     {
         $this->expectException(\FG\ASN1\Exception\ParserException::class);
-        $this->expectExceptionMessage('ASN.1 Parser Exception at offset 25: Can not parse content length from data: Offset index larger than input size');
+        $this->expectExceptionMessage('ASN.1 Parser Exception at offset 2: Content length exceeds the input');
         
         $data = 'certainly no asn.1 object';
         ASN1Object::fromBinary($data);

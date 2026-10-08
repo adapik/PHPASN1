@@ -61,6 +61,13 @@ class Decoder
         $lengthOctets     = $this->parseContentLength($binaryData, $offsetIndex);
         $contentLength    = new ContentLength($lengthOctets);
 
+        if ($contentLength->getLengthForm() !== ContentLength::INDEFINITE_FORM) {
+            $declaredLength = $contentLength->getLength();
+            if (!\is_int($declaredLength) || $declaredLength > \strlen($binaryData) - $offsetIndex) {
+                throw new ParserException('Content length exceeds the input', $offsetIndex);
+            }
+        }
+
         $children = [];
         //запоминаем начало элемента
         $startPos = $offsetIndex;
@@ -261,6 +268,9 @@ class Decoder
                     $newChild->getIdentifier()->getNrOfOctets() +
                     $newChild->getContentLength()->getNrOfOctets()
                 );
+                if ($octetsToRead < 0) {
+                    throw new ParserException('Child exceeds the length of its parent', $offsetIndex);
+                }
                 $children[] = $newChild;
             }
         } else {

@@ -106,7 +106,7 @@ class BooleanTest extends ASN1TestCase
         
         $binaryData  = chr(Identifier::BOOLEAN);
         $binaryData .= chr(0x02);
-        $binaryData .= chr(0xFF);
+        $binaryData .= chr(0xFF) . chr(0xFF);
         Boolean::fromBinary($binaryData);
     }
 

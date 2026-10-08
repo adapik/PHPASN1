@@ -44,10 +44,6 @@ class GeneralizedTime extends AbstractTime
     ) {
         parent::__construct($identifier, $contentLength, $content, $children);
 
-        if (!$this->identifier->isConstructed()) {
-            $this->setValue($content);
-        }
-
         $this->microseconds = $this->value->format('u');
         if ($this->containsFractionalSecondsElement()) {
             // DER requires us to remove trailing zeros
@@ -80,7 +76,10 @@ class GeneralizedTime extends AbstractTime
         $offsetIndex = 0;
 
         $lengthOfMinimumTimeString = 14; // YYYYMMDDHHmmSS
-        $contentLength             = $this->contentLength->getLength();
+        $contentLength             = \strlen($binaryData);
+        if ($contentLength < $lengthOfMinimumTimeString) {
+            throw new ParserException('Invalid ISO 8601 Time String: too short', 0);
+        }
         $maximumBytesToRead        = $contentLength;
 
         $format             = 'YmdGis';
@@ -89,9 +88,16 @@ class GeneralizedTime extends AbstractTime
         $offsetIndex        += $lengthOfMinimumTimeString;
         $maximumBytesToRead -= $lengthOfMinimumTimeString;
 
+        if (!preg_match('/^\d+$/D', $dateTimeString)) {
+            throw new ParserException('Invalid ISO 8601 Time String: non-digit characters', 0);
+        }
+
         if ($contentLength === $lengthOfMinimumTimeString) {
             $localTimeZone = new \DateTimeZone(date_default_timezone_get());
             $dateTime      = \DateTime::createFromFormat($format, $dateTimeString, $localTimeZone);
+            if ($dateTime === false) {
+                throw new ParserException('Invalid ISO 8601 Time String', 0);
+            }
             $this->value   = $dateTime;
         } else {
             if ($binaryData[$offsetIndex] === '.') {
@@ -99,6 +105,7 @@ class GeneralizedTime extends AbstractTime
                 $nrOfFractionalSecondElements = 1; // account for the '.'
 
                 while ($maximumBytesToRead > 0
+                    && $offsetIndex + $nrOfFractionalSecondElements < $contentLength
                     && $binaryData[$offsetIndex + $nrOfFractionalSecondElements] !== '+'
                     && $binaryData[$offsetIndex + $nrOfFractionalSecondElements] !== '-'
                     && $binaryData[$offsetIndex + $nrOfFractionalSecondElements] !== 'Z') {
@@ -106,14 +113,21 @@ class GeneralizedTime extends AbstractTime
                     $maximumBytesToRead--;
                 }
 
-                $dateTimeString .= substr($binaryData, $offsetIndex, $nrOfFractionalSecondElements);
+                $fraction = substr($binaryData, $offsetIndex, $nrOfFractionalSecondElements);
+                if (!preg_match('/^\.\d+$/D', $fraction)) {
+                    throw new ParserException('Invalid ISO 8601 Time String: malformed fractional seconds', $offsetIndex);
+                }
+                $dateTimeString .= $fraction;
                 $offsetIndex    += $nrOfFractionalSecondElements;
                 $format         .= '.u';
             }
 
             $dateTime = \DateTime::createFromFormat($format, $dateTimeString, new \DateTimeZone('UTC'));
+            if ($dateTime === false) {
+                throw new ParserException('Invalid ISO 8601 Time String', 0);
+            }
 
-            if ($maximumBytesToRead > 0) {
+            if ($maximumBytesToRead > 0 && $offsetIndex < $contentLength) {
                 if ($binaryData[$offsetIndex] === '+'
                     || $binaryData[$offsetIndex] === '-'
                 ) {

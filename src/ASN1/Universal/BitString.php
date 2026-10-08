@@ -34,7 +34,16 @@ class BitString extends OctetString implements Parsable
     ) {
         parent::__construct($identifier, $contentLength, $content, $children);
 
-        $this->nrOfUnusedBits = \ord($content->getBinary()[0]);
+        $binary = $content->getBinary();
+        if ($binary === '') {
+            // an empty constructed (BER) bit string has no segments; a primitive one is malformed
+            if (!$identifier->isConstructed()) {
+                throw new ParserException('Malformed bit string: empty content', 0);
+            }
+            $this->nrOfUnusedBits = 0;
+            return;
+        }
+        $this->nrOfUnusedBits = \ord($binary[0]);
     }
 
     public function getNumberOfUnusedBits(): int

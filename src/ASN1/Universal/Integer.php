@@ -11,6 +11,7 @@
 namespace FG\ASN1\Universal;
 
 use Exception;
+use FG\ASN1\Exception\ParserException;
 use FG\ASN1\ElementBuilder;
 use FG\ASN1\ASN1Object;
 use FG\ASN1\Identifier;
@@ -116,7 +117,10 @@ class Integer extends ASN1Object
     public function setValue(Content $content)
     {
         $binaryData    = $content->getBinary();
-        $contentLength = $this->contentLength->getLength();
+        $contentLength = \strlen($binaryData);
+        if ($contentLength === 0) {
+            throw new ParserException('Malformed integer: empty content', 0);
+        }
         $isNegative    = (\ord($binaryData[0]) & 0x80) != 0x00;
 
         $number = gmp_import($binaryData, 1, GMP_MSW_FIRST | GMP_BIG_ENDIAN);

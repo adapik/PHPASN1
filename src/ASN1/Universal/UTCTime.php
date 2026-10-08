@@ -58,6 +58,11 @@ class UTCTime extends AbstractTime implements Parsable
         $binaryData  = $content->getBinary();
         $offsetIndex = 0;
 
+        $length = \strlen($binaryData);
+        if ($length < 11) {
+            throw new ParserException('Invalid UTC String: too short', 0);
+        }
+
         $format         = 'ymdGi';
         $dateTimeString = substr($binaryData, $offsetIndex, 10);
         $offsetIndex    += 10;
@@ -70,9 +75,19 @@ class UTCTime extends AbstractTime implements Parsable
             $dateTimeString .= substr($binaryData, $offsetIndex, 2);
             $offsetIndex    += 2;
             $format         .= 's';
+            if ($offsetIndex >= $length) {
+                throw new ParserException('Invalid UTC String: too short', $offsetIndex);
+            }
+        }
+
+        if (!preg_match('/^\d+$/D', $dateTimeString)) {
+            throw new ParserException('Invalid UTC String: non-digit characters', 0);
         }
 
         $dateTime = \DateTime::createFromFormat($format, $dateTimeString, new \DateTimeZone('UTC'));
+        if ($dateTime === false) {
+            throw new ParserException('Invalid UTC String', 0);
+        }
 
         // extract time zone settings
         if ($binaryData[$offsetIndex] === '+'
